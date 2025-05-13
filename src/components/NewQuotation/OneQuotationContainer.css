@@ -1,0 +1,85 @@
+.quotation-table-quotation {
+    width: 95%;
+    margin:auto;
+    padding: 0px 20px;
+    border-collapse: collapse;
+}
+.quotation-table-quotation thead {
+    background-color: #ccc;
+    height: 45px;
+    width: 100%;
+}
+.quotation-table-quotation tr{
+    height: 45px;
+}
+.quotation-table-quotation tbody tr td {
+    text-align: center;
+}
+
+.complete-quotation-message p{
+    text-align: center;
+    margin-top: 10px;
+    font-size: 1.3em;
+}
+
+.quotation-table-products {
+    width: 95%;
+    margin: auto;
+}
+.product-container {
+    width: 100%;
+    border-collapse: collapse;
+}
+.product-container thead {
+    background-color: #ddd;
+    height: 35px;
+}
+.product-container thead th{
+    font-size: 0.9em;
+    font-weight: 500;
+}
+.product-container tbody tr {
+    height: 35px;
+}
+.product-container tbody tr td {
+    padding: 0px 10px;
+    font-size: 0.9em;
+}
+
+.quotation-table-processes{
+    width: 96%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+.quotation-table-processes thead {
+    background-color: #eee;
+    height: 22px;
+}
+.quotation-table-processes th {
+    font-size: 1em;
+    font-weight: normal;
+}
+
+.quotation-table-processes tbody tr {
+    height: 25px;
+}
+
+input {
+    background-color: #fff;/
+    color: black;
+}
+ul {
+    margin: 0px;
+}
+
+.quotation-buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 100px;
+    width: 100%;
+    padding: 0px 20px;
+    margin: 20px auto;
+    padding-top: 20px;
+    border-top:  #000 2px solid
+}

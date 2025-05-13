@@ -1,0 +1,28 @@
+.sticky {
+    position: sticky;
+    top: 0;
+    padding: 1px;
+    background-color: #a0a0a0 ;
+}
+.navbar-container h3 {
+    margin: 0px;
+}
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #aaa;
+    height: 60px;
+    padding: 0px 80px;
+}
+
+.navbar-logo-link{
+    margin-top: 7px;
+}
+.navbar-isologo {
+    width: 185px;
+    height: 26.5px;
+};
+.navbar-isologo:hover {
+    cursor: pointer;
+}

@@ -1,0 +1,58 @@
+.quotations-header {
+    display: grid;
+    grid-template-columns: 17% 71% 12%;
+    align-content: center;
+    align-items: center;
+    height: 40px;
+}
+.quotations-header h3 {
+    text-align: center;
+    margin: 0;
+    padding: 10px;  
+}
+.quotations-search {
+    margin: 7px 0px 7px 30px;
+    font-size: 1em;
+}
+
+.quotations-table thead {
+    height: 40px;
+}
+
+.quotations-table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+    margin-top: 2px;
+    font-size: 12px;
+    text-align: left;
+}
+
+.quotations-table th:nth-child(1) { width: 5%; }
+.quotations-table th:nth-child(2) { width: 6%; }
+.quotations-table th:nth-child(3) { width: 28%; } 
+.quotations-table th:nth-child(4) { width: 5%; }
+.quotations-table th:nth-child(5) { width: 4%; }
+.quotations-table th:nth-child(6) { width: 10%; }
+.quotations-table th:nth-child(7) { width: 28%; }
+.quotations-table th:nth-child(8) { width: 10%; }
+.quotations-table th:nth-child(9) { width: 6%; }
+
+.quotations-table th, .quotations-table td {
+    padding: 2px;
+    border-bottom: 1px solid #ddd;
+}
+
+.quotations-table th {
+    text-align: center;
+    font-size: 16px;
+    margin-left: 10px;
+    background-color: #ccc;
+    color: black;
+    font-weight: bold;
+}
+
+.quotations-table tr:hover {
+    background-color: #d1e7fd;
+    cursor: pointer;
+}

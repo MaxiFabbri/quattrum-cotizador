@@ -1,0 +1,15 @@
+
+.products-table td {
+    background-color: #ffffff00;
+    padding: 0px;
+    border: 0px solid #ddd;
+}
+
+.products-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.products-table td:nth-child(1) { width: 21%; }
+.products-table td:nth-child(2) { width: 58%; }
+.products-table td:nth-child(3) { width: 21%; }

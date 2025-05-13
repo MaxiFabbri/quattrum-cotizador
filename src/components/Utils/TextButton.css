@@ -1,0 +1,15 @@
+.text-button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.4em 0.8em;
+    font-size: 0.8em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #777;
+    cursor: pointer;
+    transition: border-color 0.25s;
+}
+
+.text-button:hover {
+    border-color: #646cff;
+}
