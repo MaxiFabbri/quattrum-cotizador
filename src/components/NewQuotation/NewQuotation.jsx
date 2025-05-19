@@ -32,6 +32,7 @@ const NewQuotation = () => {
     };
 
     const handleCustomerUpdate = async (customer) => {
+        console.log("Customer selected:", customer);
         const paymentMethodData = await getPaymentMethodData(customer.customerPaymentMethodId);
         updateQuotationData({
             customerId: customer._id || "",
