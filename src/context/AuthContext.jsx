@@ -5,6 +5,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [authenticating, setAuthenticating] = useState(true);
 
     const login = async (email, password) => {
         try {
@@ -13,7 +14,9 @@ export const AuthProvider = ({ children }) => {
                 { email, password }, // Datos enviados al servidor
                 { withCredentials: true } // Incluye cookies en la solicitud
             );
-            console.log('Login response:', response);
+            setAuthenticating(false);
+            console.log('Login response:', response, ' Authenticating: ', authenticating);
+
             if (response.status === 200) {
                 setIsAuthenticated(true);
             } else {
@@ -45,12 +48,14 @@ export const AuthProvider = ({ children }) => {
     };
 
     const checkAuth = async () => {
-        console.log('Verificando autenticación...');
+        setAuthenticating(true);
+        console.log('Verificando autenticación... ', authenticating);
         try {
             const response = await apiClient.post(
                 '/sessions/online',
                 { withCredentials: true } // Incluye cookies en la solicitud
             );
+            setAuthenticating(false)
             if (response.status === 200) {
                 console.log('Usuario autenticado');
                 setIsAuthenticated(true);
@@ -68,7 +73,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, checkAuth }}>
+        <AuthContext.Provider value={{ isAuthenticated, authenticating, login, logout, checkAuth }}>
             {children}
         </AuthContext.Provider>
     );
