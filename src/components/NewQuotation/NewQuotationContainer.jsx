@@ -35,8 +35,9 @@ const NewQuotationContainer = () => {
                 </tbody>
             </table>
             {quotationData.products && quotationData.products.length > 0 ? (
-                <>
-                    <table key={`table-${quotationData.id}`} className="quotation-table-products">
+                <>  
+                    <div className="quotation-table-products">
+                    {/* <table key={`table-${quotationData.id}`} className="quotation-table-products"> */}
                         {quotationData.products.map((product) => (
                             <table className="product-container" key={product.productId} id={product.productId}>
                                 <ProductHeader />
@@ -65,7 +66,8 @@ const NewQuotationContainer = () => {
                                 </tbody>
                             </table>
                         ))}
-                    </table>
+                    {/* </table> */}
+                    </div>
                     <div className="quotation-buttons-container">
                         <ButtonAddProduct />
                         <ButtonCalculateQuotation />

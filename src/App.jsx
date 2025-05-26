@@ -36,21 +36,6 @@ function App() {
       }
     </>
 
-    // <>
-    //   {isAuthenticated ?
-    //     <>
-    //       <Navbar />          
-    //       <Routes>
-    //         <Route path="/" element={<Quotations />} /> {/* Página principal */}
-    //         <Route path="/customers" element={<CustomersContainer />} /> {/* Página de Clientes */}
-    //         <Route path="/new-quotation" element={<NewQuotationContainer />} /> {/* Página de Nueva Cotización */}
-    //         <Route path="/detailed-quotation/:id" element={<DetailedQuotationContainer />} />
-    //       </Routes>
-
-    //     </>
-    //     : <LoginForm />
-    //   }
-    // </>
   )
 }
 

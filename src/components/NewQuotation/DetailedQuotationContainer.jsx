@@ -15,7 +15,7 @@ import ButtonDuplicateQuotatio from "./QuotationUtils/ButtonDuplicateQuotation.j
 import { apiClient } from "../../config/axiosConfig.js";
 
 const DetailedQuotationContainer = (quote) => {
-    // const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
+    const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
     const { quotationData, clearQuotationData, updateQuotationData } = useContext(QuotationContext);
     // const [newQuotationData, setNewQuotationData] = useState(null)
     const today = new Date().toISOString().split("T")[0];
@@ -122,7 +122,8 @@ const DetailedQuotationContainer = (quote) => {
             </table>
             {quotationData.products && quotationData.products.length > 0 ? (
                 <>
-                    <table key={`table-${quotationData.id}`} className="quotation-table-products">
+                    <div className="quotation-table-products">
+                    {/* <table key={`table-${quotationData.id}`} className="quotation-table-products"> */}
                         {quotationData.products.map((product) => (
                             <table className="product-container" key={product.productId} id={product.productId}>
                                 <ProductHeader />
@@ -150,9 +151,10 @@ const DetailedQuotationContainer = (quote) => {
                                     </tr>
                                 </tbody>
                             </table>
+                            
                         ))}
-
-                    </table>
+                    </div>
+                    {/* </table> */}
                     <div className="quotation-buttons-container">
                         <ButtonAddProduct />
                         <ButtonCalculateQuotation />

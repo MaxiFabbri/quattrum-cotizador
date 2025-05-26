@@ -1,0 +1,12 @@
+.welcome-page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    margin-top: 80px;
+}
+
+.welcome-isologo {
+    width: 370px;
+    height: 53px;
+}

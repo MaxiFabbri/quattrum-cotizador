@@ -15,6 +15,7 @@ const SelectCustomer = ({ defaultCustomer, onSelectCustomer }) => {;
         try {
             const response = await apiClient.post("/customers/name", { name });
             const data = Array.isArray(response.data.response) ? response.data.response : [];
+            console.log("Sugerencias de clientes:", data); // Muestra las sugerencias en la consola
             setCustomerSuggestions(data); // Almacena las sugerencias
         } catch (error) {
             console.error("Error al buscar clientes:", error);
