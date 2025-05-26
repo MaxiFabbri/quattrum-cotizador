@@ -30,6 +30,15 @@ const Quotation = ({ quote, onDelete }) => {
         navigate(`/detailed-quotation/${quote._id}`);
     };
 
+    // Formatear la fecha
+    const formatDate = (isoDate) => {
+        const date = new Date(isoDate);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // Asegura 2 dígitos
+        const day = String((date.getDate())+1).padStart(2, "0"); // Asegura 2 dígitos
+        return `${year}-${month}-${day}`;
+    };
+
     return (
         <tr id={quote._id} onClick={handleRowClick} style={{ cursor: "pointer" }}>
             <td>
@@ -42,7 +51,7 @@ const Quotation = ({ quote, onDelete }) => {
                     }}
                 />
             </td>
-            <td>{new Date(quote.date).toLocaleDateString()}</td>
+            <td>{formatDate(quote.date)}</td>
             <td>{quote.customerId.name}</td>
             <td>{quote.currency}</td>
             <td>{quote.isKit ? "Sí" : "No"}</td>    

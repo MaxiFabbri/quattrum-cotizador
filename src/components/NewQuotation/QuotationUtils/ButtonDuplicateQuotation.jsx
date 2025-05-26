@@ -6,7 +6,8 @@ import TextButton from "../../Utils/TextButton";
 
 const ButtonCalculateQuotation = () => {
     const { quotationData, updateProduct, updateProcessInProduct, updateQuotationData } = useContext(QuotationContext);
-    const { utilitiesTable, tax } = useContext(ParametersContext);
+    const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
+    const today = new Date().toISOString().split("T")[0];
     const [isUpdated, setIsUpdated] = useState(false);
 
     const saveDuplicatedtedQuotation = async () => {
@@ -14,16 +15,17 @@ const ButtonCalculateQuotation = () => {
         let newQuotationId = ""
         // preparo la informacion de Quotation para guardar en la DB
         const quotationToSave = {
-            date: quotationData.date,
+            date: today,
             customerId: quotationData.customerId,
             paymentMethodId: quotationData.paymentMethodId,
-            monthlyRate: quotationData.monthlyRate,
+            monthlyRate: paramMonthlyRate,
             currency: quotationData.currency,
-            exchangeRate: quotationData.exchangeRate,
+            exchangeRate: dolarPrice,
             quoteStatus: quotationData.quoteStatus,
             quoteProductsDescription: quotationData.quoteProductsDescription,
             isKit: quotationData.isKit,
         }
+        console.log("Quotation to save: ", quotationToSave);
         // grabo en la DB la información de Quotation y rescato el Id
         try {
             const responseQuote = await apiClient.post("/quotations", quotationToSave);
@@ -32,8 +34,10 @@ const ButtonCalculateQuotation = () => {
             // Actualizo el ID de la cotización en el context
             updateQuotationData({
                 id: newQuotationId,
+                date: today,
+                monthlyRate: paramMonthlyRate,
+                exchangeRate: dolarPrice,
             });
-
         } catch (error) {
             console.error("Error al guardar la cotización: ", error);
         }

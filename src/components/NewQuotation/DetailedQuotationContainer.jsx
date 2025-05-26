@@ -17,18 +17,18 @@ import { apiClient } from "../../config/axiosConfig.js";
 const DetailedQuotationContainer = (quote) => {
     const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
     const { quotationData, clearQuotationData, updateQuotationData } = useContext(QuotationContext);
-    // const [newQuotationData, setNewQuotationData] = useState(null)
+
     const today = new Date().toISOString().split("T")[0];
     const { id } = useParams()
-    console.log("Detailed Quotation Container ",id);
 
     const formatDate = (isoDate) => {
         const date = new Date(isoDate);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0"); // Asegura 2 dígitos
-        const day = String(date.getDate()).padStart(2, "0"); // Asegura 2 dígitos
+        const day = String((date.getDate())+1).padStart(2, "0"); // Asegura 2 dígitos
         return `${year}-${month}-${day}`;
     };
+    
 
     const adjustProcessesData = (dbProcesses, exchangeRate) => {
         const newProcessesData = dbProcesses.map((process) => {

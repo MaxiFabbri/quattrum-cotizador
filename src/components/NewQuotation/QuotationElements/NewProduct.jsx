@@ -11,7 +11,6 @@ const NewProduct = ({productData}) => {
 
     // Actualizar el estado local `prodData` cuando cambie `quotationData`
     useEffect(() => {
-        console.log("Actualizando prodData: ", prodData);
         updateProdData();
     }, [quotationData]);
 
@@ -24,7 +23,6 @@ const NewProduct = ({productData}) => {
 
     // Actualizar el estado global al cambiar algun dato
     useEffect(() => {
-        console.log("Actualizando producto en el contexto: ", prodData, " isUpdated: ", isUpdated);
         if(!isUpdated) {
             updateProduct(prodData, prodData.productId);
             setIsUpdated(true); // Cambiamos el estado a `true` para indicar que se ha actualizado
