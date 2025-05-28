@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [authenticating, setAuthenticating] = useState(true);
+    const [authenticating, setAuthenticating] = useState(false);
 
     const login = async (email, password) => {
         try {
@@ -50,14 +50,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     const checkAuth = async () => {
-        setAuthenticating(true);
         console.log('Verificando autenticación... ', authenticating);
         try {
+            setAuthenticating(true);
             const response = await apiClient.post(
                 '/sessions/online',
                 { withCredentials: true } // Incluye cookies en la solicitud
             );
-            setAuthenticating(false)
             if (response.status === 200) {
                 console.log('Usuario autenticado');
                 setIsAuthenticated(true);
@@ -67,6 +66,8 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error('Hubo un error al verificar la autenticación:', error);
             setIsAuthenticated(false);
+        } finally {
+            setAuthenticating(false);
         }
     };
 
