@@ -19,7 +19,9 @@ export const AuthProvider = ({ children }) => {
 
             if (response.status === 200) {
                 setIsAuthenticated(true);
+                setAuthenticating(false);
             } else {
+                setAuthenticating(false);
                 alert('Error: Credenciales incorrectas');
             }
         } catch (error) {
