@@ -9,24 +9,23 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
+            setAuthenticating(true);
             const response = await apiClient.post(
                 'sessions/login',
                 { email, password }, // Datos enviados al servidor
                 { withCredentials: true } // Incluye cookies en la solicitud
             );
-            setAuthenticating(false);
             console.log('Login response:', response, ' Authenticating: ', authenticating);
-
             if (response.status === 200) {
                 setIsAuthenticated(true);
-                setAuthenticating(false);
             } else {
-                setAuthenticating(false);
                 alert('Error: Credenciales incorrectas');
             }
         } catch (error) {
             console.error('Hubo un error al intentar iniciar sesión:', error);
             alert('Error al conectar con el servidor');
+        } finally {
+            setAuthenticating(false);
         }
     };
 

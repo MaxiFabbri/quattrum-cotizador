@@ -14,8 +14,6 @@ import CustomersContainer from './components/Customers/CustomersContainer.jsx';
 
 function App() {
   const { isAuthenticated, authenticating } = useContext(AuthContext);
-  console.log("Is Authenticated: ",isAuthenticated);
-  console.log("Authenticating: ",authenticating);
 
   return (
     <>
