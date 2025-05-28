@@ -16,8 +16,12 @@ const Navbar = () => {
                 <img src="logo-quattrum-370x53.png" alt="Isologo de Quattrum" className="navbar-isologo"/>
             </Link>
             <h4>Dolar hoy: {dolarPrice}</h4>
+            <Link to="/customers">
+                <TextButton text="Clientes" />
+            </Link>
+            <TextButton text="Proveedores" />
+            <TextButton text="Usuarios" />
             <TextButton text="Cerrar Sesión" onClick={logout} />
-
         </nav>
     );
 };

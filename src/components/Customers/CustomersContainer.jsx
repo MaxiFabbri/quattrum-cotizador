@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import "./CustomersContainer.css";
 import Customer from "./Customer.jsx";
-
+import TextButton from "../Utils/TextButton.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 import { Link } from "react-router-dom";
 
 const CustomerContainer = () => {
-    console.log("CustomerContainer");
     const [customers, setCustomers] = useState([]); // Estado para las cotizaciones
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -19,7 +18,6 @@ const CustomerContainer = () => {
             try {
                 const response = await apiClient.get("/customers/populated/");
                 setCustomers(response.data.response); // Asigna el array de la respuesta
-                console.log("Customers: ", response.data.response);
             } catch (error) {
                 setError("Error al cargar los clientes");
                 console.error(error);
@@ -44,14 +42,45 @@ const CustomerContainer = () => {
         }
     };
 
+    // Funcion para filtrar clientes
+    const handleFilterChange = async (name) => {
+        console.log("Filtrando clientes por nombre:", name);
+        setUpdated(false);
+        // try {
+        //     const response = await apiClient.get(`/customers/name?name=${name}`);
+        //     setCustomers(response.data.response); // Actualiza el estado con los clientes filtrados
+        // } catch (error) {
+        //     setError("Error al filtrar los clientes");
+        //     console.error(error);
+        // } finally {
+        //     setLoading(false);
+        // }
+    }
+
     // Renderizado condicional
     if (loading) return <p>Cargando clientes...</p>;
     if (error) return <p>{error}</p>;
     return (
-        <div>
+        <>
+            <div className="customers-header">
+                <input
+                    className="customers-search"
+                    type="text"
+                    name="filter"
+                    placeholder="Buscar cliente"
+                    onInput={handleFilterChange}
+                /> 
+                <h2>Clientes</h2>
+                <TextButton
+                    text="Nuevo Cliente"
+                    onClick={() => {
+                        // Aquí puedes definir la lógica para crear un nuevo cliente
+                        console.log("Crear nuevo cliente");
+                    }} />
+            </div>
             {customers.length > 0 ? (
-                <table>
-                    <thead>
+                <table className="customers-table">
+                    <thead className="customers-table-header">
                         <tr>
                             <th></th>
                             <th>Cliente</th>
@@ -62,7 +91,7 @@ const CustomerContainer = () => {
                         </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody className="customers-table-body">
                         {customers.map((customer) => (
                             <Customer
                                 key={customer._id}
@@ -75,7 +104,7 @@ const CustomerContainer = () => {
             ) : (
                 <p>No se encontraron clientes.</p>
             )}
-        </div>
+        </>
     )
 }
 

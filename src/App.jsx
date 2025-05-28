@@ -9,6 +9,7 @@ import Navbar from './components/Navbar/Navbar.jsx';
 import NewQuotationContainer from "./components/NewQuotation/NewQuotationContainer";
 import DetailedQuotationContainer from './components/NewQuotation/DetailedQuotationContainer.jsx';
 import CustomersContainer from './components/Customers/CustomersContainer.jsx';
+import DetailedCustomer from './components/Customers/DetailedCustomer.jsx';
 
 
 
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/customers" element={<CustomersContainer />} /> {/* Página de Clientes */}
                 <Route path="/new-quotation" element={<NewQuotationContainer />} /> {/* Página de Nueva Cotización */}
                 <Route path="/detailed-quotation/:id" element={<DetailedQuotationContainer />} />
+                <Route path="/detailed-customer/:id" element={<DetailedCustomer />} /> {/* Página de Detalle de Cliente */}
               </Routes>
             </>
             : <LoginForm />
