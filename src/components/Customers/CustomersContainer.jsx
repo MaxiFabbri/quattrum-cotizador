@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 const CustomerContainer = () => {
     const [customers, setCustomers] = useState([]); // Estado para las cotizaciones
     const [loading, setLoading] = useState(true);
+    const [filter, setFilter] = useState("");
     const [error, setError] = useState(null);
     const [updated, setUpdated] = useState(true);
 
@@ -16,7 +17,7 @@ const CustomerContainer = () => {
         const fetchCustomers = async () => {
             setUpdated(true);
             try {
-                const response = await apiClient.get("/customers/populated/");
+                const response = await apiClient.get(`/customers/populated/name?name=${filter}`);
                 setCustomers(response.data.response); // Asigna el array de la respuesta
             } catch (error) {
                 setError("Error al cargar los clientes");
@@ -43,18 +44,15 @@ const CustomerContainer = () => {
     };
 
     // Funcion para filtrar clientes
-    const handleFilterChange = async (name) => {
-        console.log("Filtrando clientes por nombre:", name);
+    const handleFilterChange = async (e) => {
+        const {value} = e.target;
         setUpdated(false);
-        // try {
-        //     const response = await apiClient.get(`/customers/name?name=${name}`);
-        //     setCustomers(response.data.response); // Actualiza el estado con los clientes filtrados
-        // } catch (error) {
-        //     setError("Error al filtrar los clientes");
-        //     console.error(error);
-        // } finally {
-        //     setLoading(false);
-        // }
+        setFilter(value);
+    }
+    // Función para crear un nuevo cliente
+    const handleCreateCustomer = () => {
+        // Aquí puedes definir la lógica para crear un nuevo cliente
+        console.log("Crear nuevo cliente");
     }
 
     // Renderizado condicional
@@ -73,10 +71,7 @@ const CustomerContainer = () => {
                 <h2>Clientes</h2>
                 <TextButton
                     text="Nuevo Cliente"
-                    onClick={() => {
-                        // Aquí puedes definir la lógica para crear un nuevo cliente
-                        console.log("Crear nuevo cliente");
-                    }} />
+                    onClick={handleCreateCustomer} />
             </div>
             {customers.length > 0 ? (
                 <table className="customers-table">
