@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./CustomersContainer.css";
 import Customer from "./Customer.jsx";
-
+import TextButton from "../Utils/TextButton.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 import { Link } from "react-router-dom";
 
 const CustomerContainer = () => {
-    console.log("CustomerContainer");
+    const navigate = useNavigate(); // Hook para la navegación
     const [customers, setCustomers] = useState([]); // Estado para las cotizaciones
     const [loading, setLoading] = useState(true);
+    const [filter, setFilter] = useState("");
     const [error, setError] = useState(null);
     const [updated, setUpdated] = useState(true);
 
@@ -17,9 +19,8 @@ const CustomerContainer = () => {
         const fetchCustomers = async () => {
             setUpdated(true);
             try {
-                const response = await apiClient.get("/customers/populated/");
+                const response = await apiClient.get(`/customers/populated/name?name=${filter}`);
                 setCustomers(response.data.response); // Asigna el array de la respuesta
-                console.log("Customers: ", response.data.response);
             } catch (error) {
                 setError("Error al cargar los clientes");
                 console.error(error);
@@ -35,8 +36,8 @@ const CustomerContainer = () => {
     const handleDelete = async (id) => {
         if (window.confirm("¿Estás seguro de que deseas eliminar esta cotización?")) {
             setUpdated(false);
-            try {
-                // await apiClient.delete(`/quotations/${id}`);
+            try {;
+                await apiClient.delete(`/customers/${id}`);
                 setLoading(true)
             } catch (error) {
                 console.error("Error al eliminar la cotización:", error);
@@ -44,14 +45,40 @@ const CustomerContainer = () => {
         }
     };
 
+    // Funcion para filtrar clientes
+    const handleFilterChange = async (e) => {
+        const {value} = e.target;
+        setUpdated(false);
+        setFilter(value);
+    }
+    // Función para crear un nuevo cliente
+    const handleCreateCustomer = () => {
+        // Aquí puedes definir la lógica para crear un nuevo cliente
+        console.log("Crear nuevo cliente");
+        navigate("/customers/edit/new");
+    }
+
     // Renderizado condicional
     if (loading) return <p>Cargando clientes...</p>;
     if (error) return <p>{error}</p>;
     return (
-        <div>
+        <>
+            <div className="customers-header">
+                <input
+                    className="customers-search"
+                    type="text"
+                    name="filter"
+                    placeholder="Buscar cliente"
+                    onInput={handleFilterChange}
+                /> 
+                <h2>Clientes</h2>
+                <TextButton
+                    text="Nuevo Cliente"
+                    onClick={handleCreateCustomer} />
+            </div>
             {customers.length > 0 ? (
-                <table>
-                    <thead>
+                <table className="customers-table">
+                    <thead className="customers-table-header">
                         <tr>
                             <th></th>
                             <th>Cliente</th>
@@ -62,7 +89,7 @@ const CustomerContainer = () => {
                         </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody className="customers-table-body">
                         {customers.map((customer) => (
                             <Customer
                                 key={customer._id}
@@ -75,7 +102,7 @@ const CustomerContainer = () => {
             ) : (
                 <p>No se encontraron clientes.</p>
             )}
-        </div>
+        </>
     )
 }
 

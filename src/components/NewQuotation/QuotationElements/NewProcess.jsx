@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { QuotationContext } from "../../../context/QuotationContext";
-import SelectSupplier from "../Selectors/SelectSupplier";
-import SelectSupplierPayMethod from "../Selectors/SelectSupplierPaymentMethod.jsx";
+import SelectSupplier from "../../Utils/Selectors/SelectSupplier.jsx";
+import SelectSupplierPayMethod from "../../Utils/Selectors/SelectSupplierPaymentMethod.jsx";
 import { apiClient } from "../../../config/axiosConfig";
 
 import IconButton from "../../Utils/IconButton";

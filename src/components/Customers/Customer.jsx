@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import IconButton from "../Utils/IconButton.jsx";
 import { useNavigate } from "react-router-dom"; // Asegúrate de tener React Router instalado
-import { apiClient } from "../../config/axiosConfig.js";
+import "./Customer.css"; // Asegúrate de tener un archivo CSS para estilos
 
 const Customer = ({ customer, onDelete }) => {
     const navigate = useNavigate(); // Hook para la navegación
@@ -11,7 +11,7 @@ const Customer = ({ customer, onDelete }) => {
     // Manejo de clic en la fila
     const handleRowClick = () => {
         console.log("Row Clicked: ",customer._id);
-        // navigate(`/detailed-Customer/${customer._id}`);
+        navigate(`/customers/edit/${customer._id}`);
     };
 
     return (
