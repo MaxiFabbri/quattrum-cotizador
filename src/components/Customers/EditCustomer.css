@@ -1,0 +1,68 @@
+/* Estilo general del formulario */
+.detailedCustomer {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.detailedCustomer h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Estilos para los campos de entrada */
+.customerInfo p {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.customerInfo span {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 3px;
+}
+
+.customerInfo input {
+    width: 100%;
+    padding: 5px 10px;
+    font-size: 1rem;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    background-color: transparent;
+    transition: border-bottom 0.3s ease-in-out;
+}
+
+.customerInfo input:focus {
+    outline: none;
+    border-bottom: 2px solid #007bff;
+}
+
+/* Botón de acción */
+.customerActions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.customerActions button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.customerActions button:hover {
+    background-color: #0056b3;
+}
+

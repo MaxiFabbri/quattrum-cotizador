@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./CustomersContainer.css";
 import Customer from "./Customer.jsx";
 import TextButton from "../Utils/TextButton.jsx";
@@ -6,6 +7,7 @@ import { apiClient } from "../../config/axiosConfig.js";
 import { Link } from "react-router-dom";
 
 const CustomerContainer = () => {
+    const navigate = useNavigate(); // Hook para la navegación
     const [customers, setCustomers] = useState([]); // Estado para las cotizaciones
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState("");
@@ -34,8 +36,8 @@ const CustomerContainer = () => {
     const handleDelete = async (id) => {
         if (window.confirm("¿Estás seguro de que deseas eliminar esta cotización?")) {
             setUpdated(false);
-            try {
-                // await apiClient.delete(`/quotations/${id}`);
+            try {;
+                await apiClient.delete(`/customers/${id}`);
                 setLoading(true)
             } catch (error) {
                 console.error("Error al eliminar la cotización:", error);
@@ -53,6 +55,7 @@ const CustomerContainer = () => {
     const handleCreateCustomer = () => {
         // Aquí puedes definir la lógica para crear un nuevo cliente
         console.log("Crear nuevo cliente");
+        navigate("/customers/edit/new");
     }
 
     // Renderizado condicional

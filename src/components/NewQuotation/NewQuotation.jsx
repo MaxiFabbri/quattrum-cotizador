@@ -11,8 +11,8 @@ import QuoteStatusSelect from "./InputComponents/QuoteStatusSelect.jsx";
 import IsKitCheckbox from "./InputComponents/IsKitCheckbox.jsx";
 import MonthlyRateInput from "./InputComponents/MonthlyRateInput.jsx";
 
-import SelectCustomer from "./Selectors/SelectCustomer.jsx";
-import SelectCustomerPayMethod from "./Selectors/SelectCustomerPaymentMethod.jsx";
+import SelectCustomer from "../Utils/Selectors/SelectCustomer.jsx";
+import SelectCustomerPayMethod from "../Utils/Selectors/SelectCustomerPaymentMethod.jsx";
 
 import IconButton from "../Utils/IconButton.jsx";
 

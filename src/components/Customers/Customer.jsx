@@ -11,7 +11,7 @@ const Customer = ({ customer, onDelete }) => {
     // Manejo de clic en la fila
     const handleRowClick = () => {
         console.log("Row Clicked: ",customer._id);
-        navigate(`/detailed-customer/${customer._id}`);
+        navigate(`/customers/edit/${customer._id}`);
     };
 
     return (
