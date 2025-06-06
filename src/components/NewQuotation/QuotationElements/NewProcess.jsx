@@ -115,16 +115,10 @@ const NewProcess = ({ initialProcessData }) => {
     return (
         <>
             <td>
-                <IconButton
-                    icon="/delete.png"
-                    text="Eliminar Producto"
-                    onClick={handleDeleteProcess}
-                />
-            </td>
-            <td>
                 <input
                     type="text"
                     name="description"
+                    placeholder="Descripción"
                     defaultValue={processData.description}
                     onInput={handleInputChange}
                 />
@@ -150,6 +144,7 @@ const NewProcess = ({ initialProcessData }) => {
                 <input
                     type="number"
                     name="tempunitCost"
+                    placeholder="Costo Unitario"
                     defaultValue={processData.tempunitCost}
                     onInput={handleInputChange}
                 />
@@ -158,14 +153,22 @@ const NewProcess = ({ initialProcessData }) => {
                 <input
                     type="number"
                     name="tempfixedCost"
+                    placeholder="Costo Fijo"
                     defaultValue={processData.tempfixedCost}
                     onInput={handleInputChange}
                 />
             </td>
-            <td>
+            {/* <td>
                 <span>
                     U$S {processData.subTotalProcessCost}
                 </span>
+            </td> */}
+            <td>
+                <IconButton
+                    icon="/delete.png"
+                    text="Eliminar Producto"
+                    onClick={handleDeleteProcess}
+                />
             </td>
         </>
     )

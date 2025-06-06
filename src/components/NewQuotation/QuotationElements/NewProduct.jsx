@@ -108,7 +108,7 @@ const NewProduct = ({productData}) => {
                 />
             </td>
             <td>
-                <span>$ {prodData.pesosPrice}</span>
+                <span className="pesos-price">$ {prodData.pesosPrice}</span>
             </td>
             <td>
                 <ButtonAddProcess

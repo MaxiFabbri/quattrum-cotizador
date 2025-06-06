@@ -135,7 +135,7 @@ const DetailedQuotationContainer = (quote) => {
                                         <td colSpan="9">
                                             {product.processes && product.processes.length > 0 ? (
                                                 <table className="quotation-table-processes">
-                                                    <ProcessHeader />
+                                                    {/* <ProcessHeader /> */}
                                                     <tbody>
                                                         {product.processes.map((process) => (
                                                             <tr key={process.processId} id={process.processId}>
