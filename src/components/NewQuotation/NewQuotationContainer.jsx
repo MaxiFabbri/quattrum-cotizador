@@ -42,13 +42,13 @@ const NewQuotationContainer = () => {
                             <table className="product-container" key={product.productId} id={product.productId}>
                                 <ProductHeader />
                                 <tbody key={"body-" + product.productId} id={"body-" + product.productId}>
-                                    <tr key={product.productId} id={product.productId}>
+                                    <tr key={product.productId} id={product.productId} className="product-header-row">
                                         <NewProduct productData={product} />
                                     </tr>
                                     <tr key={"processes-" + product.productId} id={"processes-" + product.productId}>
                                         <td colSpan="9">
                                             {product.processes && product.processes.length > 0 ? (
-                                                <table  className="quotation-table-processes">
+                                                <table className="quotation-table-processes">
                                                     {/* <ProcessHeader /> */}
                                                     <tbody>
                                                         {product.processes.map((process) => (

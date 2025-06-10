@@ -7,21 +7,18 @@
 .quotation-table-quotation {
     width: 100%;
     border-collapse: collapse;
+    height: 60px;
+    /* border-bottom: 2px solid #000; */
 
 }
-.quotation-table-quotation thead {
 
-}
-.quotation-table-quotation tr{
-    /* height: 35px; */
-}
 .quotation-table-quotation tbody tr td {
     text-align: center;
 }
 
-.complete-quotation-message p{
+.complete-quotation-message {
     text-align: center;
-    margin-top: 10px;
+    margin-top: 20px;
     font-size: 1.3em;
 }
 
@@ -32,14 +29,22 @@
 .product-container {
     width: 100%;
     border-collapse: collapse;
-    border-bottom: 1px solid #999;
+    /* background-color: antiquewhite; */
+    background-color: #fff;
+    border: 1px solid #999 radius(10px);
+    margin-top: 5px;
+    /* margin-bottom: 10px; */
+    border-radius: 10px;
+    /* border-bottom: 1px solid #999; */
 }
 .product-container thead {
     height: 22px;
     vertical-align: bottom;
+
 }
 .product-header-row{
     vertical-align: top;
+    border-bottom: 1px solid #999;
 }
 .product-container thead th{
     font-size: 0.9em;
@@ -55,6 +60,8 @@
 }
 
 .quotation-table-processes{
+    border-radius: 5px;
+    /* background-color: #ddd; */
     background-color: #fff;
     width: 96%;
     border-collapse: collapse;
