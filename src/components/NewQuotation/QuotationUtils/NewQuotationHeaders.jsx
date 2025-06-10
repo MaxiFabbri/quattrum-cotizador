@@ -24,10 +24,10 @@ const ProductHeader = () => {
                 <th></th>
                 <th>Cantidad</th>
                 <th>Descripción</th>
-                <th>Días Producción</th>
-                <th>Costo Financiero</th>
-                <th>Costo de Fletes</th>
-                <th>Otros Costos</th>
+                <th>Días</th>
+                <th>Financiero</th>
+                <th>Fletes</th>
+                <th>Otros</th>
                 <th>Precio Unitario</th>
                 <th></th>
             </tr>

@@ -54,6 +54,7 @@ const NewQuotation = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            console.log("Submitting quotation:", quotationData)
             const response = await apiClient.post("/quotations", quotationData);
             const dbId = response.data.response._id;
             if (dbId) {

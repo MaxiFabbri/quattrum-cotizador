@@ -41,6 +41,7 @@ const DetailedQuotationContainer = (quote) => {
                 supplierPaymentMethodId: process.supplierPaymentMethodId,
                 supplierPaymentMethodName: process.supplierId.supplierPaymentMethodId.supplier_payment_description,
                 daysToPayment: process.daysToPayment,
+                currency: process.currency,
                 unitCost: process.unitCost,
                 tempunitCost: (process.unitCost * exchangeRate).toFixed(2),
                 fixedCost: process.fixedCost,
@@ -113,13 +114,15 @@ const DetailedQuotationContainer = (quote) => {
     }, []);
 
     return (
-        <>
-            <table className="quotation-table-quotation">
-                <QuotationHeader />
-                <tbody>
-                    <NewQuotation />
-                </tbody>
-            </table>
+        <div>
+            <div className="quotation-container">
+                <table className="quotation-table-quotation">
+                    <QuotationHeader />
+                    <tbody>
+                        <NewQuotation />
+                    </tbody>
+                </table>
+            </div>
             {quotationData.products && quotationData.products.length > 0 ? (
                 <>
                     <div className="quotation-table-products">
@@ -128,7 +131,7 @@ const DetailedQuotationContainer = (quote) => {
                             <table className="product-container" key={product.productId} id={product.productId}>
                                 <ProductHeader />
                                 <tbody key={"body-" + product.productId} id={"body-" + product.productId}>
-                                    <tr key={product.productId} id={product.productId}>
+                                    <tr key={product.productId} id={product.productId} className="product-header-row">
                                         <NewProduct productData={product} />
                                     </tr>
                                     <tr key={"processes-" + product.productId} id={"processes-" + product.productId}>
@@ -170,7 +173,7 @@ const DetailedQuotationContainer = (quote) => {
                     )}
                 </div>
             )}
-        </>
+        </div>
     );
 }
 

@@ -3,6 +3,7 @@ import { QuotationContext } from "../../../context/QuotationContext";
 import SelectSupplier from "../../Utils/Selectors/SelectSupplier.jsx";
 import SelectSupplierPayMethod from "../../Utils/Selectors/SelectSupplierPaymentMethod.jsx";
 import { apiClient } from "../../../config/axiosConfig";
+import CurrencySelect from "../InputComponents/CurrencySelect.jsx";
 
 import IconButton from "../../Utils/IconButton";
 
@@ -10,6 +11,9 @@ const NewProcess = ({ initialProcessData }) => {
     const { updateProcessInProduct, removeProcessInProduct, updateProduct, quotationData } = useContext(QuotationContext);
 
     const [processData, setProcessData] = useState(initialProcessData);
+    const [newTempUnitCost, setNewTempUnitCost] = useState(processData.tempunitCost);
+    const [newTempFixedCost, setNewTempFixedCost] = useState(processData.tempfixedCost);
+
 
     useEffect(() => {
         updateProcessData();
@@ -42,6 +46,7 @@ const NewProcess = ({ initialProcessData }) => {
 
     // Debounce: Actualizar `debouncedProdData` después de un retraso
     useEffect(() => {
+        console.log("Change in processData: ", processData);
         const handler = setTimeout(() => {
             setDebouncedProcessData(processData);
         }, 300);
@@ -49,6 +54,20 @@ const NewProcess = ({ initialProcessData }) => {
             clearTimeout(handler); // Limpiar el temporizador previo
         };
     }, [processData]);
+
+    useEffect(() => {
+        var exchange = 1;
+        if (processData.currency === "Peso") {
+            exchange = quotationData.exchangeRate;
+        }
+        setProcessData((prevData) => ({
+            ...prevData,
+            unitCost: newTempUnitCost / exchange,
+            tempunitCost: newTempUnitCost,
+            fixedCost: newTempFixedCost / exchange,
+            tempfixedCost: newTempFixedCost,
+        }))
+    }, [newTempFixedCost, newTempUnitCost]);
 
     const getPaymentMethodData = async (paymentId) => {
         try {
@@ -59,25 +78,26 @@ const NewProcess = ({ initialProcessData }) => {
             console.error("Error fetching customer payment method:", error);
         }
     };
-
+    const handleCurrencyChange = (e) =>{
+        setNewTempFixedCost(0)
+        setNewTempUnitCost(0)
+        setProcessData((prevData) => ({
+            ...prevData,
+            unitCost: 0,
+            tempunitCost: 0,
+            fixedCost: 0,
+            tempfixedCost: 0,
+            currency: e.target.value,
+        }))
+    }
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        if (name.startsWith("temp")) {
-            const convertedValue = value / quotationData.exchangeRate;
-            const newName = name.replace("temp", "");
-            setProcessData((prevData) => ({
-                ...prevData,
-                [newName]: convertedValue,
-            }))
-        }
-        
+        const { name, value } = e.target;        
         setProcessData((prevData) => ({
             ...prevData,
             [name]: value,
         }))
     };
-
 
     const handleSupplierUpdate = async (supplier) => {
         const paymentMethodData = await getPaymentMethodData(supplier.supplierPaymentMethodId);
@@ -135,27 +155,38 @@ const NewProcess = ({ initialProcessData }) => {
                     onSelectSupplierPayMethod={handleSupplierPaymentMethodUpdate}
                 />
             </td>
+            <CurrencySelect value={processData.currency} onChange={handleCurrencyChange} />
             <td>
-                <span>
-                    {processData.daysToPayment}
-                </span>
-            </td>
-            <td>
+                <span>Unit: </span>
                 <input
+                    className="input-number"
                     type="number"
-                    name="tempunitCost"
-                    placeholder="Costo Unitario"
-                    defaultValue={processData.tempunitCost}
-                    onInput={handleInputChange}
+                    name="newTempUnitCost"
+                    placeholder="$ Unit."
+                    value={newTempUnitCost}
+                    onInput={e => setNewTempUnitCost(e.target.value)}
                 />
             </td>
             <td>
                 <input
+                    className="input-number"
                     type="number"
-                    name="tempfixedCost"
-                    placeholder="Costo Fijo"
-                    defaultValue={processData.tempfixedCost}
+                    name="adjustPercentage"
+                    placeholder="% Ajuste"
+                    defaultValue={processData.adjustPercentage}
                     onInput={handleInputChange}
+                />
+                <span> %</span>
+            </td>
+            <td>
+                <span>Fijo: </span>
+                <input
+                    className="input-number"
+                    type="number"
+                    name="newTempFixedCost"
+                    placeholder="Costo Fijo"
+                    value={newTempFixedCost}
+                    onInput={e => setNewTempFixedCost(e.target.value)}
                 />
             </td>
             {/* <td>

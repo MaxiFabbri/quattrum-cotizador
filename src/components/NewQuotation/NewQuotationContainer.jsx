@@ -27,7 +27,7 @@ const NewQuotationContainer = () => {
     }, [dolarPrice, paramMonthlyRate, today]);
 
     return (
-        <>
+        <div className="quotation-container">
             <table className="quotation-table-quotation">
                 <QuotationHeader />
                 <tbody>
@@ -49,7 +49,7 @@ const NewQuotationContainer = () => {
                                         <td colSpan="9">
                                             {product.processes && product.processes.length > 0 ? (
                                                 <table  className="quotation-table-processes">
-                                                    <ProcessHeader />
+                                                    {/* <ProcessHeader /> */}
                                                     <tbody>
                                                         {product.processes.map((process) => (
                                                             <tr key={process.processId} id={process.processId}>
@@ -82,7 +82,7 @@ const NewQuotationContainer = () => {
                     )}
                 </div>
             )}
-        </>
+        </div>
     );
 }
 

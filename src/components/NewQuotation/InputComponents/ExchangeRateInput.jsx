@@ -2,6 +2,7 @@ const ExchangeRateInput = ({ value, onChange }) => {
     return (
         <td>
             <input
+                className="input-number"
                 type="number"
                 id="exchangeRate"
                 name="exchangeRate"

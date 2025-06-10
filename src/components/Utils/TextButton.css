@@ -5,7 +5,9 @@
     font-size: 0.8em;
     font-weight: 500;
     font-family: inherit;
-    background-color: #777;
+    /* background-color: #777; */
+    background-color: rgb(199,74,75);
+    color: #fff;
     cursor: pointer;
     transition: border-color 0.25s;
 }

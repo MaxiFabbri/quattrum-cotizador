@@ -76,7 +76,7 @@ export const QuotationProvider = ({ children }) => {
                 }
             }),
         }));
-        console.log("Producto actualizado en quotationData: ", updatedProduct);
+        // console.log("Producto actualizado en quotationData: ", updatedProduct);
     };
 
     const removeProduct = (productId) => {
@@ -106,13 +106,11 @@ export const QuotationProvider = ({ children }) => {
     };
 
     const updateProcessInProduct = (updatedProcess, procId) => {
-        // console.log("Actualizando Proceso: ", updatedProcess);
         setQuotationData((prevData) => {
             const updatedProducts = prevData.products.map((product) => {
                 if (product.productId === updatedProcess.productId) {
                     const updatedProcesses = product.processes.map((process) => {
                         if (process.processId === procId) {
-                        // if (process.processId === updatedProcess.processId) {
                             return { ...process, ...updatedProcess };
                         } else {
                             return process;

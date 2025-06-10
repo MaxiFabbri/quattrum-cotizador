@@ -1,16 +1,19 @@
+.quotation-container {
+    width: 100%;
+    background-color: #ddd;
+    padding-top: 5px;
+    padding-bottom: 20px;
+}
 .quotation-table-quotation {
-    width: 95%;
-    margin:auto;
-    padding: 0px 20px;
+    width: 100%;
     border-collapse: collapse;
+
 }
 .quotation-table-quotation thead {
-    background-color: #ccc;
-    height: 45px;
-    width: 100%;
+
 }
 .quotation-table-quotation tr{
-    height: 45px;
+    /* height: 35px; */
 }
 .quotation-table-quotation tbody tr td {
     text-align: center;
@@ -23,34 +26,40 @@
 }
 
 .quotation-table-products {
-    width: 95%;
-    margin: auto;
+    width: 100%;
+    padding: 0px 2%;
 }
 .product-container {
     width: 100%;
     border-collapse: collapse;
+    border-bottom: 1px solid #999;
 }
 .product-container thead {
-    background-color: #ddd;
-    height: 35px;
+    height: 22px;
+    vertical-align: bottom;
+}
+.product-header-row{
+    vertical-align: top;
 }
 .product-container thead th{
     font-size: 0.9em;
     font-weight: 500;
 }
 .product-container tbody tr {
-    height: 35px;
+    
 }
 .product-container tbody tr td {
     padding: 0px 10px;
     font-size: 0.9em;
+    text-align: center;
 }
 
 .quotation-table-processes{
+    background-color: #fff;
     width: 96%;
     border-collapse: collapse;
-    margin-bottom: 20px;
-    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-top: 5px;
 }
 .quotation-table-processes thead {
     background-color: #eee;
@@ -59,6 +68,7 @@
 .quotation-table-processes th {
     font-size: 1em;
     font-weight: normal;
+
 }
 
 .quotation-table-processes tbody tr {
@@ -72,8 +82,23 @@
 
 input {
     background-color: #fff;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     color: black;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    /* margin: 0; */
+}
+
+
+.input-number{
+    text-align: end;
+    width: 85px
+}
+.input-number-days {
+    text-align: center;
+    width: 55px;
 }
 ul {
     margin: 0px;

@@ -57,14 +57,13 @@ const NewProduct = ({productData}) => {
     return (
         <>
             <td>
-                <IconButton
-                    icon="/delete.png"
-                    text="Eliminar Producto"
-                    onClick={handleDeleteProduct}
+                <ButtonAddProcess
+                    productId={prodData.productId}
                 />
             </td>
             <td>
                 <input
+                    className="input-number"
                     type="number"
                     name="quantity"
                     defaultValue={prodData.quantity}
@@ -77,6 +76,7 @@ const NewProduct = ({productData}) => {
             </td>
             <td>
                 <input
+                    className="input-number-days"
                     type="number"
                     name="productionDays"
                     defaultValue={prodData.productionDays}
@@ -85,6 +85,7 @@ const NewProduct = ({productData}) => {
             </td>
             <td>
                 <input
+                    className="input-number"
                     type="number"
                     name="tempfinancingCost"
                     defaultValue={prodData.tempfinancingCost}
@@ -93,6 +94,7 @@ const NewProduct = ({productData}) => {
             </td>
             <td>
                 <input
+                    className="input-number"
                     type="number"
                     name="tempshipmentCost"
                     defaultValue={prodData.tempshipmentCost}
@@ -101,6 +103,7 @@ const NewProduct = ({productData}) => {
             </td>
             <td>
                 <input
+                    className="input-number"
                     type="number"
                     name="tempotherCost"
                     defaultValue={prodData.tempotherCost}
@@ -111,11 +114,12 @@ const NewProduct = ({productData}) => {
                 <span className="pesos-price">$ {prodData.pesosPrice}</span>
             </td>
             <td>
-                <ButtonAddProcess
-                    productId={prodData.productId}
+                <IconButton
+                    icon="/delete.png"
+                    text="Eliminar Producto"
+                    onClick={handleDeleteProduct}
                 />
             </td>
-
         </>
     );
 };

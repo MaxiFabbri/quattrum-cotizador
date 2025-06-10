@@ -75,6 +75,8 @@ const ButtonCalculateQuotation = () => {
                     supplierId: process.supplierId,
                     supplierPaymentMethodId: process.supplierPaymentMethodId,
                     daysToPayment: process.daysToPayment,
+                    currency: process.currency,
+                    adjustPercentage: process.adjustPercentage,
                     unitCost: process.unitCost,
                     fixedCost: process.fixedCost,
                     subTotalProcessCost: +process.subTotalProcessCost,
@@ -132,8 +134,10 @@ const ButtonCalculateQuotation = () => {
             var totalProductCost = 0;
             var newProductDescription = ""
             product.processes = product.processes.map((process) => {
-                // Calculo el subtotal del proceso
-                const newSubtotalProcessCost = +((process.unitCost * product.quantity) + process.fixedCost).toFixed(2);
+                // Calculo el coeficiente de ajuste
+                const adjust = +( 1+(Number(process.adjustPercentage) || 0)/100)                
+                const newSubtotalProcessCost = +(((process.unitCost * product.quantity) * adjust) + process.fixedCost).toFixed(2);
+                console.log("Nuevo subtotal del proceso: ", newSubtotalProcessCost);
                 totalProductCost += +newSubtotalProcessCost;
                 if (newProductDescription === "") {
                     newProductDescription = process.description
