@@ -7,20 +7,27 @@ import TextButton from '../Utils/TextButton.jsx';
 
 
 const Navbar = () => {
-    const { isAuthenticated, logout } = useContext(AuthContext);
+    const { isAuthenticated, logout, userRole } = useContext(AuthContext);
     const { getDolarPrice, dolarPrice } = useContext(ParametersContext); // Aquí consumes el contexto
 
     return (
         <nav className="navbar-container sticky">
             <Link to="/" className="navbar-logo-link">
-                <img src="logo-quattrum-370x53.png" alt="Isologo de Quattrum" className="navbar-isologo"/>
+                <img src="logo-quattrum-370x53.png" alt="Isologo de Quattrum" className="navbar-isologo" />
             </Link>
             <h4>Dolar hoy: {dolarPrice}</h4>
             <Link to="/customers">
                 <TextButton text="Clientes" />
             </Link>
             <TextButton text="Proveedores" />
-            <TextButton text="Usuarios" />
+            {userRole === 'ADMIN' && (
+                <Link to="/users">
+                    <TextButton text="Usuarios" />
+                </Link>
+            )}
+            <Link to="/users/password-update">
+                <TextButton text="Cambiar Contraseña" />
+            </Link>
             <TextButton text="Cerrar Sesión" onClick={logout} />
         </nav>
     );

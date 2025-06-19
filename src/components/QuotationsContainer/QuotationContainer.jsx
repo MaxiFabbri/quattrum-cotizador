@@ -61,7 +61,6 @@ const Quotations = () => {
                     placeholder="Buscar cotización por cliente"
                     onInput={handleFilterChange}
                 />
-                    
                 <h3>Lista de Cotizaciones</h3>
                 <Link to="/new-quotation">
                     <TextButton text="Nueva Cotización" />

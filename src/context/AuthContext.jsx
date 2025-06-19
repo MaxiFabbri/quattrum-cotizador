@@ -6,6 +6,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [authenticating, setAuthenticating] = useState(false);
+    const [userRole, setUserRole] = useState('')
 
     const login = async (email, password) => {
         try {
@@ -15,9 +16,10 @@ export const AuthProvider = ({ children }) => {
                 { email, password }, // Datos enviados al servidor
                 { withCredentials: true } // Incluye cookies en la solicitud
             );
-            console.log('Login response:', response, ' Authenticating: ', authenticating);
+            console.log('Login response:', response);
             if (response.status === 200) {
                 setIsAuthenticated(true);
+                setUserRole(response.data.response.role);
             } else {
                 alert('Error: Credenciales incorrectas');
             }
@@ -56,15 +58,16 @@ export const AuthProvider = ({ children }) => {
                 '/sessions/online',
                 { withCredentials: true } // Incluye cookies en la solicitud
             );
+            console.log('CheckAuth response: ', response);
             if (response.status === 200) {
-                console.log('Usuario autenticado');
+                console.log('Usuario autenticado ', response.data.role);
+                setUserRole(response.data.role);
                 setIsAuthenticated(true);
             } else {
                 setIsAuthenticated(false);
             }
         } catch (error) {
-            console.log('Ususario no autenticado ',error);
-            setAuthenticating(false);
+            console.log('Ususario no autenticado ');
             setIsAuthenticated(false);
         } finally {
             setAuthenticating(false);
@@ -76,7 +79,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, authenticating, login, logout, checkAuth }}>
+        <AuthContext.Provider value={{ isAuthenticated, authenticating, userRole, login, logout, checkAuth }}>
             {children}
         </AuthContext.Provider>
     );

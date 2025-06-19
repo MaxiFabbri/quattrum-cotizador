@@ -32,15 +32,15 @@ const CustomerContainer = () => {
     }, [updated, loading]);
 
 
-    // Función para eliminar una cotización
+    // Función para eliminar un Cliente
     const handleDelete = async (id) => {
-        if (window.confirm("¿Estás seguro de que deseas eliminar esta cotización?")) {
+        if (window.confirm("¿Estás seguro de que deseas eliminar este Cliente?")) {
             setUpdated(false);
             try {;
                 await apiClient.delete(`/customers/${id}`);
                 setLoading(true)
             } catch (error) {
-                console.error("Error al eliminar la cotización:", error);
+                console.error("Error al eliminar el Cliente:", error);
             }
         }
     };

@@ -10,7 +10,11 @@ import NewQuotationContainer from "./components/NewQuotation/NewQuotationContain
 import DetailedQuotationContainer from './components/NewQuotation/DetailedQuotationContainer.jsx';
 import CustomersContainer from './components/Customers/CustomersContainer.jsx';
 import EditCustomer from './components/Customers/EditCustomer.jsx';
-
+import UsersList from './components/Users/UsersList.jsx';
+import EditUserForm from './components/Users/EditUserForm.jsx';
+import PasswordUpdate from './components/Users/PasswordUpdate.jsx';
+import CreateUserForm from './components/Users/CreateUserForm.jsx';
+import { ToastContainer } from 'react-toastify'
 
 
 function App() {
@@ -18,6 +22,7 @@ function App() {
 
   return (
     <>
+      <ToastContainer />
       { authenticating ? 
         <WelcomePage /> :
         <>
@@ -28,6 +33,10 @@ function App() {
                 <Route path="/" element={<Quotations />} /> {/* Página principal */}
                 <Route path="/customers" element={<CustomersContainer />} /> {/* Página de Clientes */}
                 <Route path="/new-quotation" element={<NewQuotationContainer />} /> {/* Página de Nueva Cotización */}
+                <Route path="/users/" element={<UsersList />} /> {/* Página de Usuarios */}
+                <Route path="/users/new" element={<CreateUserForm />} /> {/* Página de Crear Usuario */}
+                <Route path="/users/edit/:id?" element={<EditUserForm />} /> {/* Página de un Usuario */}
+                <Route path="/users/password-update" element={<PasswordUpdate />} /> {/* Página de Actualización de Contraseña */}
                 <Route path="/detailed-quotation/:id" element={<DetailedQuotationContainer />} />
                 <Route path="/customers/edit/:id" element={<EditCustomer />} />
               </Routes>

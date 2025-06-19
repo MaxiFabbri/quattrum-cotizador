@@ -1,0 +1,35 @@
+.users-list {
+    text-align: center;
+    margin: 10px;
+}
+.users-table {
+    width: 90%;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+.users-table thead {
+    text-align: center;
+    border-bottom: 1px solid #000;
+}
+.users-list-header {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: 80% 7%;
+    margin-bottom: 5px;
+}
+
+
+.users-table tbody{
+    background-color: #fff;
+}
+.users-table tbody tr td {
+    padding: 5px;
+    text-align: center;
+    border-bottom: 3px solid #eee;
+}
+p {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #333;
+}
