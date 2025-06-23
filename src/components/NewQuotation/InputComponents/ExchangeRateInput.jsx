@@ -7,6 +7,7 @@ const ExchangeRateInput = ({ value, onChange }) => {
                 id="exchangeRate"
                 name="exchangeRate"
                 value={value}
+                onClick={(e) => e.target.select()}
                 onChange={onChange}
                 required
             />

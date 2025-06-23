@@ -2,15 +2,15 @@ import { useContext, useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { QuotationContext } from "../../../context/QuotationContext.jsx";
 
-import TextButton from "../../Utils/TextButton";
 
-const ButtonAddProduct = () => {
+const FunctionAddProduct = (quotationId) => {
+    console.log("FunctionAddProduct: ",quotationId)
     const { quotationData, addProduct } = useContext(QuotationContext);
     const [tempId, setTempId] = useState(uuidv4());
 
     const [prodData, setProdData] = useState({
         productId: tempId,
-        quotationId: quotationData.id,
+        quotationId: quotationId,
         quantity: 1,
         productionDays: 15,
         financingCost: 0,
@@ -25,27 +25,10 @@ const ButtonAddProduct = () => {
         savedToDb: false,
     });
 
-    useEffect(() => {
-        setTempId(uuidv4());
-    }, [prodData]);
+    setTempId(uuidv4())
+    addProduct(prodData)
 
-    useEffect(() => {
-        setProdData((prevData) => ({
-            ...prevData,
-            productId: tempId,
-        }));
-    }, [quotationData]);
-
-    const handleAddProduct = () => {
-        addProduct(prodData);
-    };
-
-    return (
-        <TextButton
-            text="Agregar Producto"
-            onClick={handleAddProduct}
-        />
-    );
+    return null
 }
 
-export default ButtonAddProduct;
+export default FunctionAddProduct;

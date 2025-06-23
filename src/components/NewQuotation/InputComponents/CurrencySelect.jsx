@@ -5,6 +5,7 @@ const CurrencySelect = ({ value, onChange }) => {
                 id="currency"
                 name="currency"
                 value={value}
+                onClick={(e) => e.target.select()}
                 onChange={onChange}
                 required
             >

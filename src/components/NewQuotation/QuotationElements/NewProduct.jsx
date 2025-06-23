@@ -2,6 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { QuotationContext } from "../../../context/QuotationContext";
 import IconButton from "../../Utils/IconButton";
 import ButtonAddProcess from "../QuotationUtils/ButtonAddProcess";
+import ButtonDuplicateProduct from "../QuotationUtils/ButtonDuplicateProduct";
 
 
 const NewProduct = ({productData}) => {
@@ -56,7 +57,10 @@ const NewProduct = ({productData}) => {
 
     return (
         <>
-            <td>
+            <td className="product-action-buttons">
+                <ButtonDuplicateProduct
+                    productId={prodData.productId}
+                />
                 <ButtonAddProcess
                     productId={prodData.productId}
                 />
@@ -67,6 +71,7 @@ const NewProduct = ({productData}) => {
                     type="number"
                     name="quantity"
                     defaultValue={prodData.quantity}
+                    onClick={(e) => e.target.select()}
                     onInput={handleInputChange}
                     required
                 />
@@ -80,6 +85,7 @@ const NewProduct = ({productData}) => {
                     type="number"
                     name="productionDays"
                     defaultValue={prodData.productionDays}
+                    onClick={(e) => e.target.select()}
                     onInput={handleInputChange}
                 />
             </td>
@@ -89,6 +95,7 @@ const NewProduct = ({productData}) => {
                     type="number"
                     name="tempfinancingCost"
                     defaultValue={prodData.tempfinancingCost}
+                    onClick={(e) => e.target.select()}
                     onInput={handleInputChange}
                 />
             </td>
@@ -98,6 +105,7 @@ const NewProduct = ({productData}) => {
                     type="number"
                     name="tempshipmentCost"
                     defaultValue={prodData.tempshipmentCost}
+                    onClick={(e) => e.target.select()}
                     onInput={handleInputChange}
                 />
             </td>
@@ -107,6 +115,7 @@ const NewProduct = ({productData}) => {
                     type="number"
                     name="tempotherCost"
                     defaultValue={prodData.tempotherCost}
+                    onClick={(e) => e.target.select()}
                     onInput={handleInputChange}
                 />
             </td>

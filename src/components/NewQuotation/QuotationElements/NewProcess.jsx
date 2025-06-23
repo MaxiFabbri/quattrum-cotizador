@@ -46,7 +46,7 @@ const NewProcess = ({ initialProcessData }) => {
 
     // Debounce: Actualizar `debouncedProdData` después de un retraso
     useEffect(() => {
-        console.log("Change in processData: ", processData);
+        // console.log("Change in processData: ", processData);
         const handler = setTimeout(() => {
             setDebouncedProcessData(processData);
         }, 300);
@@ -140,6 +140,7 @@ const NewProcess = ({ initialProcessData }) => {
                     name="description"
                     placeholder="Descripción"
                     defaultValue={processData.description}
+                    onClick={(e) => e.target.select()}
                     onInput={handleInputChange}
                 />
             </td>
@@ -164,6 +165,7 @@ const NewProcess = ({ initialProcessData }) => {
                     name="newTempUnitCost"
                     placeholder="$ Unit."
                     value={newTempUnitCost}
+                    onClick={(e) => e.target.select()}
                     onInput={e => setNewTempUnitCost(e.target.value)}
                 />
             </td>
@@ -174,6 +176,7 @@ const NewProcess = ({ initialProcessData }) => {
                     name="adjustPercentage"
                     placeholder="% Ajuste"
                     defaultValue={processData.adjustPercentage}
+                    onClick={(e) => e.target.select()}
                     onInput={handleInputChange}
                 />
                 <span> %</span>
@@ -186,6 +189,7 @@ const NewProcess = ({ initialProcessData }) => {
                     name="newTempFixedCost"
                     placeholder="Costo Fijo"
                     value={newTempFixedCost}
+                    onClick={(e) => e.target.select()}
                     onInput={e => setNewTempFixedCost(e.target.value)}
                 />
             </td>

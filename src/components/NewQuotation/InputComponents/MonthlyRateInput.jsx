@@ -7,6 +7,7 @@ const MonthlyRateInput = ({ value, onChange }) => {
                 id="monthlyRate"
                 name="monthlyRate"
                 value={value}
+                onClick={(e) => e.target.select()}
                 onChange={onChange}
                 required
             />

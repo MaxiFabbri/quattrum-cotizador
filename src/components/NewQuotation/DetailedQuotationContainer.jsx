@@ -33,6 +33,7 @@ const DetailedQuotationContainer = (quote) => {
     const adjustProcessesData = (dbProcesses, exchangeRate) => {
         const newProcessesData = dbProcesses.map((process) => {
             return {
+                adjustPercentage: process.adjustPercentage,
                 processId: process._id,
                 productId: process.productId,
                 description: process.description,
@@ -87,7 +88,6 @@ const DetailedQuotationContainer = (quote) => {
 
     const getQuotationDataFromDb = async (id) => {
         const responseQuotation = await apiClient.get(`/quotations/populated/${id}`)
-        console.log("Response Quotation: ", responseQuotation.data.response);
         let newData = responseQuotation.data.response
         newData = {
             ...newData,
@@ -126,7 +126,6 @@ const DetailedQuotationContainer = (quote) => {
             {quotationData.products && quotationData.products.length > 0 ? (
                 <>
                     <div className="quotation-table-products">
-                    {/* <table key={`table-${quotationData.id}`} className="quotation-table-products"> */}
                         {quotationData.products.map((product) => (
                             <table className="product-container" key={product.productId} id={product.productId}>
                                 <ProductHeader />
@@ -135,10 +134,9 @@ const DetailedQuotationContainer = (quote) => {
                                         <NewProduct productData={product} />
                                     </tr>
                                     <tr key={"processes-" + product.productId} id={"processes-" + product.productId}>
-                                        <td colSpan="9">
+                                        <td colSpan="10">
                                             {product.processes && product.processes.length > 0 ? (
                                                 <table className="quotation-table-processes">
-                                                    {/* <ProcessHeader /> */}
                                                     <tbody>
                                                         {product.processes.map((process) => (
                                                             <tr key={process.processId} id={process.processId}>

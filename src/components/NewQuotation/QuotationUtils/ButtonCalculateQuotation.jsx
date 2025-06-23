@@ -12,7 +12,6 @@ const ButtonCalculateQuotation = () => {
     const saveCalculatedQuotation = async () => {
         console.log("Quotation to save: ", quotationData);
         // preparo la informacion de Quotation para guardar en la DB
-
         const quotationId = quotationData.id;
         const quotationToSave = {
             date: quotationData.date,

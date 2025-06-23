@@ -29,13 +29,10 @@
 .product-container {
     width: 100%;
     border-collapse: collapse;
-    /* background-color: antiquewhite; */
     background-color: #fff;
     border: 1px solid #999 radius(10px);
     margin-top: 5px;
-    /* margin-bottom: 10px; */
     border-radius: 10px;
-    /* border-bottom: 1px solid #999; */
 }
 .product-container thead {
     height: 22px;
@@ -50,13 +47,15 @@
     font-size: 0.9em;
     font-weight: 500;
 }
-.product-container tbody tr {
-    
-}
+
 .product-container tbody tr td {
     padding: 0px 10px;
     font-size: 0.9em;
     text-align: center;
+}
+.product-action-buttons {
+    display: flex;
+    justify-content: space-around;
 }
 
 .quotation-table-processes{

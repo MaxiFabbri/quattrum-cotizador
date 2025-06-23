@@ -13,13 +13,16 @@ import MonthlyRateInput from "./InputComponents/MonthlyRateInput.jsx";
 
 import SelectCustomer from "../Utils/Selectors/SelectCustomer.jsx";
 import SelectCustomerPayMethod from "../Utils/Selectors/SelectCustomerPaymentMethod.jsx";
-
+import { useAddProductWithQuotation } from "./QuotationUtils/useAddProductWithQuotation.jsx";
 import IconButton from "../Utils/IconButton.jsx";
 
 
 const NewQuotation = () => {
 
     const { quotationData, updateQuotationData } = useContext(QuotationContext);
+    const [quotationId, setQuotationId] = useState(null);
+
+    useAddProductWithQuotation(quotationId);
 
     const getPaymentMethodData = async (paymentId) => {
         try {
@@ -59,6 +62,7 @@ const NewQuotation = () => {
             const dbId = response.data.response._id;
             if (dbId) {
                 updateQuotationData({id: dbId});
+                setQuotationId(dbId);
             }
         } catch (error) {
             console.error("Error submitting quotation:", error);
