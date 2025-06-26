@@ -18,7 +18,6 @@ const EditCustomer = () => {
         try {
             const response = await apiClient.get(`/customers/${id}`);
             setNewCustomerData(response.data.response); // Asigna el objeto de la respuesta
-            console.log("newCustomerData: ", response.data.response)
         } catch (error) {
             console.error("Error al cargar el cliente:", error);
         } finally {
@@ -126,6 +125,7 @@ const EditCustomer = () => {
     useEffect(() => {
         console.log("id: ", id);
         console.log("new customer Data: ", newCustomerData)
+        console.log("Forma de cobro: ", newCustomerData.customerPaymentMethodId?.customer_payment_description)
     }, [newCustomerData]);
 
     return (
@@ -183,7 +183,7 @@ const EditCustomer = () => {
                             <div>
                                 <span>Método de pago: </span>
                                 <SelectCustomerPayMethod
-                                    defaultCustomerPay={newCustomerData.customerPaymentMethodId?.customer_payment_description}
+                                    defaultPayment={newCustomerData.customerPaymentMethodId?.customer_payment_description}
                                     onSelectCustomerPayMethod={handleCustomerPaymentMethodUpdate}
                                 />
                             </div>

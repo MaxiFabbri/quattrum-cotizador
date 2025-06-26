@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./CustomersContainer.css";
-import Customer from "./Customer.jsx";
+import "./SuppliersContainer.css";
+import Supplier from "./Supplier.jsx";
 import TextButton from "../Utils/TextButton.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 import { Link } from "react-router-dom";
 
-const CustomerContainer = () => {
+const SupplierContainer = () => {
     const navigate = useNavigate(); // Hook para la navegación
-    const [customers, setCustomers] = useState([]); // Estado para las cotizaciones
+    const [suppliers, setSuppliers] = useState([]); // Estado para las cotizaciones
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState("");
     const [error, setError] = useState(null);
@@ -16,31 +16,31 @@ const CustomerContainer = () => {
 
     useEffect(() => {
         // Función para realizar la solicitud GET
-        const fetchCustomers = async () => {
+        const fetchSuppliers = async () => {
             try {
-                const response = await apiClient.get(`/customers/populated/name?name=${filter}`);
-                setCustomers(response.data.response); // Asigna el array de la respuesta
+                const response = await apiClient.get(`/suppliers/populated/name?name=${filter}`);
+                setSuppliers(response.data.response); // Asigna el array de la respuesta
             } catch (error) {
-                setError("Error al cargar los clientes");
+                setError("Error al cargar los proveedores");
                 console.error(error);
             } finally {
                 setLoading(false);
                 setUpdated(true);
             }
         };
-        fetchCustomers();
+        fetchSuppliers();
     }, [updated, loading, filter]);
 
 
     // Función para eliminar un Cliente
     const handleDelete = async (id) => {
-        if (window.confirm("¿Estás seguro de que deseas eliminar este Cliente?")) {
+        if (window.confirm("¿Estás seguro de que deseas eliminar este Proveedor?")) {
             setUpdated(false);
             try {;
-                await apiClient.delete(`/customers/${id}`);
+                await apiClient.delete(`/suppliers/${id}`);
                 setLoading(true)
             } catch (error) {
-                console.error("Error al eliminar el Cliente:", error);
+                console.error("Error al eliminar el Proveedor:", error);
             }
         }
     };
@@ -52,56 +52,56 @@ const CustomerContainer = () => {
         setFilter(value);
     }
     // Función para crear un nuevo cliente
-    const handleCreateCustomer = () => {
-        console.log("Crear nuevo cliente");
-        navigate("/customers/edit/new");
+    const handleCreateSupplier= () => {
+        console.log("Crear nuevo proveedor");
+        navigate("/suppliers/edit/new");
     }
 
     // Renderizado condicional
-    if (loading) return <p>Cargando clientes...</p>;
+    if (loading) return <p>Cargando proveedores...</p>;
     if (error) return <p>{error}</p>;
     return (
         <>
-            <div className="customers-header">
+            <div className="suppliers-header">
                 <input
-                    className="customers-search"
+                    className="suppliers-search"
                     type="text"
                     name="filter"
-                    placeholder="Buscar cliente"
+                    placeholder="Buscar proveedor"
                     onInput={handleFilterChange}
                 /> 
-                <h2>Clientes</h2>
+                <h2>Proveedores</h2>
                 <TextButton
-                    text="Nuevo Cliente"
-                    onClick={handleCreateCustomer} />
+                    text="Nuevo Proveedor"
+                    onClick={handleCreateSupplier} />
             </div>
-            {customers.length > 0 ? (
-                <table className="customers-table">
-                    <thead className="customers-table-header">
+            {suppliers.length > 0 ? (
+                <table className="suppliers-table">
+                    <thead className="suppliers-table-header">
                         <tr>
                             <th></th>
-                            <th>Cliente</th>
+                            <th>Proveedor</th>
                             <th>Codigo</th>
                             <th>CUIT</th>
                             <th>E-mail</th>
                             <th>Forma de Pago</th>
                         </tr>
                     </thead>
-                    <tbody className="customers-table-body">
-                        {customers.map((customer) => (
-                            <Customer
-                                key={customer._id}
-                                customer={customer}
+                    <tbody className="suppliers-table-body">
+                        {suppliers.map((supplier) => (
+                            <Supplier
+                                key={supplier._id}
+                                supplier={supplier}
                                 onDelete={handleDelete} // Pasa la función al componente hijo
                             />
                         ))}
                     </tbody>
                 </table>
             ) : (
-                <p>No se encontraron clientes.</p>
+                <p>No se encontraron proveedores.</p>
             )}
         </>
     )
 }
 
-export default CustomerContainer;
+export default SupplierContainer;

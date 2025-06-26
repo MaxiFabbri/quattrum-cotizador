@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [authenticating, setAuthenticating] = useState(false);
     const [userRole, setUserRole] = useState('')
+    const [userName, setUserName] = useState('')
 
     const login = async (email, password) => {
         try {
@@ -20,6 +21,7 @@ export const AuthProvider = ({ children }) => {
             if (response.status === 200) {
                 setIsAuthenticated(true);
                 setUserRole(response.data.response.role);
+                setUserName(response.data.response.first_name)
             } else {
                 alert('Error: Credenciales incorrectas');
             }
@@ -60,6 +62,8 @@ export const AuthProvider = ({ children }) => {
             );
             console.log('CheckAuth response: ', response);
             if (response.status === 200) {
+                console.log('Usuario autenticado', response.data);
+                setUserName(response.data.first_name);
                 setUserRole(response.data.role);
                 setIsAuthenticated(true);
             } else {
@@ -78,7 +82,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, authenticating, userRole, login, logout, checkAuth }}>
+        <AuthContext.Provider value={{ isAuthenticated, authenticating, userRole, userName, login, logout, checkAuth }}>
             {children}
         </AuthContext.Provider>
     );

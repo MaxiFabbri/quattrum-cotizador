@@ -1,8 +1,10 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 import { apiClient, apiDolar } from '../config/axiosConfig.js';
+import { AuthContext } from './AuthContext.jsx';
 
 // Creación del contexto
 export const ParametersContext = createContext();
+
 
 // Proveedor del contexto
 export const ParametersProvider = ({ children }) => {
@@ -11,6 +13,7 @@ export const ParametersProvider = ({ children }) => {
     const [utilitiesTable, setUtilitiesTable] = useState([]);
     const [dolarPrice, setDolarPrice] = useState(1080);
     const [isParamsLoaded, setIsParamsLoaded] = useState(false); // Nuevo estado
+    const { isAuthenticated } = useContext(AuthContext);
 
     const getGeneralParameters = async () => {
         try {
@@ -58,7 +61,7 @@ export const ParametersProvider = ({ children }) => {
 
     useEffect(() => {
         getGeneralParameters();
-    }, []); // Ejecutar al montar el componente
+    }, [isAuthenticated]); // Ejecutar al montar el componente
 
     useEffect(() => {
         getDolarPrice();

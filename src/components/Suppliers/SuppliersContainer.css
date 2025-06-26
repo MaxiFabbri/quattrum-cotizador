@@ -1,0 +1,41 @@
+.suppliers-header {
+    display: grid;
+    position: fixed;
+    width: 100%;
+    grid-template-columns: 15% 70% 15%;
+    justify-items: center;
+    background-color: #bbb;
+    padding: 10px;
+}
+
+.suppliers-table {
+    margin-top: 56px ;
+    border-collapse: collapse;
+}
+
+.suppliers-table-header {
+    position: sticky;
+    top: 116px;
+    background-color: #bbb;
+    height: 30px;
+    font-weight: bold;
+}
+
+.suppliers-table-body {
+    background-color: #ffffff;
+}
+
+.suppliers-table-body tr {
+    font-size: smaller;
+    height: 30px;
+}
+
+.suppliers-table td:nth-child(1) { 
+    width: 5%; 
+    text-align: center;
+}
+.suppliers-table td:nth-child(2) { width: 28%; }
+.suppliers-table td:nth-child(3) { width: 10%; }
+.suppliers-table td:nth-child(4) { width: 7%; }
+.suppliers-table td:nth-child(5) { width: 10%; }
+.suppliers-table td:nth-child(6) { width: 20%; }

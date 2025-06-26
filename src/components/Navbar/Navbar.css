@@ -9,16 +9,30 @@
     margin: 0px;
 }
 .navbar-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 60px;
-    padding: 0px 80px;
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    height: 70px;
+    padding: 4px 10px;
     border-bottom: 1px solid #ddd;
 }
-
+.navbar-content {
+    display: grid;
+    grid-template-rows: 30px 30px;
+    gap: 4px;
+}
+.navbar-user-info {
+    display: grid;
+    grid-template-columns: 1fr 90px 90px 90px;
+    justify-items: center;
+}
+.navbar-menu {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
+}
 .navbar-logo-link{
-    margin-top: 7px;
+    align-self: center;
 }
 .navbar-isologo {
     width: 185px;
