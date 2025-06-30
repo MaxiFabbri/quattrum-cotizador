@@ -107,12 +107,13 @@ const ButtonCalculateQuotation = () => {
         let minUtilitie = targetUtility.productMinimun;
         let percentageUtilitie = targetUtility.productUtilitie / 100;
 
+
         // Defino si es kit o no
         if (quotationData.isKit) {
             // Si es kit, la utilidad es por producto
             console.log("Es un kit");
             minUtilitie = targetUtility.kitMinimun;
-            percentageUtilitie = targetUtility.kitUtilitie;
+            percentageUtilitie = targetUtility.kitUtilitie / 100;
         }
         // calculo utilidad por porjentaje
         let newTotalProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax))).toFixed(2);

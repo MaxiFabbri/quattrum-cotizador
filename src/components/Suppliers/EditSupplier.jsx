@@ -60,6 +60,7 @@ const EditSupplier = () => {
             email: newSupplierData.email || "",
             supplierPaymentMethodId: newSupplierData.supplierPaymentMethodId,
         }
+        // console.log("Supplier data: ", data);
         try {
             const response = await apiClient.post("/suppliers", data);
             if (response.data.response) {
@@ -130,7 +131,7 @@ const EditSupplier = () => {
                 <p>Cargando...</p>
                 :
                 <div className="detailedCustomer">
-                    <h2>Cliente</h2>
+                    <h2>Proveedor</h2>
                     <div className="customerData">
                         <div className="customerInfo">
                             <p>
@@ -171,7 +172,7 @@ const EditSupplier = () => {
                                 <input
                                     type="text"
                                     name="email"
-                                    placeholder="Email del cliente"
+                                    placeholder="Email del proveedor"
                                     defaultValue={newSupplierData.email}
                                     onInput={handleInputChange}
                                 />
