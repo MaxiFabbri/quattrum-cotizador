@@ -57,10 +57,10 @@ const EditSupplier = () => {
             name: newSupplierData.name,
             code: newSupplierData.code || "",
             cuit: newSupplierData.cuit || "",
+            phone: newSupplierData.phone || "",
             email: newSupplierData.email || "",
             supplierPaymentMethodId: newSupplierData.supplierPaymentMethodId,
         }
-        // console.log("Supplier data: ", data);
         try {
             const response = await apiClient.post("/suppliers", data);
             if (response.data.response) {
@@ -164,6 +164,16 @@ const EditSupplier = () => {
                                     name="cuit"
                                     placeholder="CUIT del Proveedor ej.(20-12345678-1)"
                                     defaultValue={newSupplierData.cuit}
+                                    onInput={handleInputChange}
+                                />
+                            </p>
+                            <p>
+                                <span>Teléfono: </span>
+                                <input
+                                    type="text"
+                                    name="phone"
+                                    placeholder="Teléfono del proveedor"
+                                    defaultValue={newSupplierData.phone}
                                     onInput={handleInputChange}
                                 />
                             </p>

@@ -5,7 +5,6 @@ import { AuthContext } from './AuthContext.jsx';
 // Creación del contexto
 export const ParametersContext = createContext();
 
-
 // Proveedor del contexto
 export const ParametersProvider = ({ children }) => {
     const [paramMonthlyRate, setParamMonthlyRate] = useState(0.1);

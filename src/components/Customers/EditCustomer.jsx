@@ -61,6 +61,7 @@ const EditCustomer = () => {
             code: newCustomerData.code || "",
             cuit: newCustomerData.cuit || "",
             email: newCustomerData.email || "",
+            phone: newCustomerData.phone || "",
             customerPaymentMethodId: newCustomerData.customerPaymentMethodId,
         }
         try {
@@ -167,6 +168,17 @@ const EditCustomer = () => {
                                     name="cuit"
                                     placeholder="CUIT del cliente ej.(20-12345678-1)"
                                     defaultValue={newCustomerData.cuit}
+                                    onInput={handleInputChange}
+                                />
+                            </p>
+                            <p>
+                                <span>Teléfono: </span>
+                                <input
+                                    className="input"
+                                    type="text"
+                                    name="phone"
+                                    placeholder="Número de teléfono"
+                                    defaultValue={newCustomerData.phone}
                                     onInput={handleInputChange}
                                 />
                             </p>

@@ -21,11 +21,12 @@ const DetailedQuotationContainer = (quote) => {
     const today = new Date().toISOString().split("T")[0];
     const { id } = useParams()
 
-    const formatDate = (isoDate) => {
-        const date = new Date(isoDate);
+    // Formatear la fecha
+    const formatDate = (utcDate) => {;
+        const date = new Date(utcDate);
         const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0"); // Asegura 2 dígitos
-        const day = String((date.getDate())+1).padStart(2, "0"); // Asegura 2 dígitos
+        const month = String(date.getUTCMonth()+1).padStart(2, "0"); // Asegura 2 dígitos
+        const day = String(date.getUTCDate()).padStart(2, "0"); // Asegura 2 dígitos
         return `${year}-${month}-${day}`;
     };
     

@@ -31,12 +31,12 @@ const Quotation = ({ quote, onDelete }) => {
     };
 
     // Formatear la fecha
-    const formatDate = (isoDate) => {
-        const date = new Date(isoDate);
+    const formatDate = (utcDate) => {;
+        const date = new Date(utcDate);
         const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0"); // Asegura 2 dígitos
-        const day = String((date.getDate())+1).padStart(2, "0"); // Asegura 2 dígitos
-        return `${year}-${month}-${day}`;
+        const month = String(date.getUTCMonth()+1).padStart(2, "0"); // Asegura 2 dígitos
+        const day = String(date.getUTCDate()).padStart(2, "0"); // Asegura 2 dígitos
+        return `${day}-${month}-${year}`;
     };
 
     return (
@@ -55,8 +55,6 @@ const Quotation = ({ quote, onDelete }) => {
             <td>{quote.customerId.name}</td>
             <td>{quote.currency}</td>
             <td>{quote.isKit ? "Sí" : "No"}</td>    
-
-            {/* Mostrar Loading hasta que los productos estén cargados */}
             <td colSpan="3" style={{ padding: "0px" }}>
                 {!isProductsLoaded ? (
                     <p>Loading...</p>
