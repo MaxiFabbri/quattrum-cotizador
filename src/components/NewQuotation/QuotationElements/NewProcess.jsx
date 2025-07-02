@@ -8,11 +8,11 @@ import CurrencySelect from "../InputComponents/CurrencySelect.jsx";
 import IconButton from "../../Utils/IconButton";
 
 const NewProcess = ({ initialProcessData }) => {
-    const { updateProcessInProduct, removeProcessInProduct, updateProduct, quotationData } = useContext(QuotationContext);
+    const { updateProcessInProduct, removeProcessInProduct, quotationData } = useContext(QuotationContext);
 
     const [processData, setProcessData] = useState(initialProcessData);
-    const [newTempUnitCost, setNewTempUnitCost] = useState(processData.tempunitCost);
-    const [newTempFixedCost, setNewTempFixedCost] = useState(processData.tempfixedCost);
+    const [newTempUnitCost, setNewTempUnitCost] = useState(processData.tempunitCost) || 0;
+    const [newTempFixedCost, setNewTempFixedCost] = useState(processData.tempfixedCost) || 0;
 
 
     useEffect(() => {
@@ -92,7 +92,7 @@ const NewProcess = ({ initialProcessData }) => {
     }
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {
-        const { name, value } = e.target;        
+        const { name, value } = e.target;
         setProcessData((prevData) => ({
             ...prevData,
             [name]: value,
@@ -132,6 +132,7 @@ const NewProcess = ({ initialProcessData }) => {
         removeProcessInProduct(processData.productId, processData.processId);
     };
 
+    // console.log("processData: ", processData);
     return (
         <>
             <td>
@@ -166,7 +167,8 @@ const NewProcess = ({ initialProcessData }) => {
                     placeholder="$ Unit."
                     value={newTempUnitCost}
                     onClick={(e) => e.target.select()}
-                    onInput={e => setNewTempUnitCost(e.target.value)}
+                    onInput={e => setNewTempUnitCost(Number(e.target.value))}
+
                 />
             </td>
             <td>
@@ -190,14 +192,9 @@ const NewProcess = ({ initialProcessData }) => {
                     placeholder="Costo Fijo"
                     value={newTempFixedCost}
                     onClick={(e) => e.target.select()}
-                    onInput={e => setNewTempFixedCost(e.target.value)}
+                    onInput={e => setNewTempFixedCost(Number(e.target.value))}
                 />
             </td>
-            {/* <td>
-                <span>
-                    U$S {processData.subTotalProcessCost}
-                </span>
-            </td> */}
             <td>
                 <IconButton
                     icon="/delete.png"

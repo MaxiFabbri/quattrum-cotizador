@@ -35,7 +35,7 @@ const NewProduct = ({productData}) => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         if (name.startsWith("temp")) {
-            const convertedValue = +((value / quotationData.exchangeRate).toFixed(2));
+            const convertedValue = +(value / quotationData.exchangeRate);
             const newName = name.replace("temp", "");
             setProdData((prevData) => ({
                 ...prevData,

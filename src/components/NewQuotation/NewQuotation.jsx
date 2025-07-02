@@ -31,6 +31,8 @@ const NewQuotation = () => {
             return paymentMethod;
         } catch (error) {
             console.error("Error fetching customer payment method:", error);
+            const paymentMethod = { customer_payment_description: "Elija forma de pago" };
+            return paymentMethod;
         }
     };
 
@@ -47,6 +49,7 @@ const NewQuotation = () => {
     };
 
     const handleCustomerPaymentMethodUpdate = (newCustomerPaymentMethod) => {
+        console.log("Customer payment method updated:", newCustomerPaymentMethod);
         updateQuotationData({
             paymentMethodId: newCustomerPaymentMethod._id || "",
             paymentMethodName: newCustomerPaymentMethod.customer_payment_description || "",

@@ -33,6 +33,7 @@ const DetailedQuotationContainer = (quote) => {
 
     const adjustProcessesData = (dbProcesses, exchangeRate) => {
         const newProcessesData = dbProcesses.map((process) => {
+            let newExchangeRate = process.currency === "Peso" ? exchangeRate : 1;
             return {
                 adjustPercentage: process.adjustPercentage,
                 processId: process._id,
@@ -44,11 +45,11 @@ const DetailedQuotationContainer = (quote) => {
                 supplierPaymentMethodName: process.supplierId.supplierPaymentMethodId.supplier_payment_description,
                 daysToPayment: process.daysToPayment,
                 currency: process.currency,
-                unitCost: process.unitCost,
-                tempunitCost: (process.unitCost * exchangeRate).toFixed(2),
-                fixedCost: process.fixedCost,
-                tempfixedCost: (process.fixedCost * exchangeRate).toFixed(2),
-                subTotalProcessCost: process.subTotalProcessCost,
+                unitCost: +(process.unitCost).toFixed(4),
+                tempunitCost: +(process.unitCost * newExchangeRate).toFixed(2),
+                fixedCost: +(process.fixedCost).toFixed(4),
+                tempfixedCost: +(process.fixedCost * newExchangeRate).toFixed(2),
+                subTotalProcessCost: +(process.subTotalProcessCost),
                 savedToDb: true,
             }
         })
@@ -71,19 +72,18 @@ const DetailedQuotationContainer = (quote) => {
                 productDescription: product.productDescription,
                 quantity: product.quantity,
                 productionDays: product.productionDays,
-                financingCost: product.financingCost,
-                tempfinancingCost: (product.financingCost * exchangeRate).toFixed(2),
-                shipmentCost: product.shipmentCost,
-                tempshipmentCost: (product.shipmentCost * exchangeRate).toFixed(2),
-                otherCost: product.otherCost,
-                tempotherCost: (product.otherCost * exchangeRate).toFixed(2),
-                unitSellingPrice: product.unitSellingPrice,
-                pesosPrice: (product.unitSellingPrice * exchangeRate).toFixed(0),
+                financingCost: +(product.financingCost),
+                tempfinancingCost: +(product.financingCost * exchangeRate).toFixed(2),
+                shipmentCost: +(product.shipmentCost),
+                tempshipmentCost: +(product.shipmentCost * exchangeRate).toFixed(2),
+                otherCost: +(product.otherCost),
+                tempotherCost: +(product.otherCost * exchangeRate).toFixed(2),
+                unitSellingPrice: +(product.unitSellingPrice),
+                pesosPrice: +(product.unitSellingPrice * exchangeRate).toFixed(0),
                 processes: newProcesses, // Ahora los procesos se incluyen correctamente
                 savedToDb: true,
             };
         }));
-
         return newProductsData;
     };
 

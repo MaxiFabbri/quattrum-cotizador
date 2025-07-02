@@ -107,7 +107,6 @@ const ButtonCalculateQuotation = () => {
         let minUtilitie = targetUtility.productMinimun;
         let percentageUtilitie = targetUtility.productUtilitie / 100;
 
-
         // Defino si es kit o no
         if (quotationData.isKit) {
             // Si es kit, la utilidad es por producto
@@ -116,16 +115,16 @@ const ButtonCalculateQuotation = () => {
             percentageUtilitie = targetUtility.kitUtilitie / 100;
         }
         // calculo utilidad por porjentaje
-        let newTotalProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax))).toFixed(2);
+        let newTotalProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax))).toFixed(4);
         if (newTotalProductCost * percentageUtilitie < minUtilitie) {
             // si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
             console.log("El costo total por porcentaje es menor al minimo, lo cambio por el minimo");
             console.log("Utilidad por porcentaje: ", newTotalProductCost * percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
-            newTotalProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax)).toFixed(2);
+            newTotalProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax)).toFixed(4);
         }
 
         // paso el costo total a costo unitario
-        const unitSellingPrice = parseFloat(newTotalProductCost / quantity).toFixed(4);
+        const unitSellingPrice = parseFloat(newTotalProductCost / quantity).toFixed(6);
         return unitSellingPrice;
     };
 
@@ -136,7 +135,7 @@ const ButtonCalculateQuotation = () => {
             product.processes = product.processes.map((process) => {
                 // Calculo el coeficiente de ajuste
                 const adjust = +( 1+(Number(process.adjustPercentage) || 0)/100)                
-                const newSubtotalProcessCost = +(((process.unitCost * product.quantity) * adjust) + process.fixedCost).toFixed(2);
+                const newSubtotalProcessCost = +(((process.unitCost * product.quantity) * adjust) + process.fixedCost).toFixed(4);
                 console.log("Nuevo subtotal del proceso: ", newSubtotalProcessCost);
                 totalProductCost += +newSubtotalProcessCost;
                 if (newProductDescription === "") {
@@ -158,8 +157,8 @@ const ButtonCalculateQuotation = () => {
                     +product.financingCost +
                     +product.shipmentCost +
                     +product.otherCost
-                ).toFixed(2);
-            const unitSellingPrice = calculateUnitSellingPrice(totalProductCost, product.quantity);
+                ).toFixed(4);
+            const unitSellingPrice = parseFloat(calculateUnitSellingPrice(totalProductCost, product.quantity));
             const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
             updateProduct({
                 productId: product.productId,
