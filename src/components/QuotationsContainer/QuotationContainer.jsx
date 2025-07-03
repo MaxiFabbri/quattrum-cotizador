@@ -4,31 +4,34 @@ import { apiClient } from "../../config/axiosConfig.js";
 import { Link } from "react-router-dom";
 import TextButton from "../Utils/TextButton.jsx";
 import Quotation from "../Quotation/Quotation.jsx";
+import StatusFilterSelect from "../NewQuotation/InputComponents/StatusFilterSelect.jsx";
 
 const Quotations = () => {
     const [quotations, setQuotations] = useState([]); // Estado para las cotizaciones
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState(""); // Estado para el filtro de estado
     const [updated, setUpdated] = useState(true);
 
     useEffect(() => {
-        // Función para realizar la solicitud GET
-        const fetchQuotations = async () => {
-            setUpdated(true);
-            try {
-                const response = await apiClient.get(`/quotations/name?name=${filter}`);
-                setQuotations(response.data.response);
-            } catch (error) {
-                setError("Error al cargar las cotizaciones");
-                console.error(error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchQuotations();
     }, [updated, loading]);
 
+    // Función para realizar la solicitud GET
+    const fetchQuotations = async () => {
+        // setUpdated(true);
+        try {
+            const response = await apiClient.get(`/quotations/filtered?name=${filter}&status=${statusFilter}`);
+            setQuotations(response.data.response);
+        } catch (error) {
+            setError("Error al cargar las cotizaciones");
+            console.error(error);
+        } finally {
+            setLoading(false);
+            setUpdated(true);
+        }
+    };
     // Función para eliminar una cotización
     const handleDelete = async (id) => {
         if (window.confirm("¿Estás seguro de que deseas eliminar esta cotización?")) {
@@ -46,6 +49,12 @@ const Quotations = () => {
         setUpdated(false);
         setFilter(value);
     }
+    const handleStatusFilterChange = (e) => {
+        const {value} = e.target;
+        setUpdated(false);
+        setLoading(true);
+        setStatusFilter(value);
+    };
 
     // Renderizado condicional
     if (loading) return <p>Cargando cotizaciones...</p>;
@@ -65,6 +74,7 @@ const Quotations = () => {
                 <Link to="/new-quotation">
                     <TextButton text="Nueva Cotización" />
                 </Link>
+                <StatusFilterSelect value={statusFilter} onChange={handleStatusFilterChange} />
             </div>
             {quotations.length > 0 ? (
                 <table className="quotations-table">

@@ -1,6 +1,6 @@
-const QuoteStatusSelect = ({ value, onChange }) => {
+const StatusFilterSelect = ({ value, onChange }) => {
     return (
-        <td>
+        
             <select
                 id="quoteStatus"
                 name="quoteStatus"
@@ -8,13 +8,14 @@ const QuoteStatusSelect = ({ value, onChange }) => {
                 onChange={onChange}
                 required
             >
+                <option value="">Todos</option>
                 <option value="Cotizado">Cotizado</option>
                 <option value="Aprobado">Aprobado</option>
                 <option value="En Producción">En Producción</option>
                 <option value="Entregado">Entregado</option>
             </select>
-        </td>
+        
     );
 };
 
-export default QuoteStatusSelect;
+export default StatusFilterSelect;

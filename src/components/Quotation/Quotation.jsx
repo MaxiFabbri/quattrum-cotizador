@@ -72,7 +72,6 @@ const Quotation = ({ quote, onDelete }) => {
                     </table>
                 )}
             </td>
-
             <td>{quote.quoteStatus}</td>
         </tr>
     );
