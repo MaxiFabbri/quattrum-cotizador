@@ -12,15 +12,13 @@ const Quotations = () => {
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState(""); // Estado para el filtro de estado
-    const [updated, setUpdated] = useState(true);
 
     useEffect(() => {
         fetchQuotations();
-    }, [updated, loading]);
+    }, [loading]);
 
     // Función para realizar la solicitud GET
     const fetchQuotations = async () => {
-        // setUpdated(true);
         try {
             const response = await apiClient.get(`/quotations/filtered?name=${filter}&status=${statusFilter}`);
             setQuotations(response.data.response);
@@ -29,7 +27,6 @@ const Quotations = () => {
             console.error(error);
         } finally {
             setLoading(false);
-            setUpdated(true);
         }
     };
     // Función para eliminar una cotización
@@ -45,20 +42,15 @@ const Quotations = () => {
         }
     };
     const handleFilterChange = (e) => {
-        const {value} = e.target;
-        setUpdated(false);
+        const { value } = e.target;
+        setLoading(true)
         setFilter(value);
     }
     const handleStatusFilterChange = (e) => {
-        const {value} = e.target;
-        setUpdated(false);
+        const { value } = e.target;
         setLoading(true);
         setStatusFilter(value);
     };
-
-    // Renderizado condicional
-    if (loading) return <p>Cargando cotizaciones...</p>;
-    if (error) return <p>{error}</p>;
 
     return (
         <>
@@ -76,34 +68,44 @@ const Quotations = () => {
                 </Link>
                 <StatusFilterSelect value={statusFilter} onChange={handleStatusFilterChange} />
             </div>
-            {quotations.length > 0 ? (
-                <table className="quotations-table">
-                    <thead>
+            <table className="quotations-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Moneda</th>
+                        <th>Kit</th>
+                        <th>Cantidad</th>
+                        <th>Producto</th>
+                        <th>Precio Unitario</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody className="quotations-container-body">
+                    {loading ? (
                         <tr>
-                            <th></th>
-                            <th>Fecha</th>
-                            <th>Cliente</th>
-                            <th>Moneda</th>
-                            <th>Kit</th>
-                            <th>Cantidad</th>
-                            <th>Producto</th>
-                            <th>Precio Unitario</th>
-                            <th>Estado</th>
+                            <td colSpan="9">Cargando cotizaciones...</td>
                         </tr>
-                    </thead>
-                    <tbody className="quotations-container-body">
-                        {quotations.map((quote) => (
+                    ) : error ? (
+                        <tr>
+                            <td colSpan="9">{error}</td>
+                        </tr>
+                    ) : quotations.length > 0 ? (
+                        quotations.map((quote) => (
                             <Quotation
                                 key={quote._id}
                                 quote={quote}
-                                onDelete={handleDelete} // Pasa la función al componente hijo
+                                onDelete={handleDelete}
                             />
-                        ))}
-                    </tbody>
-                </table>
-            ) : (
-                <p>No se encontraron cotizaciones.</p>
-            )}
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="9">No se encontraron cotizaciones.</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
         </>
     );
 };

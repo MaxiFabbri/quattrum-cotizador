@@ -9,6 +9,91 @@ const ButtonCalculateQuotation = () => {
     const { utilitiesTable, tax } = useContext(ParametersContext);
     const [isUpdated, setIsUpdated] = useState(false);
 
+
+
+
+
+
+
+    // Se ejecuta cuando isUpdated cambia a `true`
+    useEffect(() => {
+        if (isUpdated) {
+            saveCalculatedQuotation();
+            setIsUpdated(false); // Resetear el estado para futuras ejecuciones
+        }
+    }, [isUpdated]);
+
+    const handleCalculateQuotation = () => {
+        quotationData.products.map((product) => {
+            var totalProductCost = 0;
+            var newProductDescription = ""
+            product.processes = product.processes.map((process) => {
+                // Calculo el coeficiente de ajuste
+                const adjust = +(1 + (Number(process.adjustPercentage) || 0) / 100)
+                const newSubtotalProcessCost = +(((process.unitCost * product.quantity) * adjust) + process.fixedCost).toFixed(4);
+                console.log("Nuevo subtotal del proceso: ", newSubtotalProcessCost);
+                totalProductCost += +newSubtotalProcessCost;
+                if (newProductDescription === "") {
+                    newProductDescription = process.description
+                } else {
+                    newProductDescription = newProductDescription + ", " + process.description
+                }
+                // Actualizo el subtotal del proceso en el context         
+                updateProcessInProduct({ subTotalProcessCost: newSubtotalProcessCost }, process.processId);
+                return {
+                    ...process,
+                    subTotalProcessCost: newSubtotalProcessCost,
+                };
+            });
+            // Levanto los datos del producto del context
+            totalProductCost =
+                +(
+                    +totalProductCost +
+                    +product.shipmentCost +
+                    +product.otherCost
+                ).toFixed(4);
+            console.log("Costo financiero: ", product.financingCost);
+            const unitSellingPrice = parseFloat(calculateUnitSellingPrice(totalProductCost, product.financingCost, product.quantity));
+            const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
+            updateProduct({
+                productId: product.productId,
+                productDescription: newProductDescription,
+                unitSellingPrice: unitSellingPrice,
+                pesosPrice: pesosPrice
+            }, product.productId);
+        });
+        setIsUpdated(true);
+    };
+
+    const calculateUnitSellingPrice = (totalProductCost, financingCost, quantity) => {
+        const targetUtility = utilitiesTable.find((utility) => totalProductCost < utility.upTo);
+        let minUtilitie = targetUtility.productMinimun;
+        let percentageUtilitie = targetUtility.productUtilitie / 100;
+        const totalFinancingCost = parseFloat(financingCost /(1 - tax))
+        console.log("Costo total de financiación: ", totalFinancingCost);
+        // Defino si es kit o no
+        if (quotationData.isKit) {
+            // Si es kit, la utilidad es por producto
+            console.log("Es un kit");
+            minUtilitie = targetUtility.kitMinimun;
+            percentageUtilitie = targetUtility.kitUtilitie / 100;
+        }
+        // calculo utilidad por porjentaje
+        let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
+        console.log("Costo total por porcentaje: ", newNetProductCost);
+        if (newNetProductCost * percentageUtilitie < minUtilitie) {
+            // si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
+            console.log("El costo total por porcentaje es menor al minimo, lo cambio por el minimo");
+            console.log("Utilidad por porcentaje: ", newNetProductCost * percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
+            newNetProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax))
+        }
+        console.log("Costo total Sin Financiación: ", newNetProductCost);
+
+        // paso el costo total a costo unitario
+        const unitSellingPrice = parseFloat((newNetProductCost + totalFinancingCost) / quantity).toFixed(6);
+        return unitSellingPrice;
+    };
+
     const saveCalculatedQuotation = async () => {
         console.log("Quotation to save: ", quotationData);
         // preparo la informacion de Quotation para guardar en la DB
@@ -101,83 +186,6 @@ const ButtonCalculateQuotation = () => {
             });
         });
     }
-
-    const calculateUnitSellingPrice = (totalProductCost, quantity) => {
-        const targetUtility = utilitiesTable.find((utility) => totalProductCost < utility.upTo);
-        let minUtilitie = targetUtility.productMinimun;
-        let percentageUtilitie = targetUtility.productUtilitie / 100;
-
-        // Defino si es kit o no
-        if (quotationData.isKit) {
-            // Si es kit, la utilidad es por producto
-            console.log("Es un kit");
-            minUtilitie = targetUtility.kitMinimun;
-            percentageUtilitie = targetUtility.kitUtilitie / 100;
-        }
-        // calculo utilidad por porjentaje
-        let newTotalProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax))).toFixed(4);
-        if (newTotalProductCost * percentageUtilitie < minUtilitie) {
-            // si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
-            console.log("El costo total por porcentaje es menor al minimo, lo cambio por el minimo");
-            console.log("Utilidad por porcentaje: ", newTotalProductCost * percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
-            newTotalProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax)).toFixed(4);
-        }
-
-        // paso el costo total a costo unitario
-        const unitSellingPrice = parseFloat(newTotalProductCost / quantity).toFixed(6);
-        return unitSellingPrice;
-    };
-
-    const handleCalculateQuotation = () => {
-        quotationData.products.map((product) => {
-            var totalProductCost = 0;
-            var newProductDescription = ""
-            product.processes = product.processes.map((process) => {
-                // Calculo el coeficiente de ajuste
-                const adjust = +( 1+(Number(process.adjustPercentage) || 0)/100)                
-                const newSubtotalProcessCost = +(((process.unitCost * product.quantity) * adjust) + process.fixedCost).toFixed(4);
-                console.log("Nuevo subtotal del proceso: ", newSubtotalProcessCost);
-                totalProductCost += +newSubtotalProcessCost;
-                if (newProductDescription === "") {
-                    newProductDescription = process.description
-                } else {
-                    newProductDescription = newProductDescription + ", " + process.description
-                }
-                // Actualizo el subtotal del proceso en el context         
-                updateProcessInProduct({ subTotalProcessCost: newSubtotalProcessCost }, process.processId);
-                return {
-                    ...process,
-                    subTotalProcessCost: newSubtotalProcessCost,
-                };
-            });
-            // Levanto los datos del producto del context
-            totalProductCost =
-                +(
-                    +totalProductCost +
-                    +product.financingCost +
-                    +product.shipmentCost +
-                    +product.otherCost
-                ).toFixed(4);
-            const unitSellingPrice = parseFloat(calculateUnitSellingPrice(totalProductCost, product.quantity));
-            const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
-            updateProduct({
-                productId: product.productId,
-                productDescription: newProductDescription,
-                unitSellingPrice: unitSellingPrice,
-                pesosPrice: pesosPrice
-            }, product.productId);
-        });
-        setIsUpdated(true);
-    };
-
-    // Se ejecuta cuando isUpdated cambia a `true`
-    useEffect(() => {
-        if (isUpdated) {
-            saveCalculatedQuotation();
-            setIsUpdated(false); // Resetear el estado para futuras ejecuciones
-        }
-    }, [isUpdated]);
-
 
     return (
         <TextButton
