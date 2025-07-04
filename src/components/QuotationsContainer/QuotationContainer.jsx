@@ -32,10 +32,9 @@ const Quotations = () => {
     // Función para eliminar una cotización
     const handleDelete = async (id) => {
         if (window.confirm("¿Estás seguro de que deseas eliminar esta cotización?")) {
-            setUpdated(false);
+            setLoading(true)
             try {
                 await apiClient.delete(`/quotations/${id}`);
-                setLoading(true)
             } catch (error) {
                 console.error("Error al eliminar la cotización:", error);
             }
