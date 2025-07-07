@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, use } from "react";
 import { QuotationContext } from "../../../context/QuotationContext";
 import SelectSupplier from "../../Utils/Selectors/SelectSupplier.jsx";
 import SelectSupplierPayMethod from "../../Utils/Selectors/SelectSupplierPaymentMethod.jsx";
@@ -54,6 +54,17 @@ const NewProcess = ({ initialProcessData }) => {
             clearTimeout(handler); // Limpiar el temporizador previo
         };
     }, [processData]);
+
+    // Actualizar los valores cuando cambie quotationData.exchangeRate
+    useEffect(() => {
+        var exchange = 1;
+        if (processData.currency === "Peso") {
+            exchange = quotationData.exchangeRate;
+        }
+        setNewTempUnitCost(processData.unitCost * exchange);
+        setNewTempFixedCost(processData.fixedCost * exchange);
+    }, [quotationData.exchangeRate]);
+
 
     useEffect(() => {
         var exchange = 1;

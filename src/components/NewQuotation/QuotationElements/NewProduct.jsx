@@ -30,9 +30,20 @@ const NewProduct = ({productData}) => {
         }
     }, [isUpdated]);
 
+    // Actualizar los valores cuando cambie quotationData.exchangeRate
+    useEffect(() => {
+        setProdData((prevData) => ({
+            ...prevData,
+            tempfinancingCost: prevData.financingCost * quotationData.exchangeRate,
+            tempshipmentCost: prevData.shipmentCost * quotationData.exchangeRate,
+            tempotherCost: prevData.otherCost * quotationData.exchangeRate
+        }))
+        setIsUpdated(false);
+    }, [quotationData.exchangeRate]);
 
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {
+        console.log("handleInputChange: ", e.target.name, e.target.value);
         const { name, value } = e.target;
         if (name.startsWith("temp")) {
             const convertedValue = +(value / quotationData.exchangeRate);
@@ -84,7 +95,7 @@ const NewProduct = ({productData}) => {
                     className="input-number-days"
                     type="number"
                     name="productionDays"
-                    defaultValue={prodData.productionDays}
+                    value={prodData.productionDays}
                     onClick={(e) => e.target.select()}
                     onInput={handleInputChange}
                 />
@@ -94,7 +105,7 @@ const NewProduct = ({productData}) => {
                     className="input-number"
                     type="number"
                     name="tempfinancingCost"
-                    defaultValue={prodData.tempfinancingCost}
+                    value={prodData.tempfinancingCost}
                     onClick={(e) => e.target.select()}
                     onInput={handleInputChange}
                 />
@@ -104,7 +115,7 @@ const NewProduct = ({productData}) => {
                     className="input-number"
                     type="number"
                     name="tempshipmentCost"
-                    defaultValue={prodData.tempshipmentCost}
+                    value={prodData.tempshipmentCost}
                     onClick={(e) => e.target.select()}
                     onInput={handleInputChange}
                 />
@@ -114,7 +125,7 @@ const NewProduct = ({productData}) => {
                     className="input-number"
                     type="number"
                     name="tempotherCost"
-                    defaultValue={prodData.tempotherCost}
+                    value={prodData.tempotherCost}
                     onClick={(e) => e.target.select()}
                     onInput={handleInputChange}
                 />

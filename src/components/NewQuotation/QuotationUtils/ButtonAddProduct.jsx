@@ -19,6 +19,7 @@ const ButtonAddProduct = () => {
         tempshipmentCost: 0,
         otherCost: 0,
         tempotherCost: 0,
+        totalProductCost: 0,
         unitSellingPrice: 0,
         productDescription: "",
         processes: [],

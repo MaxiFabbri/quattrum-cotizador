@@ -6,6 +6,8 @@ export const QuotationContext = createContext();
 
 export const QuotationProvider = ({ children }) => {
 
+
+
     const initialQuotationDataState = {
         id: "",
         date: "",
@@ -58,6 +60,7 @@ export const QuotationProvider = ({ children }) => {
 
     // Función para agregar un producto al array de productos
     const addProduct = (prodData) => {
+        console.log("adding product: ", prodData)
         setQuotationData((prevData) => ({
             ...prevData,
             products: [...prevData.products, prodData],
@@ -76,7 +79,7 @@ export const QuotationProvider = ({ children }) => {
                 }
             }),
         }));
-        // console.log("Producto actualizado en quotationData: ", updatedProduct);
+        // console.log("Producto actualizado en quotationData: ", updatedProduct, id);
     };
 
     const removeProduct = (productId) => {
@@ -158,6 +161,7 @@ export const QuotationProvider = ({ children }) => {
             products: updatedProducts,
         }));
     };
+
 
 
     return (

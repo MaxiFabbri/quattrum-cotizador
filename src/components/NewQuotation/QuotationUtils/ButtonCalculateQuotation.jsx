@@ -8,12 +8,7 @@ const ButtonCalculateQuotation = () => {
     const { quotationData, updateProduct, updateProcessInProduct } = useContext(QuotationContext);
     const { utilitiesTable, tax } = useContext(ParametersContext);
     const [isUpdated, setIsUpdated] = useState(false);
-
-
-
-
-
-
+    let productsTotalCost = []
 
     // Se ejecuta cuando isUpdated cambia a `true`
     useEffect(() => {
@@ -23,15 +18,17 @@ const ButtonCalculateQuotation = () => {
         }
     }, [isUpdated]);
 
-    const handleCalculateQuotation = () => {
+    const getQuotationTotalCost = () => {
+        var totalQuotationCost = 0;
+        // Paso por los productos y actualizo los Costos totales de los productos y el Costo total de la cotizacion
         quotationData.products.map((product) => {
             var totalProductCost = 0;
             var newProductDescription = ""
+            // Paso por los procesos del producto y actualizo el subtotal y la descripción
             product.processes = product.processes.map((process) => {
                 // Calculo el coeficiente de ajuste
                 const adjust = +(1 + (Number(process.adjustPercentage) || 0) / 100)
-                const newSubtotalProcessCost = +(((process.unitCost * product.quantity) * adjust) + process.fixedCost).toFixed(4);
-                console.log("Nuevo subtotal del proceso: ", newSubtotalProcessCost);
+                const newSubtotalProcessCost = +(((process.unitCost * product.quantity) * adjust) + process.fixedCost)
                 totalProductCost += +newSubtotalProcessCost;
                 if (newProductDescription === "") {
                     newProductDescription = process.description
@@ -51,7 +48,53 @@ const ButtonCalculateQuotation = () => {
                     +totalProductCost +
                     +product.shipmentCost +
                     +product.otherCost
-                ).toFixed(4);
+                );
+            
+            // console.log("Costo total del Producto: ", totalProductCost, " y Financiero ", product.financingCost);
+            // Sumo el costo del producto al costo de la cotización
+            totalQuotationCost += totalProductCost;
+            console.log("Total Quotation Cost: ", totalQuotationCost);
+            console.log("Total Product Cost: ", totalProductCost);
+            console.log("Product ID: ", product.productId);
+            productsTotalCost.push({id:product.productId, totalProductCost: totalProductCost, description: newProductDescription});
+            // Actualizo el producto en el context
+            updateProduct({
+                productId: product.productId,
+                productDescription: newProductDescription,
+            }, product.productId);
+
+        });
+        return totalQuotationCost;
+    };
+
+    const handleCalculateQuotation = () => {
+        quotationData.products.map((product) => {
+            var totalProductCost = 0;
+            var newProductDescription = ""
+            product.processes = product.processes.map((process) => {
+                // Calculo el coeficiente de ajuste
+                const adjust = +(1 + (Number(process.adjustPercentage) || 0) / 100)
+                const newSubtotalProcessCost = +(((process.unitCost * product.quantity) * adjust) + process.fixedCost)
+                totalProductCost += +newSubtotalProcessCost;
+                if (newProductDescription === "") {
+                    newProductDescription = process.description
+                } else {
+                    newProductDescription = newProductDescription + ", " + process.description
+                }
+                // Actualizo el subtotal del proceso en el context         
+                updateProcessInProduct({ subTotalProcessCost: newSubtotalProcessCost }, process.processId);
+                return {
+                    ...process,
+                    subTotalProcessCost: newSubtotalProcessCost,
+                };
+            });
+            // Levanto los datos del producto del context
+            totalProductCost =
+                +(
+                    +totalProductCost +
+                    +product.shipmentCost +
+                    +product.otherCost
+                );
             console.log("Costo financiero: ", product.financingCost);
             const unitSellingPrice = parseFloat(calculateUnitSellingPrice(totalProductCost, product.financingCost, product.quantity));
             const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
@@ -65,32 +108,81 @@ const ButtonCalculateQuotation = () => {
         setIsUpdated(true);
     };
 
+    const handleCalculateSetQuotation = () => {
+        const  quotationTotalCost = getQuotationTotalCost();
+        
+        // Calculo las utilidades deseadas de los parametros generales
+        const targetUtilities = utilitiesTable.find((utility) => quotationTotalCost < utility.upTo);
+        console.log("Target Utility: ", targetUtilities);
+        
+        quotationData.products.map((product) => {
+            // Calculo las utilidades deseadas de los parametros generales
+            console.log("Calculo la utilidad de: ", product);
+            const productCost = productsTotalCost.find((el) => el.id === product.productId);
+            console.log("Costo del Producto encontrado: ", productCost.totalProductCost)
+            const unitSellingPrice = calculateKitUniteSellingPrice(productCost.totalProductCost, product.financingCost, product.quantity, targetUtilities, quotationTotalCost);
+            const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
+            const newProductDescription = productCost.description;
+            updateProduct({
+                productId: product.productId,
+                productDescription: newProductDescription,
+                unitSellingPrice: unitSellingPrice,
+                pesosPrice: pesosPrice
+            }, product.productId);
+
+            console.log("Precio unitario Calculado: ", unitSellingPrice, " Pesos Price: ", pesosPrice);
+        })
+        setIsUpdated(true);
+    };
+
+    const calculateKitUniteSellingPrice = (totalProductCost, financingCost, quantity, targetUtilities, totalQuotationCost) => {
+        // Calculo las utilidades deseadas de los parametros generales
+        // calculo el minutilitie que le corresponde a este producto por regla de 3 simple
+        let minUtilitie = (totalProductCost / totalQuotationCost) * targetUtilities.kitMinimun
+        let percentageUtilitie = targetUtilities.kitUtilitie / 100;
+        console.log("Utilidad por % Target: ", percentageUtilitie , " minima: ", minUtilitie);
+        const totalFinancingCost = parseFloat(financingCost /(1 - tax))
+        
+        // calculo utilidad por porjentaje
+        let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
+        console.log("Precio total por porcentaje: ", newNetProductCost, " - Ganancia: ", newNetProductCost * percentageUtilitie, " - Minimo: ", minUtilitie);
+
+        // Si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
+        if (newNetProductCost * percentageUtilitie < minUtilitie) {
+            // si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
+            console.log("El Precio total por porcentaje es menor al minimo, lo cambio por el minimo");
+            console.log("Utilidad por porcentaje: ", newNetProductCost * percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
+            newNetProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax))
+        }
+        console.log("Precio total Sin Financiación: ", newNetProductCost);
+
+        // paso el costo total a costo unitario
+        const unitSellingPrice = parseFloat((newNetProductCost + totalFinancingCost) / quantity);
+        return unitSellingPrice;
+    }
+
     const calculateUnitSellingPrice = (totalProductCost, financingCost, quantity) => {
         const targetUtility = utilitiesTable.find((utility) => totalProductCost < utility.upTo);
         let minUtilitie = targetUtility.productMinimun;
         let percentageUtilitie = targetUtility.productUtilitie / 100;
         const totalFinancingCost = parseFloat(financingCost /(1 - tax))
         console.log("Costo total de financiación: ", totalFinancingCost);
-        // Defino si es kit o no
-        if (quotationData.isKit) {
-            // Si es kit, la utilidad es por producto
-            console.log("Es un kit");
-            minUtilitie = targetUtility.kitMinimun;
-            percentageUtilitie = targetUtility.kitUtilitie / 100;
-        }
+        console.log("Costo total: ", totalProductCost)
+        console.log("Utilidad por % Target: ", percentageUtilitie, " minima: ", minUtilitie);
         // calculo utilidad por porjentaje
         let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
-        console.log("Costo total por porcentaje: ", newNetProductCost);
+        console.log("Precio total por porcentaje: ", newNetProductCost, " - Ganancia: ", newNetProductCost * percentageUtilitie, " - Minimo: ", minUtilitie);
+        // Si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
         if (newNetProductCost * percentageUtilitie < minUtilitie) {
             // si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
-            console.log("El costo total por porcentaje es menor al minimo, lo cambio por el minimo");
+            console.log("El Precio total por porcentaje es menor al minimo, lo cambio por el minimo");
             console.log("Utilidad por porcentaje: ", newNetProductCost * percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
             newNetProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax))
         }
-        console.log("Costo total Sin Financiación: ", newNetProductCost);
+        console.log("Precio total Sin Financiación: ", newNetProductCost);
 
         // paso el costo total a costo unitario
-        const unitSellingPrice = parseFloat((newNetProductCost + totalFinancingCost) / quantity).toFixed(6);
+        const unitSellingPrice = parseFloat((newNetProductCost + totalFinancingCost) / quantity);
         return unitSellingPrice;
     };
 
@@ -187,10 +279,22 @@ const ButtonCalculateQuotation = () => {
         });
     }
 
+    const testCalculateQuotation = () => {
+        if (quotationData.isKit) {
+            console.log("Calculando cotización KIT");
+            handleCalculateSetQuotation();
+        } else {
+            console.log("Calculando cotización NORMAL");
+            handleCalculateQuotation();
+        }
+    }
+    
+
     return (
         <TextButton
             text="Calcular y Guardar"
-            onClick={handleCalculateQuotation}
+            // onClick={handleCalculateQuotation}
+            onClick={testCalculateQuotation}
         />
     );
 }
