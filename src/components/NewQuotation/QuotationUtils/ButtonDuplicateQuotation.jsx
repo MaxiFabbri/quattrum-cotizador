@@ -4,7 +4,7 @@ import { ParametersContext } from "../../../context/ParametersContext.jsx";
 import { apiClient } from "../../../config/axiosConfig.js";
 import TextButton from "../../Utils/TextButton";
 
-const ButtonCalculateQuotation = () => {
+const ButtonDuplicateQuotation = () => {
     const { quotationData, updateProduct, updateProcessInProduct, updateQuotationData } = useContext(QuotationContext);
     const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
     const today = new Date().toISOString().split("T")[0];
@@ -80,13 +80,14 @@ const ButtonCalculateQuotation = () => {
                     supplierId: process.supplierId,
                     supplierPaymentMethodId: process.supplierPaymentMethodId,
                     daysToPayment: process.daysToPayment,
+                    currency: process.currency,
+                    adjustPercentage: process.adjustPercentage,
                     unitCost: process.unitCost,
                     fixedCost: process.fixedCost,
                     subTotalProcessCost: +process.subTotalProcessCost,
                 }
                 // guardo en la DB la información de Process
                 try {
-
                     const responseProcess = await apiClient.post('/processes/', processToSave);
                     // Actualizo el ID del proceso y el ID de Producto en el context
                     updateProcessInProduct({
@@ -115,4 +116,4 @@ const ButtonCalculateQuotation = () => {
     );
 }
 
-export default ButtonCalculateQuotation;
+export default ButtonDuplicateQuotation;
