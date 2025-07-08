@@ -3,6 +3,7 @@ import { apiClient } from "../../config/axiosConfig.js";
 import "./OneQuotationContainer.css"
 
 import { QuotationContext } from "../../context/QuotationContext";
+import { ParametersContext } from "../../context/ParametersContext.jsx";
 
 import DateField from "./InputComponents/DateField.jsx";
 import CurrencySelect from "./InputComponents/CurrencySelect.jsx";
@@ -18,11 +19,12 @@ import IconButton from "../Utils/IconButton.jsx";
 
 
 const NewQuotation = () => {
-
+    const { getDolarPrice } = useContext(ParametersContext);
     const { quotationData, updateQuotationData } = useContext(QuotationContext);
     const [quotationId, setQuotationId] = useState(null);
 
     useAddProductWithQuotation(quotationId);
+    getDolarPrice();
 
     const getPaymentMethodData = async (paymentId) => {
         try {

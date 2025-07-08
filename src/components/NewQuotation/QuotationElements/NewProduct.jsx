@@ -25,6 +25,7 @@ const NewProduct = ({productData}) => {
     // Actualizar el estado global al cambiar algun dato
     useEffect(() => {
         if(!isUpdated) {
+            console.log("Change in prodData: ", prodData);
             updateProduct(prodData, prodData.productId);
             setIsUpdated(true); // Cambiamos el estado a `true` para indicar que se ha actualizado
         }
@@ -32,18 +33,41 @@ const NewProduct = ({productData}) => {
 
     // Actualizar los valores cuando cambie quotationData.exchangeRate
     useEffect(() => {
+        const updatedProduct = {
+            ...prodData,
+            processes: prodData.processes.map((process) => {
+                if (process.currency === "Peso") {
+                    return {
+                        ...process,
+                        fixedCost: process.tempfixedCost / quotationData.exchangeRate,
+                        unitCost: process.tempunitCost / quotationData.exchangeRate
+                    };
+                }
+                return process;
+            })
+        }
+
         setProdData((prevData) => ({
             ...prevData,
-            tempfinancingCost: prevData.financingCost * quotationData.exchangeRate,
-            tempshipmentCost: prevData.shipmentCost * quotationData.exchangeRate,
-            tempotherCost: prevData.otherCost * quotationData.exchangeRate
+            financingCost: prevData.tempfinancingCost / quotationData.exchangeRate,
+            shipmentCost: prevData.tempshipmentCost / quotationData.exchangeRate,
+            otherCost: prevData.tempotherCost / quotationData.exchangeRate,
+            processes: prodData.processes.map((process) => {
+                if (process.currency === "Peso") {
+                    return {
+                        ...process,
+                        fixedCost: process.tempfixedCost / quotationData.exchangeRate,
+                        unitCost: process.tempunitCost / quotationData.exchangeRate
+                    };
+                }
+                return process;
+            })
         }))
         setIsUpdated(false);
     }, [quotationData.exchangeRate]);
 
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {
-        console.log("handleInputChange: ", e.target.name, e.target.value);
         const { name, value } = e.target;
         if (name.startsWith("temp")) {
             const convertedValue = +(value / quotationData.exchangeRate);

@@ -38,6 +38,7 @@ export const ParametersProvider = ({ children }) => {
         try {
             const response = await apiDolar.get();
             const newDolar = response.data.venta;
+            console.log("Dolar Price de la API: ", newDolar);
 
             if (newDolar !== dolarPrice) {
                 console.log("NewDolar: ", newDolar, " vs ", dolarPrice);
@@ -72,7 +73,8 @@ export const ParametersProvider = ({ children }) => {
                 paramMonthlyRate,
                 tax,
                 utilitiesTable,
-                dolarPrice
+                dolarPrice,
+                getDolarPrice
             }}
         >
             {children}

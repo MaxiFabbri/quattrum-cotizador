@@ -55,17 +55,6 @@ const NewProcess = ({ initialProcessData }) => {
         };
     }, [processData]);
 
-    // Actualizar los valores cuando cambie quotationData.exchangeRate
-    useEffect(() => {
-        var exchange = 1;
-        if (processData.currency === "Peso") {
-            exchange = quotationData.exchangeRate;
-        }
-        setNewTempUnitCost(processData.unitCost * exchange);
-        setNewTempFixedCost(processData.fixedCost * exchange);
-    }, [quotationData.exchangeRate]);
-
-
     useEffect(() => {
         var exchange = 1;
         if (processData.currency === "Peso") {

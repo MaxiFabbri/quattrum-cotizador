@@ -9,7 +9,7 @@ const QuotationHeader = () => {
                 <th>Moneda</th>
                 <th>Cambio</th>
                 <th>Estado</th>
-                <th>Kit</th>
+                <th>Kit/Set</th>
                 <th style={{ paddingRight: "20px"}}></th>
                 
             </tr>

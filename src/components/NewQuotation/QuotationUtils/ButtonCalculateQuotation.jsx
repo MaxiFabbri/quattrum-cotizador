@@ -95,7 +95,7 @@ const ButtonCalculateQuotation = () => {
                     +product.shipmentCost +
                     +product.otherCost
                 );
-            console.log("Costo financiero: ", product.financingCost);
+
             const unitSellingPrice = parseFloat(calculateUnitSellingPrice(totalProductCost, product.financingCost, product.quantity));
             const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
             updateProduct({
@@ -113,13 +113,10 @@ const ButtonCalculateQuotation = () => {
         
         // Calculo las utilidades deseadas de los parametros generales
         const targetUtilities = utilitiesTable.find((utility) => quotationTotalCost < utility.upTo);
-        console.log("Target Utility: ", targetUtilities);
         
         quotationData.products.map((product) => {
             // Calculo las utilidades deseadas de los parametros generales
-            console.log("Calculo la utilidad de: ", product);
             const productCost = productsTotalCost.find((el) => el.id === product.productId);
-            console.log("Costo del Producto encontrado: ", productCost.totalProductCost)
             const unitSellingPrice = calculateKitUniteSellingPrice(productCost.totalProductCost, product.financingCost, product.quantity, targetUtilities, quotationTotalCost);
             const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
             const newProductDescription = productCost.description;
@@ -145,7 +142,6 @@ const ButtonCalculateQuotation = () => {
         
         // calculo utilidad por porjentaje
         let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
-        console.log("Precio total por porcentaje: ", newNetProductCost, " - Ganancia: ", newNetProductCost * percentageUtilitie, " - Minimo: ", minUtilitie);
 
         // Si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
         if (newNetProductCost * percentageUtilitie < minUtilitie) {
@@ -154,7 +150,6 @@ const ButtonCalculateQuotation = () => {
             console.log("Utilidad por porcentaje: ", newNetProductCost * percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
             newNetProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax))
         }
-        console.log("Precio total Sin Financiación: ", newNetProductCost);
 
         // paso el costo total a costo unitario
         const unitSellingPrice = parseFloat((newNetProductCost + totalFinancingCost) / quantity);
@@ -166,20 +161,14 @@ const ButtonCalculateQuotation = () => {
         let minUtilitie = targetUtility.productMinimun;
         let percentageUtilitie = targetUtility.productUtilitie / 100;
         const totalFinancingCost = parseFloat(financingCost /(1 - tax))
-        console.log("Costo total de financiación: ", totalFinancingCost);
-        console.log("Costo total: ", totalProductCost)
-        console.log("Utilidad por % Target: ", percentageUtilitie, " minima: ", minUtilitie);
         // calculo utilidad por porjentaje
         let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
-        console.log("Precio total por porcentaje: ", newNetProductCost, " - Ganancia: ", newNetProductCost * percentageUtilitie, " - Minimo: ", minUtilitie);
         // Si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
         if (newNetProductCost * percentageUtilitie < minUtilitie) {
             // si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
-            console.log("El Precio total por porcentaje es menor al minimo, lo cambio por el minimo");
-            console.log("Utilidad por porcentaje: ", newNetProductCost * percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
+            console.log("Utilidad por porcentaje: ", newNetProductCost * percentageUtilitie," - ", percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
             newNetProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax))
         }
-        console.log("Precio total Sin Financiación: ", newNetProductCost);
 
         // paso el costo total a costo unitario
         const unitSellingPrice = parseFloat((newNetProductCost + totalFinancingCost) / quantity);

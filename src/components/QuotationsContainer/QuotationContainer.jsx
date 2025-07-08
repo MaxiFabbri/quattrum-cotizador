@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import "./QuotationsContainer.css";
 import { apiClient } from "../../config/axiosConfig.js";
 import { Link } from "react-router-dom";
@@ -12,6 +12,7 @@ const Quotations = () => {
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState(""); // Estado para el filtro de estado
+
 
     useEffect(() => {
         fetchQuotations();
@@ -74,7 +75,7 @@ const Quotations = () => {
                         <th>Fecha</th>
                         <th>Cliente</th>
                         <th>Moneda</th>
-                        <th>Kit</th>
+                        <th>Kit/Set</th>
                         <th>Cantidad</th>
                         <th>Producto</th>
                         <th>Precio Unitario</th>
