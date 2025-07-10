@@ -61,7 +61,7 @@ export const ParametersProvider = ({ children }) => {
 
     useEffect(() => {
         getGeneralParameters();
-    }, [isAuthenticated]); // Ejecutar al montar el componente
+    }, [isAuthenticated]);
 
     useEffect(() => {
         getDolarPrice();
