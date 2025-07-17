@@ -6,7 +6,7 @@ import ButtonDuplicateProduct from "../QuotationUtils/ButtonDuplicateProduct";
 
 
 const NewProduct = ({productData}) => {
-    const { quotationData, updateProduct, removeProduct } = useContext(QuotationContext);
+    const { quotationData, updateProduct, removeProduct, setIsSaved } = useContext(QuotationContext);
     const [prodData, setProdData] = useState(productData);
     const [isUpdated, setIsUpdated] = useState(true);
 
@@ -28,6 +28,7 @@ const NewProduct = ({productData}) => {
             console.log("Change in prodData: ", prodData);
             updateProduct(prodData, prodData.productId);
             setIsUpdated(true); // Cambiamos el estado a `true` para indicar que se ha actualizado
+            setIsSaved(false);
         }
     }, [isUpdated]);
 

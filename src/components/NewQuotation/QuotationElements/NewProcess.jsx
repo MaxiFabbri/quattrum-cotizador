@@ -8,7 +8,7 @@ import CurrencySelect from "../InputComponents/CurrencySelect.jsx";
 import IconButton from "../../Utils/IconButton";
 
 const NewProcess = ({ initialProcessData }) => {
-    const { updateProcessInProduct, removeProcessInProduct, quotationData } = useContext(QuotationContext);
+    const { updateProcessInProduct, removeProcessInProduct, quotationData, setIsSaved } = useContext(QuotationContext);
 
     const [processData, setProcessData] = useState(initialProcessData);
     const [newTempUnitCost, setNewTempUnitCost] = useState(processData.tempunitCost) || 0;
@@ -42,10 +42,13 @@ const NewProcess = ({ initialProcessData }) => {
     // Actualizar el estado global al cambiar `debouncedProdData`
     useEffect(() => {
         updateProcessInProduct(debouncedProcessData, debouncedProcessData.processId);
+        
     }, [debouncedProcessData]);
 
     // Debounce: Actualizar `debouncedProdData` después de un retraso
     useEffect(() => {
+        console.log("Change in processData ")
+        setIsSaved(false);
         // console.log("Change in processData: ", processData);
         const handler = setTimeout(() => {
             setDebouncedProcessData(processData);

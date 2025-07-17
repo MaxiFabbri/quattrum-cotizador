@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
 import { apiClient } from "../../config/axiosConfig.js";
 import "./OneQuotationContainer.css"
 
@@ -20,11 +20,15 @@ import IconButton from "../Utils/IconButton.jsx";
 
 const NewQuotation = () => {
     const { getDolarPrice } = useContext(ParametersContext);
-    const { quotationData, updateQuotationData } = useContext(QuotationContext);
+    const { quotationData, updateQuotationData, setIsSaved } = useContext(QuotationContext);
     const [quotationId, setQuotationId] = useState(null);
 
     useAddProductWithQuotation(quotationId);
     getDolarPrice();
+    useEffect(() => {
+        console.log("New Quotation Use Effect")
+        setIsSaved(false);
+    }, [quotationData]);
 
     const getPaymentMethodData = async (paymentId) => {
         try {
@@ -39,6 +43,7 @@ const NewQuotation = () => {
     };
 
     const handleCustomerUpdate = async (customer) => {
+        setIsSaved(false);
         console.log("Customer selected:", customer);
         const paymentMethodData = await getPaymentMethodData(customer.customerPaymentMethodId);
         updateQuotationData({
@@ -51,6 +56,7 @@ const NewQuotation = () => {
     };
 
     const handleCustomerPaymentMethodUpdate = (newCustomerPaymentMethod) => {
+        setIsSaved(false);
         console.log("Customer payment method updated:", newCustomerPaymentMethod);
         updateQuotationData({
             paymentMethodId: newCustomerPaymentMethod._id || "",

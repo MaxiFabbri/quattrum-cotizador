@@ -1,11 +1,12 @@
 import { useContext, useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { QuotationContext } from "../../../context/QuotationContext.jsx";
 import { ParametersContext } from "../../../context/ParametersContext.jsx";
 import { apiClient } from "../../../config/axiosConfig.js";
 import TextButton from "../../Utils/TextButton";
 
 const ButtonCalculateQuotation = () => {
-    const { quotationData, updateProduct, updateProcessInProduct } = useContext(QuotationContext);
+    const { quotationData, updateProduct, updateProcessInProduct, isSaved, setIsSaved } = useContext(QuotationContext);
     const { utilitiesTable, tax } = useContext(ParametersContext);
     const [isUpdated, setIsUpdated] = useState(false);
     let productsTotalCost = []
@@ -192,8 +193,17 @@ const ButtonCalculateQuotation = () => {
         }
         // Actualizo en la DB la información de Quotation en la BD
         try {
-            const responseQuote = await apiClient.put(`/quotations/${quotationId}`, quotationToSave);
+            const responseQuote = await toast.promise(
+                apiClient.put(`/quotations/${quotationId}`, quotationToSave),
+                {
+                pending: "Guardando cotización...",
+                success: "Cotización guardada correctamente",
+                error: "Error al guardar la cotización",
+                }
+                )
             console.log("Cotización guardada: ", responseQuote.data);
+
+            setIsSaved(true);
         } catch (error) {
             console.error("Error al guardar la cotización: ", error);
         }
@@ -269,6 +279,7 @@ const ButtonCalculateQuotation = () => {
     }
 
     const testCalculateQuotation = () => {
+        if (isSaved) return;
         if (quotationData.isKit) {
             console.log("Calculando cotización KIT");
             handleCalculateSetQuotation();
@@ -276,13 +287,15 @@ const ButtonCalculateQuotation = () => {
             console.log("Calculando cotización NORMAL");
             handleCalculateQuotation();
         }
+        setIsSaved(true)
+        console.log("Cotizacion Guardada, isSaved: ", isSaved);
     }
     
 
     return (
         <TextButton
-            text="Calcular y Guardar"
-            // onClick={handleCalculateQuotation}
+            text={isSaved ? "Guardado" : "Guardar"}
+            hide={isSaved}
             onClick={testCalculateQuotation}
         />
     );

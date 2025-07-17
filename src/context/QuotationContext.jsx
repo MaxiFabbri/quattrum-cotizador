@@ -7,7 +7,6 @@ export const QuotationContext = createContext();
 export const QuotationProvider = ({ children }) => {
 
 
-
     const initialQuotationDataState = {
         id: "",
         date: "",
@@ -26,6 +25,7 @@ export const QuotationProvider = ({ children }) => {
         products: [],
     };
 
+    const [isSaved, setIsSaved] = useState(true);
     const [quotationData, setQuotationData] = useState(initialQuotationDataState);
 
     const deleteProcessFromDb = async (processId) => {
@@ -60,6 +60,7 @@ export const QuotationProvider = ({ children }) => {
 
     // Función para agregar un producto al array de productos
     const addProduct = (prodData) => {
+        setIsSaved(false);
         console.log("adding product: ", prodData)
         setQuotationData((prevData) => ({
             ...prevData,
@@ -69,6 +70,7 @@ export const QuotationProvider = ({ children }) => {
 
     // Función para actualizar un producto específico
     const updateProduct = (updatedProduct, id) => {
+        console.log("updating product: ", isSaved)
         setQuotationData((prevData) => ({
             ...prevData,
             products: prevData.products.map((product) => {
@@ -83,6 +85,7 @@ export const QuotationProvider = ({ children }) => {
     };
 
     const removeProduct = (productId) => {
+        setIsSaved(false);
         quotationData.products.map((product) => {
             console.log("checking Product for removal: ", product)
             if (product.productId === productId && product.savedToDb) {
@@ -98,6 +101,8 @@ export const QuotationProvider = ({ children }) => {
 
     // Función para agregar un proceso a un producto específico
     const addProcessToProduct = (newProcess) => {
+        console.log("add Process")
+        setIsSaved(false);
         setQuotationData((prevData) => ({
             ...prevData,
             products: prevData.products.map((product) => {
@@ -109,6 +114,7 @@ export const QuotationProvider = ({ children }) => {
     };
 
     const updateProcessInProduct = (updatedProcess, procId) => {
+        // console.log("update Process ", isSaved)
         setQuotationData((prevData) => {
             const updatedProducts = prevData.products.map((product) => {
                 if (product.productId === updatedProcess.productId) {
@@ -133,6 +139,7 @@ export const QuotationProvider = ({ children }) => {
     };
     
     const removeProcessInProduct = (productId, processId) => {
+        setIsSaved(false);
         // Encuentra el producto y proceso específicos
         const updatedProducts = quotationData.products.map((product) => {
             if (product.productId === productId) {
@@ -162,12 +169,12 @@ export const QuotationProvider = ({ children }) => {
         }));
     };
 
-
-
     return (
         <QuotationContext.Provider
             value={{
                 quotationData,
+                isSaved,
+                setIsSaved,
                 clearQuotationData,
                 updateQuotationData,
                 addProduct,

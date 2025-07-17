@@ -34,13 +34,13 @@ export const ParametersProvider = ({ children }) => {
 
     const getDolarPrice = async () => {
         if (!isParamsLoaded) return; // Evita ejecutar si `getGeneralParameters` no ha finalizado
-
+        if (!isAuthenticated) return; // Evita ejecutar si no está autenticado
         try {
             const response = await apiDolar.get();
             const newDolar = response.data.venta;
             console.log("Dolar Price de la API: ", newDolar);
 
-            if (newDolar !== dolarPrice) {
+            if (newDolar !== dolarPrice ) {
                 console.log("NewDolar: ", newDolar, " vs ", dolarPrice);
                 updateDolarPrice(newDolar);
             }
