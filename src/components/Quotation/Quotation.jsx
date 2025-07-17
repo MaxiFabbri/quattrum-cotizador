@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import IconButton from "../Utils/IconButton.jsx";
 import { useNavigate } from "react-router-dom";
 import { apiClient } from "../../config/axiosConfig.js";
+import { QuotationContext } from "../../context/QuotationContext.jsx";
 import "./Quotation.css";
 
 const Quotation = ({ quote, onDelete }) => {
     const navigate = useNavigate(); // Hook para la navegación
+    const {setIsSaved } = useContext(QuotationContext);
     const [isProductsLoaded, setIsProductsLoaded] = useState(false); 
     const [products, setProducts] = useState([]); // Estado para los productos
 
@@ -27,6 +29,7 @@ const Quotation = ({ quote, onDelete }) => {
 
     // Manejo de clic en la fila
     const handleRowClick = () => {
+        setIsSaved(true);
         navigate(`/detailed-quotation/${quote._id}`);
     };
 

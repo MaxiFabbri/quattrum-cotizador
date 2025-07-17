@@ -27,8 +27,7 @@ const NewProduct = ({productData}) => {
         if(!isUpdated) {
             console.log("Change in prodData: ", prodData);
             updateProduct(prodData, prodData.productId);
-            setIsUpdated(true); // Cambiamos el estado a `true` para indicar que se ha actualizado
-            setIsSaved(false);
+            setIsUpdated(true);
         }
     }, [isUpdated]);
 
@@ -69,6 +68,7 @@ const NewProduct = ({productData}) => {
 
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {
+        setIsSaved(false)
         const { name, value } = e.target;
         if (name.startsWith("temp")) {
             const convertedValue = +(value / quotationData.exchangeRate);

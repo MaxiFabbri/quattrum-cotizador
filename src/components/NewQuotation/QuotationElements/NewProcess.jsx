@@ -47,9 +47,6 @@ const NewProcess = ({ initialProcessData }) => {
 
     // Debounce: Actualizar `debouncedProdData` después de un retraso
     useEffect(() => {
-        console.log("Change in processData ")
-        setIsSaved(false);
-        // console.log("Change in processData: ", processData);
         const handler = setTimeout(() => {
             setDebouncedProcessData(processData);
         }, 300);
@@ -82,6 +79,7 @@ const NewProcess = ({ initialProcessData }) => {
         }
     };
     const handleCurrencyChange = (e) =>{
+        setIsSaved(false)
         setNewTempFixedCost(0)
         setNewTempUnitCost(0)
         setProcessData((prevData) => ({
@@ -95,6 +93,8 @@ const NewProcess = ({ initialProcessData }) => {
     }
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {
+        console.log("handleInputChange");
+        setIsSaved(false)
         const { name, value } = e.target;
         setProcessData((prevData) => ({
             ...prevData,
@@ -103,6 +103,7 @@ const NewProcess = ({ initialProcessData }) => {
     };
 
     const handleSupplierUpdate = async (supplier) => {
+        setIsSaved(false)
         const paymentMethodData = await getPaymentMethodData(supplier.supplierPaymentMethodId);
         const updatedData = {
             ...processData,
@@ -118,7 +119,7 @@ const NewProcess = ({ initialProcessData }) => {
     }
 
     const handleSupplierPaymentMethodUpdate = async (supplierPaymentMethod) => {
-        console.log("Supplier Payment Method en handle supplier payment method update: ", supplierPaymentMethod);
+        setIsSaved(false)
         const updatedData = {
             ...processData,            
             supplierPaymentMethodId: supplierPaymentMethod._id || "",
@@ -135,7 +136,6 @@ const NewProcess = ({ initialProcessData }) => {
         removeProcessInProduct(processData.productId, processData.processId);
     };
 
-    // console.log("processData: ", processData);
     return (
         <>
             <td>
@@ -170,8 +170,11 @@ const NewProcess = ({ initialProcessData }) => {
                     placeholder="$ Unit."
                     value={newTempUnitCost}
                     onClick={(e) => e.target.select()}
-                    onInput={e => setNewTempUnitCost(Number(e.target.value))}
-
+                    onInput={e => {
+                        setIsSaved(false)
+                        setNewTempUnitCost(Number(e.target.value))
+                        }
+                    }
                 />
             </td>
             <td>
@@ -195,7 +198,11 @@ const NewProcess = ({ initialProcessData }) => {
                     placeholder="Costo Fijo"
                     value={newTempFixedCost}
                     onClick={(e) => e.target.select()}
-                    onInput={e => setNewTempFixedCost(Number(e.target.value))}
+                    onInput={e => {
+                        setIsSaved(false)
+                        setNewTempFixedCost(Number(e.target.value))
+                        }
+                    }
                 />
             </td>
             <td>

@@ -5,8 +5,6 @@ import { ParametersContext } from "../../../context/ParametersContext.jsx";
 import { apiClient } from "../../../config/axiosConfig.js";
 import TextButton from "../../Utils/TextButton";
 
-// cambio de prueba
-
 const ButtonCalculateQuotation = () => {
     const { quotationData, updateProduct, updateProcessInProduct, isSaved, setIsSaved } = useContext(QuotationContext);
     const { utilitiesTable, tax } = useContext(ParametersContext);
@@ -52,14 +50,14 @@ const ButtonCalculateQuotation = () => {
                     +product.shipmentCost +
                     +product.otherCost
                 );
-            
+
             // console.log("Costo total del Producto: ", totalProductCost, " y Financiero ", product.financingCost);
             // Sumo el costo del producto al costo de la cotización
             totalQuotationCost += totalProductCost;
             console.log("Total Quotation Cost: ", totalQuotationCost);
             console.log("Total Product Cost: ", totalProductCost);
             console.log("Product ID: ", product.productId);
-            productsTotalCost.push({id:product.productId, totalProductCost: totalProductCost, description: newProductDescription});
+            productsTotalCost.push({ id: product.productId, totalProductCost: totalProductCost, description: newProductDescription });
             // Actualizo el producto en el context
             updateProduct({
                 productId: product.productId,
@@ -112,11 +110,11 @@ const ButtonCalculateQuotation = () => {
     };
 
     const handleCalculateSetQuotation = () => {
-        const  quotationTotalCost = getQuotationTotalCost();
-        
+        const quotationTotalCost = getQuotationTotalCost();
+
         // Calculo las utilidades deseadas de los parametros generales
         const targetUtilities = utilitiesTable.find((utility) => quotationTotalCost < utility.upTo);
-        
+
         quotationData.products.map((product) => {
             // Calculo las utilidades deseadas de los parametros generales
             const productCost = productsTotalCost.find((el) => el.id === product.productId);
@@ -140,9 +138,9 @@ const ButtonCalculateQuotation = () => {
         // calculo el minutilitie que le corresponde a este producto por regla de 3 simple
         let minUtilitie = (totalProductCost / totalQuotationCost) * targetUtilities.kitMinimun
         let percentageUtilitie = targetUtilities.kitUtilitie / 100;
-        console.log("Utilidad por % Target: ", percentageUtilitie , " minima: ", minUtilitie);
-        const totalFinancingCost = parseFloat(financingCost /(1 - tax))
-        
+        console.log("Utilidad por % Target: ", percentageUtilitie, " minima: ", minUtilitie);
+        const totalFinancingCost = parseFloat(financingCost / (1 - tax))
+
         // calculo utilidad por porjentaje
         let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
 
@@ -163,13 +161,13 @@ const ButtonCalculateQuotation = () => {
         const targetUtility = utilitiesTable.find((utility) => totalProductCost < utility.upTo);
         let minUtilitie = targetUtility.productMinimun;
         let percentageUtilitie = targetUtility.productUtilitie / 100;
-        const totalFinancingCost = parseFloat(financingCost /(1 - tax))
+        const totalFinancingCost = parseFloat(financingCost / (1 - tax))
         // calculo utilidad por porjentaje
         let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
         // Si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
         if (newNetProductCost * percentageUtilitie < minUtilitie) {
             // si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
-            console.log("Utilidad por porcentaje: ", newNetProductCost * percentageUtilitie," - ", percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
+            console.log("Utilidad por porcentaje: ", newNetProductCost * percentageUtilitie, " - ", percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
             newNetProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax))
         }
 
@@ -198,13 +196,15 @@ const ButtonCalculateQuotation = () => {
             const responseQuote = await toast.promise(
                 apiClient.put(`/quotations/${quotationId}`, quotationToSave),
                 {
-                pending: "Guardando cotización...",
-                success: "Cotización guardada correctamente",
-                error: "Error al guardar la cotización",
+                    pending: "Guardando cotización...",
+                    success: "Cotización guardada correctamente",
+                    error: "Error al guardar la cotización",
+                },
+                {
+                    autoClose: 800,
                 }
-                )
+            )
             console.log("Cotización guardada: ", responseQuote.data);
-
             setIsSaved(true);
         } catch (error) {
             console.error("Error al guardar la cotización: ", error);
@@ -290,13 +290,12 @@ const ButtonCalculateQuotation = () => {
             handleCalculateQuotation();
         }
         setIsSaved(true)
-        console.log("Cotizacion Guardada, isSaved: ", isSaved);
     }
-    
+
 
     return (
         <TextButton
-            text={isSaved ? "Guardado" : "Guardar"}
+            text={isSaved ? "Guardado" : "Calcular y Guardar"}
             hide={isSaved}
             onClick={testCalculateQuotation}
         />

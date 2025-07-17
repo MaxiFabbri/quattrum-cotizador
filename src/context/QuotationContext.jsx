@@ -81,7 +81,6 @@ export const QuotationProvider = ({ children }) => {
                 }
             }),
         }));
-        // console.log("Producto actualizado en quotationData: ", updatedProduct, id);
     };
 
     const removeProduct = (productId) => {

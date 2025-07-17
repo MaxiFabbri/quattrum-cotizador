@@ -25,10 +25,6 @@ const NewQuotation = () => {
 
     useAddProductWithQuotation(quotationId);
     getDolarPrice();
-    useEffect(() => {
-        console.log("New Quotation Use Effect")
-        setIsSaved(false);
-    }, [quotationData]);
 
     const getPaymentMethodData = async (paymentId) => {
         try {
@@ -80,9 +76,14 @@ const NewQuotation = () => {
         }
     };
 
+    const handleChange = (updates) => {
+        updateQuotationData(updates);
+        setIsSaved(false);
+      };
+
     return (
         <tr key={quotationData.id + "-Test"}>
-            <DateField value={quotationData.date} onChange={(e) => updateQuotationData({ date: e.target.value })} />
+            <DateField value={quotationData.date} onChange={(e) => handleChange({ date: e.target.value })} />
             <td>
                 <SelectCustomer
                     defaultCustomer={quotationData.customerName || ""}
@@ -94,11 +95,11 @@ const NewQuotation = () => {
                     onSelectCustomerPayMethod={handleCustomerPaymentMethodUpdate}
                 />
             </td>
-            <MonthlyRateInput value={quotationData.monthlyRate} onChange={(e) => updateQuotationData({ monthlyRate: e.target.value })} />
-            <CurrencySelect value={quotationData.currency} onChange={(e) => updateQuotationData({ currency: e.target.value })} />
-            <ExchangeRateInput value={quotationData.exchangeRate} onChange={(e) => updateQuotationData({ exchangeRate: e.target.value })} />
-            <QuoteStatusSelect value={quotationData.quoteStatus} onChange={(e) => updateQuotationData({ ...quotationData, quoteStatus: e.target.value })} />
-            <IsKitCheckbox checked={quotationData.isKit} onChange={(e) => updateQuotationData({ isKit: e.target.checked })} />
+            <MonthlyRateInput value={quotationData.monthlyRate} onChange={(e) => handleChange({ monthlyRate: e.target.value })} />
+            <CurrencySelect value={quotationData.currency} onChange={(e) => handleChange({ currency: e.target.value })} />
+            <ExchangeRateInput value={quotationData.exchangeRate} onChange={(e) => handleChange({ exchangeRate: e.target.value })} />
+            <QuoteStatusSelect value={quotationData.quoteStatus} onChange={(e) => handleChange({ ...quotationData, quoteStatus: e.target.value })} />
+            <IsKitCheckbox checked={quotationData.isKit} onChange={(e) => handleChange({ isKit: e.target.checked })} />
             
             <td>
                 {quotationData.id === '' ? (
