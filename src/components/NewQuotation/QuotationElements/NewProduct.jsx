@@ -130,9 +130,10 @@ const NewProduct = ({productData}) => {
                     className="input-number"
                     type="number"
                     name="tempfinancingCost"
-                    value={prodData.tempfinancingCost}
-                    onClick={(e) => e.target.select()}
-                    onInput={handleInputChange}
+                    value={prodData.financingCost}
+                    disabled
+                    // onClick={(e) => e.target.select()}
+                    // onInput={handleInputChange}
                 />
             </td>
             <td>

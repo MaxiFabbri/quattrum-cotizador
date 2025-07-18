@@ -79,7 +79,7 @@ const NewQuotation = () => {
     const handleChange = (updates) => {
         updateQuotationData(updates);
         setIsSaved(false);
-      };
+    };
 
     return (
         <tr key={quotationData.id + "-Test"}>

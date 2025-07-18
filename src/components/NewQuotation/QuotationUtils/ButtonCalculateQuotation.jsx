@@ -69,10 +69,14 @@ const ButtonCalculateQuotation = () => {
     };
 
     const handleCalculateQuotation = () => {
+        const daysToCollect = quotationData.paymentDaysToCollect
         quotationData.products.map((product) => {
             var totalProductCost = 0;
+            var newFinancingCost = 0;
             var newProductDescription = ""
             product.processes = product.processes.map((process) => {
+                // Calculo el costo financiero del proceso
+                const monthsToFinance = process.daysToPayment - daysToCollect;
                 // Calculo el coeficiente de ajuste
                 const adjust = +(1 + (Number(process.adjustPercentage) || 0) / 100)
                 const newSubtotalProcessCost = +(((process.unitCost * product.quantity) * adjust) + process.fixedCost)
@@ -108,6 +112,25 @@ const ButtonCalculateQuotation = () => {
         });
         setIsUpdated(true);
     };
+    const calculateUnitSellingPrice = (totalProductCost, financingCost, quantity) => {
+        const targetUtility = utilitiesTable.find((utility) => totalProductCost < utility.upTo);
+        let minUtilitie = targetUtility.productMinimun;
+        let percentageUtilitie = targetUtility.productUtilitie / 100;
+        const totalFinancingCost = parseFloat(financingCost / (1 - tax))
+        // calculo utilidad por porjentaje
+        let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
+        // Si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
+        if (newNetProductCost * percentageUtilitie < minUtilitie) {
+            // si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
+            console.log("Utilidad por porcentaje: ", newNetProductCost * percentageUtilitie, " - ", percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
+            newNetProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax))
+        }
+
+        // paso el costo total a costo unitario
+        const unitSellingPrice = parseFloat((newNetProductCost + totalFinancingCost) / quantity);
+        return unitSellingPrice;
+    };
+
 
     const handleCalculateSetQuotation = () => {
         const quotationTotalCost = getQuotationTotalCost();
@@ -132,7 +155,6 @@ const ButtonCalculateQuotation = () => {
         })
         setIsUpdated(true);
     };
-
     const calculateKitUniteSellingPrice = (totalProductCost, financingCost, quantity, targetUtilities, totalQuotationCost) => {
         // Calculo las utilidades deseadas de los parametros generales
         // calculo el minutilitie que le corresponde a este producto por regla de 3 simple
@@ -157,24 +179,6 @@ const ButtonCalculateQuotation = () => {
         return unitSellingPrice;
     }
 
-    const calculateUnitSellingPrice = (totalProductCost, financingCost, quantity) => {
-        const targetUtility = utilitiesTable.find((utility) => totalProductCost < utility.upTo);
-        let minUtilitie = targetUtility.productMinimun;
-        let percentageUtilitie = targetUtility.productUtilitie / 100;
-        const totalFinancingCost = parseFloat(financingCost / (1 - tax))
-        // calculo utilidad por porjentaje
-        let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
-        // Si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
-        if (newNetProductCost * percentageUtilitie < minUtilitie) {
-            // si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
-            console.log("Utilidad por porcentaje: ", newNetProductCost * percentageUtilitie, " - ", percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
-            newNetProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax))
-        }
-
-        // paso el costo total a costo unitario
-        const unitSellingPrice = parseFloat((newNetProductCost + totalFinancingCost) / quantity);
-        return unitSellingPrice;
-    };
 
     const saveCalculatedQuotation = async () => {
         console.log("Quotation to save: ", quotationData);
@@ -280,7 +284,7 @@ const ButtonCalculateQuotation = () => {
         });
     }
 
-    const testCalculateQuotation = () => {
+    const calculateQuotation = () => {
         if (isSaved) return;
         if (quotationData.isKit) {
             console.log("Calculando cotización KIT");
@@ -297,7 +301,7 @@ const ButtonCalculateQuotation = () => {
         <TextButton
             text={isSaved ? "Guardado" : "Calcular y Guardar"}
             hide={isSaved}
-            onClick={testCalculateQuotation}
+            onClick={calculateQuotation}
         />
     );
 }
