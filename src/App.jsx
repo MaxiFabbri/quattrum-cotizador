@@ -9,6 +9,8 @@ import Navbar from './components/Navbar/Navbar.jsx';
 import NewQuotationContainer from "./components/NewQuotation/NewQuotationContainer";
 import DetailedQuotationContainer from './components/NewQuotation/DetailedQuotationContainer.jsx';
 import CustomersContainer from './components/Customers/CustomersContainer.jsx';
+import CustomerPaymentList from './components/PaymentMethods/CustomerPaymentsList.jsx';
+import CustomerPaymentDetail from './components/PaymentMethods/CustomerPaymentDetail.jsx';
 import EditCustomer from './components/Customers/EditCustomer.jsx';
 import UsersList from './components/Users/UsersList.jsx';
 import EditUserForm from './components/Users/EditUserForm.jsx';
@@ -35,6 +37,8 @@ function App() {
                 <Route path="/" element={<Quotations />} /> {/* Página principal */}
                 <Route path="/customers" element={<CustomersContainer />} /> {/* Página de Clientes */}
                 <Route path="/customers/edit/:id" element={<EditCustomer />} />
+                <Route path="/customers-payments" element={<CustomerPaymentList/>} /> {/* Página de Formas de pago de Clientes */}
+                <Route path="/customers-payments/:id" element={<CustomerPaymentDetail />} /> {/* Página de Editar o Agregar Forma de pago de Cliente */}
                 <Route path="/suppliers" element={<SupplierContainer />} /> {/* Página de Proveedores */}
                 <Route path="/suppliers/edit/:id" element={<EditSupplier />} /> {/* Página de Proveedor */}       
                 <Route path="/new-quotation" element={<NewQuotationContainer />} /> {/* Página de Nueva Cotización */}

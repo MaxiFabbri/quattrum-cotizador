@@ -1,0 +1,20 @@
+h2 {
+    text-align: center;
+}
+ul {
+    margin: auto;
+    align-content: center;
+    width: 60%;
+}
+h3 {
+    text-align: center;
+}
+
+li {
+    text-align: center;
+    list-style-type: none;
+    margin: 5px;
+    /* padding: 5px; */
+    /* border-bottom: 1px solid #ccc; */
+    font-size: 1.2em;
+}
