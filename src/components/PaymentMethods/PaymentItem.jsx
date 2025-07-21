@@ -1,40 +1,32 @@
 import { useState, useEffect, useContext, use } from "react";
 import { apiClient } from "../../config/axiosConfig";	
 
-import IconButton from "../../Utils/IconButton";
+import IconButton from "../Utils/IconButton.jsx";
 
-const PaymentItem = () => {
-
+const PaymentItem = ({item, handleDelete, handleChange}) => {
+    
     return (
-        <>
+        <tr id={item.id} key={item.id}>
             <td>
                 <IconButton
                     icon="/delete.png"
                     title="Eliminar Item"
-                    onClick={() => console.log("Eliminar Item")}
+                    onClick={() => handleDelete(item.id)}
                 />
             </td>
             <td>
-                <h4>
-                    Porcentaje
-                </h4>
+                <input name="percentage" type="number" value={item.percentage} onChange={(el) => handleChange(el)}/>
             </td>
             <td>
-                <h4>
-                    Anticipo
-                </h4>
+                <input name="description" type="string" value={item.description} onChange={(el) => handleChange(el)} />
             </td>
             <td>
-                <h4>
-                    Nombre del Método de Pago
-                </h4>
+                <input name="days" type="number" value={item.days} onChange={(el) => handleChange(el)} />
             </td>
             <td>
-                <h4>
-                    Dias
-                </h4>
+                <input type="checkbox" name="downpayment" id="downpayment" checked={item.downpayment} onChange={(el) => handleChange(el)} />
             </td>
-        </>
+        </tr>
     )
 }
 export default PaymentItem;

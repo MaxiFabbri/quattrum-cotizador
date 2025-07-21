@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext, use } from "react";
 import { useNavigate } from "react-router-dom";
+import IconButton from "../Utils/IconButton.jsx";
 import { apiClient } from "../../config/axiosConfig";
 import CustomerPaymentDetail from "./CustomerPaymentDetail";
 import "./PaymentMethods.css"
@@ -31,32 +32,46 @@ const CustomerPaymentList = () => {
         navigate(`/customers-payments/${id}`);
     };
 
+    const handleDeletePayment = async (id) => {
+        if (window.confirm("¿Estás seguro de que deseas eliminar esta forma de cobro?")) {
+            setLoading(true)
+            try {
+                await apiClient.delete(`/customer-payment-methods/${id}`);
+            } catch (error) {
+                console.error("Error al eliminar la forma de cobro:", error);
+            }
+        }
+    };
+
     return (
         <div>
             <h2>Formas de Cobro a Clientes</h2>
-            <div>
-                <ul>
+            <table className="payment-table">
+                <tbody>
                     {loading ? (
-                        <li>Cargando Formas de Cobro...</li>
+                        <td>Cargando Formas de Cobro...</td>
                     ) : error ? (
-                        <li>
-                            {error}
-                        </li>
+                        <td>{error}</td>
                     ) : customerPaymentsMethods.length > 0 ? (
                         customerPaymentsMethods.map((payment) => (
-                            <li
-                                key={payment._id}
-                                onClick={() => handlePaymentClick(payment._id)}
-                            >
-                                {payment.customer_payment_description}
-                            </li>
+                            <tr key={payment._id} className="payment-element" >
+                                <td>
+                                    <IconButton
+                                        icon="/delete.png"
+                                        title="Eliminar Item"
+                                        onClick={() => handleDeletePayment(payment._id)}
+                                    />
+                                </td>
+                                <td onClick={() => handlePaymentClick(payment._id)} style={{ cursor: 'pointer' }}>    
+                                    {payment.customer_payment_description}
+                                </td>
+                            </tr>
                         ))
                     ) : (
-                        <li>No se encontraron Formas de Cobro.</li>
+                        <td>No se encontraron Formas de Cobro.</td>
                     )}
-
-                </ul>
-            </div>
+                </tbody>
+            </table>
         </div>
     );
 }
