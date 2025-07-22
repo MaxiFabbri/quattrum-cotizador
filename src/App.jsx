@@ -11,6 +11,8 @@ import DetailedQuotationContainer from './components/NewQuotation/DetailedQuotat
 import CustomersContainer from './components/Customers/CustomersContainer.jsx';
 import CustomerPaymentList from './components/PaymentMethods/CustomerPaymentsList.jsx';
 import CustomerPaymentDetail from './components/PaymentMethods/CustomerPaymentDetail.jsx';
+import SupplierPaymentList from './components/PaymentMethods/SupplierPaymentList.jsx';
+import SupplierPaymentDetail from './components/PaymentMethods/SupplierPaymentDetail.jsx';
 import EditCustomer from './components/Customers/EditCustomer.jsx';
 import UsersList from './components/Users/UsersList.jsx';
 import EditUserForm from './components/Users/EditUserForm.jsx';
@@ -40,7 +42,9 @@ function App() {
                 <Route path="/customers-payments" element={<CustomerPaymentList/>} /> {/* Página de Formas de pago de Clientes */}
                 <Route path="/customers-payments/:id" element={<CustomerPaymentDetail />} /> {/* Página de Editar o Agregar Forma de pago de Cliente */}
                 <Route path="/suppliers" element={<SupplierContainer />} /> {/* Página de Proveedores */}
-                <Route path="/suppliers/edit/:id" element={<EditSupplier />} /> {/* Página de Proveedor */}       
+                <Route path="/suppliers/edit/:id" element={<EditSupplier />} /> {/* Página de Proveedor */}
+                <Route path="/suppliers-payments" element={<SupplierPaymentList/>} /> {/* Página de Formas de pago de Proveedores */}
+                <Route path="/suppliers-payments/:id" element={<SupplierPaymentDetail />} /> {/* Página de Editar o Agregar Forma de pago de Proveedor     */}
                 <Route path="/new-quotation" element={<NewQuotationContainer />} /> {/* Página de Nueva Cotización */}
                 <Route path="/users/" element={<UsersList />} /> {/* Página de Usuarios */}
                 <Route path="/users/new" element={<CreateUserForm />} /> {/* Página de Crear Usuario */}

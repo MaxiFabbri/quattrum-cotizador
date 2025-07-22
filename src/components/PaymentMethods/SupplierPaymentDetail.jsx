@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { toast } from "react-toastify";
 import TextButton from "../Utils/TextButton.jsx";
 
-const CustomerPaymentDetail = () => {
+const supplierPaymentDetail = () => {
     const { id } = useParams()
     const navigate = useNavigate();
 
@@ -22,8 +22,8 @@ const CustomerPaymentDetail = () => {
     useEffect(() => {
         if(id==="new") {
             setPayment({
-                customer_payment_description: '',
-                customer_payment_details: []
+                supplier_payment_description: '',
+                supplier_payment_details: []
             });
             setLoading(false);
         } else {
@@ -38,13 +38,13 @@ const CustomerPaymentDetail = () => {
 
     const fetchPayment = async (id) => {
         try {
-            const response = await apiClient.get(`/customer-payment-methods/${id}`);
-            setTotalPercentage(response.data.response.customer_payment_details.reduce((acc, item) => acc + item.percentage, 0));
+            const response = await apiClient.get(`/supplier-payment-methods/${id}`);
+            setTotalPercentage(response.data.response.supplier_payment_details.reduce((acc, item) => acc + item.percentage, 0));
             setPayment(response.data.response);
-            setPaymentItems(response.data.response.customer_payment_details);
-            setPaymentDescription(response.data.response.customer_payment_description);
+            setPaymentItems(response.data.response.supplier_payment_details);
+            setPaymentDescription(response.data.response.supplier_payment_description);
         } catch (error) {
-            setError("Error al cargar las cotizaciones");
+            setError("Error al cargar las Formas de pago");
             console.error(error);
         } finally {
             setLoading(false);
@@ -92,18 +92,18 @@ const CustomerPaymentDetail = () => {
 
     const handleSubmit = async () => {
         const paymentToSave = {
-            customer_payment_description: paymentDescription,
-            customer_payment_details: paymentItems
+            supplier_payment_description: paymentDescription,
+            supplier_payment_details: paymentItems
         };
 
         try {
             if (id === "new") {
                 const response = await toast.promise(
-                    apiClient.post("/customer-payment-methods", paymentToSave),
+                    apiClient.post("/supplier-payment-methods", paymentToSave),
                     {
-                        pending: "Guardando la forma de cobro...",
-                        success: "Forma de cobro guardada correctamente",
-                        error: "Error al guardar la forma de cobro",
+                        pending: "Guardando la forma de pago...",
+                        success: "Forma de pago guardada correctamente",
+                        error: "Error al guardar la forma de pago",
                     },
                     {
                         autoClose: 800,
@@ -111,11 +111,11 @@ const CustomerPaymentDetail = () => {
                 )
             } else {
                 const response = await toast.promise(
-                    apiClient.put(`/customer-payment-methods/${id}`, paymentToSave),
+                    apiClient.put(`/supplier-payment-methods/${id}`, paymentToSave),
                     {
-                        pending: "Actualizando la forma de cobro...",
-                        success: "Forma de cobro actualizada correctamente",
-                        error: "Error al actualizar la forma de cobro",
+                        pending: "Actualizando la forma de pago...",
+                        success: "Forma de pago actualizada correctamente",
+                        error: "Error al actualizar la forma de pago",
                     },
                     {
                         autoClose: 800,
@@ -124,9 +124,9 @@ const CustomerPaymentDetail = () => {
             }
             
         } catch (error) {
-            toast.error("Error al guardar la cotización");
+            toast.error("Error al guardar la Forma de pago");
         }
-        navigate("/customers-payments");
+        navigate("/suppliers-payments");
     }
 
     return (
@@ -204,7 +204,7 @@ const CustomerPaymentDetail = () => {
                                 <td>
                                     <TextButton
                                         text="Cancelar"
-                                        onClick={() => navigate("/customers-payments")}
+                                        onClick={() => navigate("/suppliers-payments")}
                                     />
                                 </td>
                             </tr>
@@ -218,4 +218,4 @@ const CustomerPaymentDetail = () => {
     );
 }
 
-export default CustomerPaymentDetail;
+export default supplierPaymentDetail;

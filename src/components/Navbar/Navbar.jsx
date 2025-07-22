@@ -37,7 +37,7 @@ const Navbar = () => {
                     <Link to="/suppliers">
                         <TextButton text="Proveedores" />
                     </Link>
-                    <Link to="/suppliers">
+                    <Link to="/suppliers-payments">
                         <TextButton text="Formas de Pago" />
                     </Link>
                     {userRole === 'ADMIN' && (
