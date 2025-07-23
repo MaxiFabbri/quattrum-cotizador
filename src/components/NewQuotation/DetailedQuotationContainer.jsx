@@ -97,6 +97,7 @@ const DetailedQuotationContainer = (quote) => {
             customerId: newData.customerId._id,
             customerName: newData.customerId.name,
             paymentMethodName: newData.customerId.customerPaymentMethodId.customer_payment_description,
+            paymentMethodId: newData.customerId.customerPaymentMethodId._id,
             paymentDaysToCollect: newData.customerId.customerPaymentMethodId.days_to_collect
         }
 

@@ -56,7 +56,7 @@ const NewProcess = ({ initialProcessData }) => {
     }, [processData]);
 
     useEffect(() => {
-        var exchange = 1;
+        let exchange = 1;
         if (processData.currency === "Peso") {
             exchange = quotationData.exchangeRate;
         }
