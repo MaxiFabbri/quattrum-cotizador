@@ -70,7 +70,6 @@ export const QuotationProvider = ({ children }) => {
 
     // Función para actualizar un producto específico
     const updateProduct = (updatedProduct, id) => {
-        console.log("updating product: ", isSaved)
         setQuotationData((prevData) => ({
             ...prevData,
             products: prevData.products.map((product) => {

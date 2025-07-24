@@ -130,7 +130,7 @@ const NewProduct = ({productData}) => {
                     className="input-number"
                     type="number"
                     name="tempfinancingCost"
-                    value={prodData.financingCost}
+                    value={(prodData.financingCost * quotationData.exchangeRate).toFixed(0)}
                     disabled
                     // onClick={(e) => e.target.select()}
                     // onInput={handleInputChange}

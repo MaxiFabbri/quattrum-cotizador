@@ -90,15 +90,15 @@ const DetailedQuotationContainer = (quote) => {
     const getQuotationDataFromDb = async (id) => {
         const responseQuotation = await apiClient.get(`/quotations/populated/${id}`)
         let newData = responseQuotation.data.response
+        console.log("Quotation data from DB: ", newData);
         newData = {
             ...newData,
             id: newData._id,
             date: formatDate(newData.date),
             customerId: newData.customerId._id,
             customerName: newData.customerId.name,
-            paymentMethodName: newData.customerId.customerPaymentMethodId.customer_payment_description,
-            paymentMethodId: newData.customerId.customerPaymentMethodId._id,
-            paymentDaysToCollect: newData.customerId.customerPaymentMethodId.days_to_collect
+            paymentMethodName: newData.paymentMethodId.customer_payment_description,
+            paymentMethodId: newData.paymentMethodId._id,
         }
 
         // agrego los Productos

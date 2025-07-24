@@ -57,7 +57,7 @@ const NewQuotation = () => {
         updateQuotationData({
             paymentMethodId: newCustomerPaymentMethod._id || "",
             paymentMethodName: newCustomerPaymentMethod.customer_payment_description || "",
-            paymentDaysToCollect: newCustomerPaymentMethod.days_to_collect || 0,
+            // paymentDaysToCollect: newCustomerPaymentMethod.days_to_collect || 0,
         });
     };
 

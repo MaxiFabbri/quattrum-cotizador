@@ -42,7 +42,6 @@ const NewProcess = ({ initialProcessData }) => {
     // Actualizar el estado global al cambiar `debouncedProdData`
     useEffect(() => {
         updateProcessInProduct(debouncedProcessData, debouncedProcessData.processId);
-        
     }, [debouncedProcessData]);
 
     // Debounce: Actualizar `debouncedProdData` después de un retraso
@@ -118,17 +117,15 @@ const NewProcess = ({ initialProcessData }) => {
         setProcessData(updatedData);
     }
 
-    const handleSupplierPaymentMethodUpdate = async (supplierPaymentMethod) => {
+    const handleSupplierPaymentMethodUpdate = (supplierPaymentMethod) => {
         setIsSaved(false)
-        const updatedData = {
-            ...processData,            
+        console.log("handleSupplierPaymentMethodUpdate ", supplierPaymentMethod);
+        setProcessData((prevData) => ({
+            ...prevData,
             supplierPaymentMethodId: supplierPaymentMethod._id || "",
             supplierPaymentMethodName: supplierPaymentMethod.supplier_payment_description || "",
-            daysToPayment: supplierPaymentMethod.days_to_payment || 0,
-        }
+        }))
 
-        setProcessData(updatedData);
-        updateProcessInProduct(updatedData)
     }
 
     const handleDeleteProcess = async (e) => {
