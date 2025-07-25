@@ -41,8 +41,8 @@ const DetailedQuotationContainer = (quote) => {
                 description: process.description,
                 supplierId: process.supplierId._id,
                 supplierName: process.supplierId.name,
-                supplierPaymentMethodId: process.supplierPaymentMethodId,
-                supplierPaymentMethodName: process.supplierId.supplierPaymentMethodId.supplier_payment_description,
+                supplierPaymentMethodId: process.supplierPaymentMethodId._id,
+                supplierPaymentMethodName: process.supplierPaymentMethodId.supplier_payment_description,
                 daysToPayment: process.daysToPayment,
                 currency: process.currency,
                 unitCost: +(process.unitCost).toFixed(4),
@@ -90,7 +90,6 @@ const DetailedQuotationContainer = (quote) => {
     const getQuotationDataFromDb = async (id) => {
         const responseQuotation = await apiClient.get(`/quotations/populated/${id}`)
         let newData = responseQuotation.data.response
-        console.log("Quotation data from DB: ", newData);
         newData = {
             ...newData,
             id: newData._id,

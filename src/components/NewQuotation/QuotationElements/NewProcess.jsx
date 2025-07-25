@@ -119,7 +119,6 @@ const NewProcess = ({ initialProcessData }) => {
 
     const handleSupplierPaymentMethodUpdate = (supplierPaymentMethod) => {
         setIsSaved(false)
-        console.log("handleSupplierPaymentMethodUpdate ", supplierPaymentMethod);
         setProcessData((prevData) => ({
             ...prevData,
             supplierPaymentMethodId: supplierPaymentMethod._id || "",

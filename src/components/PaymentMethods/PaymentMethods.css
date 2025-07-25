@@ -35,9 +35,8 @@ h2, h3 {
 }
 
 
-tr {
+.payment-table tr {
     height: 33px;
-    /* border-bottom: 1px solid black; */
     font-size: 1em;
 }
 

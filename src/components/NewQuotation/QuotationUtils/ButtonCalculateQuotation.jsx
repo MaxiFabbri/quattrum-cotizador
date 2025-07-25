@@ -23,7 +23,9 @@ const ButtonCalculateQuotation = () => {
     const getQuotationTotalCost = () => {
         let totalQuotationCost = 0;
         // Paso por los productos y actualizo los Costos totales de los productos y el Costo total de la cotizacion
+        // for (const product of quotationData.products) {
         quotationData.products.map((product) => {
+            console.log("En getQuotationTotalCost: ", product);
             let totalProductCost = 0;
             let newProductDescription = ""
             // Paso por los procesos del producto y actualizo el subtotal y la descripción
@@ -55,17 +57,19 @@ const ButtonCalculateQuotation = () => {
             // console.log("Costo total del Producto: ", totalProductCost, " y Financiero ", product.financingCost);
             // Sumo el costo del producto al costo de la cotización
             totalQuotationCost += totalProductCost;
+            console.log("Calculando el costo del producto: ", product);
             console.log("Total Quotation Cost: ", totalQuotationCost);
             console.log("Total Product Cost: ", totalProductCost);
             console.log("Product ID: ", product.productId);
             productsTotalCost.push({ id: product.productId, totalProductCost: totalProductCost, description: newProductDescription });
             // Actualizo el producto en el context
             updateProduct({
-                productId: product.productId,
+                // productId: product.productId,
                 productDescription: newProductDescription,
             }, product.productId);
-
+        // }
         });
+        console.log("Products Total Cost: ", productsTotalCost);
         return totalQuotationCost;
     };
 
@@ -73,7 +77,6 @@ const ButtonCalculateQuotation = () => {
         const paymentDays = Number(paymentItem.days) || 0;
         const production = Number(productionDays) || 0;
         const totalDays = paymentDays + production;
-        console.log("Total Days: ", totalDays)
 
         const monthsToFinance = paymentItem.downpayment ? (paymentDays / 30) : (totalDays / 30);
         const amountToFinance = totalProductCost * (paymentItem.percentage / 100);
@@ -83,8 +86,8 @@ const ButtonCalculateQuotation = () => {
             - amountToFinance
         );
 
-        console.log("Downpayment: ", paymentItem.downpayment ,"Months to Finance: ", monthsToFinance, " Days: ", paymentItem.days, " Production Days: ", productionDays);
-        console.log("Item finance cost: ", itemFinanceCost);
+        // console.log("Downpayment: ", paymentItem.downpayment ,"Months to Finance: ", monthsToFinance, " Days: ", paymentItem.days, " Production Days: ", productionDays);
+        // console.log("Item finance cost: ", itemFinanceCost);
         return itemFinanceCost;
     }
 
@@ -94,6 +97,7 @@ const ButtonCalculateQuotation = () => {
         try {
             const response = await apiClient.get(`/customer-payment-methods/${quotationData.paymentMethodId}`);
             paymentDetails = response.data.response.customer_payment_details;
+            console.log( "Sell Payment ID: ", quotationData.paymentMethodId ," Payment details: ", paymentDetails);
         } catch (error) {
             console.log("Error: ", error);
         }
@@ -109,6 +113,7 @@ const ButtonCalculateQuotation = () => {
         try {
             const response = await apiClient.get(`/supplier-payment-methods/${paymentId}`);
             paymentDetails = response.data.response.supplier_payment_details;
+            console.log( "Buy Payment ID: ", paymentId ," Payment details: ", paymentDetails);
         } catch (error) {
             console.log("Error: ", error);
         }
@@ -129,12 +134,14 @@ const ButtonCalculateQuotation = () => {
             const updatedProcesses = [];
     
             for (const process of product.processes) {
+                
                 const adjust = 1 + ((Number(process.adjustPercentage) || 0) / 100);
                 const newSubtotalProcessCost = ((process.unitCost * product.quantity) * adjust) + process.fixedCost;
                 totalProductCost += newSubtotalProcessCost;
     
                 newProductDescription += newProductDescription ? `, ${process.description}` : process.description;
-    
+                
+                console.log("Calculo el costo financiero del proceso: ", process.description, " con el costo: ", newSubtotalProcessCost);
                 // Calculo costo financiero de cada proceso
                 const sellCost = await getSellingFinanceCost(newSubtotalProcessCost, product.productionDays);
                 sellingFinanceCost += sellCost;
@@ -151,7 +158,6 @@ const ButtonCalculateQuotation = () => {
                 });
             }
 
-            console.log("Calculo el costo financiero: ", calculateFinanceCost);
             if (calculateFinanceCost) {
                 // Calculo el costo financiero del producto
                 if(sellingFinanceCost > buyingFinanceCost) {
@@ -185,27 +191,30 @@ const ButtonCalculateQuotation = () => {
 
     const handleCalculateSetQuotation = async () => {
         const quotationTotalCost = getQuotationTotalCost();
-
+        console.log("Calculated Quotation Total Cost: ", quotationTotalCost);
+        console.log("Products Total Cost: ", productsTotalCost);
         // Calculo las utilidades deseadas de los parametros generales
         const targetUtilities = utilitiesTable.find((utility) => quotationTotalCost < utility.upTo);
 
-        quotationData.products.map( async (product) => {
+        for (const product of quotationData.products) {
             // Calculo las utilidades deseadas de los parametros generales
             const productCost = productsTotalCost.find((el) => el.id === product.productId);
 
             // Calculo el costo Financiero
-            let totalProductCost
+            let totalProductCost = 0;
             let sellingFinanceCost = 0;
             let buyingFinanceCost = 0;
             let newFinancingCost = 0;
             const updatedProcesses = [];
         
             for (const process of product.processes) {
+                console.log("For de process: ",process)
                 const adjust = 1 + ((Number(process.adjustPercentage) || 0) / 100);
                 const newSubtotalProcessCost = ((process.unitCost * product.quantity) * adjust) + process.fixedCost;
                 totalProductCost += newSubtotalProcessCost;
 
                 // Calculo costo financiero de cada proceso
+                console.log("Calculo el costo financiero del proceso: ", process.description, " con el costo: ", newSubtotalProcessCost);
                 const sellCost = await getSellingFinanceCost(newSubtotalProcessCost, product.productionDays);
                 sellingFinanceCost += sellCost;
 
@@ -213,7 +222,6 @@ const ButtonCalculateQuotation = () => {
                 buyingFinanceCost += buyCost;
             }
 
-            console.log("Calculo el costo financiero: ", calculateFinanceCost);
             if (calculateFinanceCost) {
                 // Calculo el costo financiero del producto
                 if(sellingFinanceCost > buyingFinanceCost) {
@@ -226,19 +234,22 @@ const ButtonCalculateQuotation = () => {
                 newFinancingCost = 0;
             }
 
-            console.log("Total Product Cost: ", totalProductCost, " New Financing Cost: ", newFinancingCost);
+            console.log("Total Product Cost: ", totalProductCost, " - ", productCost.totalProductCost , " New Financing Cost: ", newFinancingCost);
             const unitSellingPrice = calculateKitUniteSellingPrice(productCost.totalProductCost, newFinancingCost, product.quantity, targetUtilities, quotationTotalCost);
             const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
-            const newProductDescription = productCost.description;
+            // const newProductDescription = productCost.description;
+
             updateProduct({
                 productId: product.productId,
-                productDescription: newProductDescription,
+                // productDescription: newProductDescription,
                 unitSellingPrice: unitSellingPrice,
+                financingCost: newFinancingCost,
                 pesosPrice: pesosPrice
             }, product.productId);
 
             console.log("Precio unitario Calculado: ", unitSellingPrice, " Pesos Price: ", pesosPrice);
-        })
+        // })
+        }
         setIsUpdated(true);
     };
 
@@ -265,6 +276,7 @@ const ButtonCalculateQuotation = () => {
     };
 
     const calculateKitUniteSellingPrice = (totalProductCost, financingCost, quantity, targetUtilities, totalQuotationCost) => {
+        console.log("Calculando KIT: ", totalProductCost, financingCost);
         // Calculo las utilidades deseadas de los parametros generales
         // calculo el minutilitie que le corresponde a este producto por regla de 3 simple
         let minUtilitie = (totalProductCost / totalQuotationCost) * targetUtilities.kitMinimun
@@ -290,7 +302,6 @@ const ButtonCalculateQuotation = () => {
 
     const saveCalculatedQuotation = async () => {
         console.log("Quotation to save: ", quotationData);
-        console.log("Pay method Id: ", quotationData.paymentMethodId);
         // preparo la informacion de Quotation para guardar en la DB
         const quotationId = quotationData.id;
         const quotationToSave = {
