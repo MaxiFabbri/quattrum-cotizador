@@ -1,4 +1,5 @@
 import './Navbar.css';
+import DropdownMenu from './DropdownMenu.jsx';
 import React, { use, useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext.jsx';
@@ -10,48 +11,43 @@ const Navbar = () => {
     const { logout, userRole, userName } = useContext(AuthContext);
     const { dolarPrice } = useContext(ParametersContext); // Aquí consumes el contexto
 
+
     return (
         <nav className="navbar-container sticky">
             <Link to="/" className="navbar-logo-link">
                 <img src="logo-quattrum-370x53.png" alt="Isologo de Quattrum" className="navbar-isologo" />
             </Link>
             <div className='navbar-content'>
-                <div className='navbar-user-info'>
-                    <h4>Dolar hoy: {dolarPrice}</h4>
-                    <h3>{userName}</h3>
-                    <Link to="/users/password-update">
-                        <TextButton text="Cambiar PW" />
-                    </Link>
-                    <TextButton text="Cerrar Sesión" onClick={logout} />
-                </div>
+                <h4>Dolar hoy: {dolarPrice}</h4>
                 <div className='navbar-menu'>
                     <Link to="/">
-                        <TextButton text="Cotizaciones" />
+                        <h4>Cotizaciones</h4>
                     </Link>
                     <Link to="/customers">
-                        <TextButton text="Clientes" />
+                        <h4>Clientes</h4>
                     </Link>
-                    <Link to="/customers-payments">
-                        <TextButton text="Formas de Cobro" />
+                    <Link to="/customers-payments"> 
+                        <h4>Formas de Cobro</h4>
                     </Link>
                     <Link to="/suppliers">
-                        <TextButton text="Proveedores" />
+                        <h4>Proveedores</h4>
                     </Link>
                     <Link to="/suppliers-payments">
-                        <TextButton text="Formas de Pago" />
+                        <h4>Formas de Pago</h4>
                     </Link>
                     {userRole === 'ADMIN' && (
                         <Link to="/users">
-                            <TextButton text="Usuarios" />
+                            <h4>Usuarios</h4>
                         </Link>
                     )}
                     {userRole === 'ADMIN' && (
                         <Link to="/parameters">
-                            <TextButton text="Parametros Generales" />
+                            <h4>Parametros Generales</h4>
                         </Link>
                     )}
                 </div>
             </div>
+            <DropdownMenu user={userName} role={userRole} onLogout={logout} />
         </nav>
     );
 };

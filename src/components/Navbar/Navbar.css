@@ -10,15 +10,22 @@
 }
 .navbar-container {
     display: grid;
-    grid-template-columns: 210px 1fr;
+    grid-template-columns: 210px 1fr 180px;
+    justify-items: center;
+    align-items: center;
     height: 70px;
     padding: 4px 10px;
     border-bottom: 1px solid #ddd;
 }
 .navbar-content {
+    width: 100%;
     display: grid;
+    justify-items: center;
     grid-template-rows: 30px 30px;
     gap: 4px;
+}
+.navbar-dolar {
+    align-items: center;
 }
 .navbar-user-info {
     display: grid;
@@ -27,10 +34,14 @@
 }
 .navbar-menu {
     display: flex;
-    justify-content: space-around;
-    align-items: center;
-    gap: 20px;
+    gap: 40px;
 }
+.navbar-menu h4 {
+    font-size: 1em;
+    font-weight: 400;
+    text-decoration: none;
+}
+
 .navbar-logo-link{
     align-self: center;
 }

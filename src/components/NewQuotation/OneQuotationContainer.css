@@ -4,12 +4,13 @@
     padding-top: 5px;
     padding-bottom: 20px;
 }
+.quotation-container ul{
+    font-size: 0.8em;
+}
 .quotation-table-quotation {
     width: 100%;
     border-collapse: collapse;
     height: 60px;
-    /* border-bottom: 2px solid #000; */
-
 }
 
 .quotation-table-quotation tbody tr td {
@@ -108,6 +109,8 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 ul {
     margin: 0px;
+    list-style: none;
+    
 }
 
 .quotation-buttons-container {
