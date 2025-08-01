@@ -1,0 +1,54 @@
+h2 {
+    text-align: center;
+
+}
+
+h4 {
+    text-align: center;
+}
+
+.utilities-table {
+    margin: auto;
+    background-color: white;
+    border-radius: 10px;
+    border-collapse: collapse;
+}
+
+.utilities-table th {
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    padding: 5px
+}
+
+.utilities-table td {
+    text-align: center;
+    padding-bottom: 4px;
+
+}
+
+.utilities-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.utilities-table tr:hover {
+    background-color: #ddd;
+}
+.utilities-table input {
+    border: none;
+    background-color: transparent;
+
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-around;
+    margin: 40px auto 0px auto;
+    width: 40%;
+}
+
+.button-container button {
+    height: auto;
+    border: 2px solid transparent;
+    font-size: 1rem;
+}
+

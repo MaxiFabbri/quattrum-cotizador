@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { apiClient, apiDolar } from '../config/axiosConfig.js';
 import { AuthContext } from './AuthContext.jsx';
+import { toast } from 'react-toastify';
 
 // Creación del contexto
 export const ParametersContext = createContext();
@@ -40,7 +41,7 @@ export const ParametersProvider = ({ children }) => {
             const newDolar = response.data.venta;
             console.log("Dolar Price de la API: ", newDolar);
 
-            if (newDolar !== dolarPrice ) {
+            if (newDolar !== dolarPrice) {
                 console.log("NewDolar: ", newDolar, " vs ", dolarPrice);
                 updateDolarPrice(newDolar);
             }
@@ -48,6 +49,36 @@ export const ParametersProvider = ({ children }) => {
             console.error('Error al recuperar datos de dolarHoy:', error);
         }
     };
+
+    const updateGeneralParameters = async (newParamMonthlyRate, newTax, newUtilitiesTable) => {
+        console.log("Actualizando parametros generales: ", newParamMonthlyRate, newTax, newUtilitiesTable);
+        setParamMonthlyRate(newParamMonthlyRate);
+        setTax(newTax / 100); // Convertir a decimal
+        setUtilitiesTable(newUtilitiesTable);
+        const newParameters = {
+            monthlyRate: newParamMonthlyRate,
+            tax: newTax / 100, // Convertir a decimal
+            utilitiesTable: newUtilitiesTable,
+            dolar: dolarPrice
+        };
+        console.log("Parametros Generales Actualizados: ", newParameters);
+        try {
+            const response = await toast.promise(
+                apiClient.put('general-parameters/67ddd1f2ef05d862858798c3', newParameters),
+                {
+                    pending: "Guardando Parametros...",
+                    success: "Parametros guardados correctamente",
+                    error: "Error al guardar los parametros",
+                },
+                {
+                    autoClose: 800,
+                }
+            )
+            console.log("Parametros Guardados");
+        } catch (error) {
+            console.error("Error al guardar los parametros: ", error);
+        }
+    }
 
     const updateDolarPrice = async (newDolar) => {
         try {
@@ -73,6 +104,7 @@ export const ParametersProvider = ({ children }) => {
                 paramMonthlyRate,
                 tax,
                 utilitiesTable,
+                updateGeneralParameters,
                 dolarPrice,
                 getDolarPrice
             }}

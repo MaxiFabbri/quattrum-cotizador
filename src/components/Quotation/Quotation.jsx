@@ -7,7 +7,7 @@ import "./Quotation.css";
 
 const Quotation = ({ quote, onDelete }) => {
     const navigate = useNavigate(); // Hook para la navegación
-    const {setIsSaved } = useContext(QuotationContext);
+    const { setIsSaved } = useContext(QuotationContext);
     const [isProductsLoaded, setIsProductsLoaded] = useState(false); 
     const [products, setProducts] = useState([]); // Estado para los productos
 

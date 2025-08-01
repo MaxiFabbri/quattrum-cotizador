@@ -21,6 +21,7 @@ import CreateUserForm from './components/Users/CreateUserForm.jsx';
 import { ToastContainer } from 'react-toastify'
 import SupplierContainer from './components/Suppliers/SuppliersContainer.jsx';
 import EditSupplier from './components/Suppliers/EditSupplier.jsx';
+import GeneralParameters from './components/GeneralParameters/GeneralParameters.jsx';
 
 
 function App() {
@@ -51,7 +52,7 @@ function App() {
                 <Route path="/users/edit/:id?" element={<EditUserForm />} /> {/* Página de un Usuario */}
                 <Route path="/users/password-update" element={<PasswordUpdate />} /> {/* Página de Actualización de Contraseña */}
                 <Route path="/detailed-quotation/:id" element={<DetailedQuotationContainer />} />
-                <Route path="/parameters" element={<h1>Parametros Generales</h1>} /> {/* Página de Parámetros Generales */}
+                <Route path="/parameters" element={<GeneralParameters />} /> {/* Página de Parámetros Generales */}
               </Routes>
             </>
             : <LoginForm />
