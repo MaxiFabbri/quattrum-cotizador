@@ -157,6 +157,10 @@ const ButtonCalculateQuotation = () => {
                     subTotalProcessCost: newSubtotalProcessCost,
                 });
             }
+            toast.info(`Calculando el costo del producto: ${newProductDescription}`, {
+                position: "top-center",
+                autoClose: 3000
+            })
 
             if (calculateFinanceCost) {
                 // Calculo el costo financiero del producto
@@ -221,6 +225,10 @@ const ButtonCalculateQuotation = () => {
                 const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, process.supplierPaymentMethodId, product.productionDays);
                 buyingFinanceCost += buyCost;
             }
+            toast.info(`Calculando el costo del producto: ${product.description}`, {
+                position: "top-center",
+                autoClose: 3000
+            })
 
             if (calculateFinanceCost) {
                 // Calculo el costo financiero del producto
@@ -405,7 +413,7 @@ const ButtonCalculateQuotation = () => {
     };
 
     const calculateQuotation = () => {
-        if (isSaved) return;
+        // if (isSaved) return;
         // consulto si se quiere calcular el costo financiero
         calculateFinanceCost = window.confirm("¿Queres calcular el Costo financiero?")
         
@@ -422,7 +430,6 @@ const ButtonCalculateQuotation = () => {
     return (
         <TextButton
             text={isSaved ? "Guardado" : "Calcular y Guardar"}
-            hide={isSaved}
             onClick={calculateQuotation}
         />
     );
