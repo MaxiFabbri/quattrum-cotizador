@@ -4,6 +4,8 @@ import SelectSupplier from "../../Utils/Selectors/SelectSupplier.jsx";
 import SelectSupplierPayMethod from "../../Utils/Selectors/SelectSupplierPaymentMethod.jsx";
 import { apiClient } from "../../../config/axiosConfig";
 import CurrencySelect from "../InputComponents/CurrencySelect.jsx";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import IconButton from "../../Utils/IconButton";
 
@@ -14,6 +16,15 @@ const NewProcess = ({ initialProcessData }) => {
     const [newTempUnitCost, setNewTempUnitCost] = useState(processData.tempunitCost) || 0;
     const [newTempFixedCost, setNewTempFixedCost] = useState(processData.tempfixedCost) || 0;
 
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition
+    } = useSortable({
+        id: `${initialProcessData.productId}#${initialProcessData.processId}`
+    })
 
     useEffect(() => {
         updateProcessData();
@@ -33,8 +44,8 @@ const NewProcess = ({ initialProcessData }) => {
                 if (JSON.stringify(processData) !== JSON.stringify(process)) {
                     setProcessData(process);
                 }
-            } 
-        } 
+            }
+        }
     };
 
     // Estado para manejo de debouncing
@@ -77,7 +88,7 @@ const NewProcess = ({ initialProcessData }) => {
             console.error("Error fetching customer payment method:", error);
         }
     };
-    const handleCurrencyChange = (e) =>{
+    const handleCurrencyChange = (e) => {
         setIsSaved(false)
         setNewTempFixedCost(0)
         setNewTempUnitCost(0)
@@ -92,7 +103,7 @@ const NewProcess = ({ initialProcessData }) => {
     }
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {
-        console.log("handleInputChange");
+        // console.log("handleInputChange");
         setIsSaved(false)
         const { name, value } = e.target;
         setProcessData((prevData) => ({
@@ -132,8 +143,22 @@ const NewProcess = ({ initialProcessData }) => {
         removeProcessInProduct(processData.productId, processData.processId);
     };
 
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
     return (
-        <>
+        <tr
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+        >
+            <td>
+                <div {...listeners} style={{ cursor: "grab" }} >
+                    <img src="/drag-icon.png" style={{ width: "20px", height: "20px" }} alt="Mover" />
+                </div>
+            </td>
             <td>
                 <input
                     type="text"
@@ -141,7 +166,7 @@ const NewProcess = ({ initialProcessData }) => {
                     placeholder="Descripción"
                     defaultValue={processData.description}
                     onClick={(e) => e.target.select()}
-                    onInput={handleInputChange}
+                    onChange={handleInputChange}
                 />
             </td>
             <td>
@@ -169,8 +194,7 @@ const NewProcess = ({ initialProcessData }) => {
                     onInput={e => {
                         setIsSaved(false)
                         setNewTempUnitCost(Number(e.target.value))
-                        }
-                    }
+                    }}
                 />
             </td>
             <td>
@@ -197,8 +221,7 @@ const NewProcess = ({ initialProcessData }) => {
                     onInput={e => {
                         setIsSaved(false)
                         setNewTempFixedCost(Number(e.target.value))
-                        }
-                    }
+                    }}
                 />
             </td>
             <td>
@@ -208,7 +231,7 @@ const NewProcess = ({ initialProcessData }) => {
                     onClick={handleDeleteProcess}
                 />
             </td>
-        </>
+        </tr>
     )
 };
 

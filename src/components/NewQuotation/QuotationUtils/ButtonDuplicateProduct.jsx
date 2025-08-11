@@ -9,8 +9,6 @@ const ButtonDuplicateProduct = ({ productId }) => {
     const [isUpdated, setIsUpdated] = useState(false);
 
     const handleDuplicateProduct = async () => {
-        console.log("Duplicating product with ID: ", productId);
-        console.log("Quotation Data: ", quotationData);
         const productToDuplicate = quotationData.products.find(product => product.productId === productId);
         console.log("Product to duplicate: ", productToDuplicate);
         // Check if the product exists before duplicating
@@ -20,21 +18,20 @@ const ButtonDuplicateProduct = ({ productId }) => {
         } else {
             const newProductId = uuidv4();
             const processesToDuplicate = productToDuplicate.processes.map(process => ({
-                ...process,                  // copia el resto de las propiedades originales
-                savedToDb: false,      // pone saved to db en false para indicar que es un producto nuevo
-                processId: uuidv4(),        // genera un nuevo ID único para cada proceso
-                productId: newProductId,    // asigna el nuevo ID del producto
+                ...process,
+                savedToDb: false,
+                processId: uuidv4(),
+                productId: newProductId,
             }));
             // Add the duplicated product to the quotation
             const newProductDuplicated = {
-                ...productToDuplicate,  // copia las propiedades originales
-                savedToDb: false,      // pone saved to db en false para indicar que es un producto nuevo
-                productId: newProductId,    // asigna el nuevo ID del producto
-                processes: processesToDuplicate, // asigna los procesos duplicados
+                ...productToDuplicate,
+                savedToDb: false,
+                productId: newProductId,
+                processes: processesToDuplicate,
             };
             addProduct(newProductDuplicated); // agrega el nuevo producto al contexto de cotización
             console.log("New product duplicated: ", newProductDuplicated);
-            console.log("Product duplicated successfully.");
         }
     }
 

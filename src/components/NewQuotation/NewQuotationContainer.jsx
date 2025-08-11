@@ -1,4 +1,7 @@
 import { useContext, useEffect, useState } from "react";
+import { closestCenter, DndContext } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
+import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { QuotationHeader, ProductHeader, ProcessHeader } from "./QuotationUtils/NewQuotationHeaders.jsx";
 import "./OneQuotationContainer.css"
 
@@ -13,9 +16,10 @@ import ButtonAddProduct from "./QuotationUtils/ButtonAddProduct";
 
 const NewQuotationContainer = () => {
     const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
-    const { quotationData, clearQuotationData, updateQuotationData } = useContext(QuotationContext);
+    const { quotationData, clearQuotationData, updateQuotationData, setIsSaved } = useContext(QuotationContext);
+    const [activeId, setActiveId] = useState(null)
     const today = new Date().toISOString().split("T")[0];
-    
+
     useEffect(() => {
         clearQuotationData()
         updateQuotationData({
@@ -26,63 +30,71 @@ const NewQuotationContainer = () => {
         });
     }, [dolarPrice, paramMonthlyRate, today]);
 
+    const handleProductsDragEnd = (event) => {
+        const { active, over } = event;
+        if (!active || !over || active.id === over.id) return;
+
+        const products = quotationData.products;
+        const oldIndex = quotationData.products.findIndex(p => p.productId === active.id);
+        const newIndex = quotationData.products.findIndex(p => p.productId === over.id);
+
+        if (oldIndex === -1 || newIndex === -1) return;
+
+        const updatedProducts = arrayMove(products, oldIndex, newIndex);
+
+        updateQuotationData({
+            ...quotationData,
+            products: updatedProducts
+        });
+        setIsSaved(false);
+        setActiveId(null);
+    };
+
     return (
-        <div className="quotation-container">
-            <table className="quotation-table-quotation">
-                <QuotationHeader />
-                <tbody>
-                    <NewQuotation />
-                </tbody>
-            </table>
-            {quotationData.products && quotationData.products.length > 0 ? (
-                <>  
-                    <div className="quotation-table-products">
-                    {/* <table key={`table-${quotationData.id}`} className="quotation-table-products"> */}
-                        {quotationData.products.map((product) => (
-                            <table className="product-container" key={product.productId} id={product.productId}>
-                                <ProductHeader />
-                                <tbody key={"body-" + product.productId} id={"body-" + product.productId}>
-                                    <tr key={product.productId} id={product.productId} className="product-header-row">
-                                        <NewProduct productData={product} />
-                                    </tr>
-                                    <tr key={"processes-" + product.productId} id={"processes-" + product.productId}>
-                                        <td colSpan="9">
-                                            {product.processes && product.processes.length > 0 ? (
-                                                <table className="quotation-table-processes">
-                                                    {/* <ProcessHeader /> */}
-                                                    <tbody>
-                                                        {product.processes.map((process) => (
-                                                            <tr key={process.processId} id={process.processId}>
-                                                                <NewProcess initialProcessData={process} />
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                            ) : (
-                                                <p>No hay procesos para este producto</p>
-                                            )}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        ))}
-                    {/* </table> */}
-                    </div>
-                    <div className="quotation-buttons-container">
-                        <ButtonAddProduct />
-                        <ButtonCalculateQuotation />
-                    </div>
-                </>
-            ) : (
-                <div className="complete-quotation-message">
-                    {quotationData.id !== '' ? (
-                        <ButtonAddProduct />
-                    ) : (
-                        <p>Complete la Cotización</p>
-                    )}
+        <div>
+            <DndContext
+                collisionDetection={closestCenter}
+                onDragStart={(event) => setActiveId(event.active.id)}
+                onDragEnd={handleProductsDragEnd}
+            >
+                <div className="quotation-container">
+                    <table className="quotation-table-quotation">
+                        <QuotationHeader />
+                        <tbody>
+                            <NewQuotation />
+                        </tbody>
+                    </table>
                 </div>
-            )}
-        </div>
+                {quotationData.products && quotationData.products.length > 0 ? (
+                    <>
+                        <div className="quotation-table-products">
+                            <SortableContext
+                                items={quotationData.products.map(p => p.productId)}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                {quotationData.products.map((product) => (
+                                    <NewProduct 
+                                        key={product.productId}
+                                        productData={product} />
+                                ))}
+                            </SortableContext>
+                        </div>
+                        <div className="quotation-buttons-container">
+                            <ButtonAddProduct />
+                            <ButtonCalculateQuotation />
+                        </div>
+                    </>
+                ) : (
+                    <div className="complete-quotation-message">
+                        {quotationData.id !== '' ? (
+                            <ButtonAddProduct />
+                        ) : (
+                            <p>Complete la Cotización</p>
+                        )}
+                    </div>
+                )}
+            </DndContext >
+        </div >
     );
 }
 

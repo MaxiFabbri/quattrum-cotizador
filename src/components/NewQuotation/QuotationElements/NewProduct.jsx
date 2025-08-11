@@ -3,12 +3,28 @@ import { QuotationContext } from "../../../context/QuotationContext";
 import IconButton from "../../Utils/IconButton";
 import ButtonAddProcess from "../QuotationUtils/ButtonAddProcess";
 import ButtonDuplicateProduct from "../QuotationUtils/ButtonDuplicateProduct";
+import NewProcess from "./NewProcess";
+
+import { CSS } from "@dnd-kit/utilities";
+import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { closestCenter, DndContext } from '@dnd-kit/core';
 
 
-const NewProduct = ({productData}) => {
-    const { quotationData, updateProduct, removeProduct, setIsSaved } = useContext(QuotationContext);
+const NewProduct = ({ productData }) => {
+    const { quotationData, updateQuotationData, updateProduct, removeProduct, setIsSaved } = useContext(QuotationContext);
     const [prodData, setProdData] = useState(productData);
     const [isUpdated, setIsUpdated] = useState(true);
+    const [activeId, setActiveId] = useState(null)
+
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition
+    } = useSortable({
+        id: productData.productId
+    })
 
     // Actualizar el estado local `prodData` cuando cambie `quotationData`
     useEffect(() => {
@@ -24,7 +40,7 @@ const NewProduct = ({productData}) => {
 
     // Actualizar el estado global al cambiar algun dato
     useEffect(() => {
-        if(!isUpdated) {
+        if (!isUpdated) {
             console.log("Change in prodData: ", prodData);
             updateProduct(prodData, prodData.productId);
             setIsUpdated(true);
@@ -78,7 +94,7 @@ const NewProduct = ({productData}) => {
                 [newName]: convertedValue,
             }))
         }
-        
+
         setProdData((prevData) => ({
             ...prevData,
             [name]: value,
@@ -91,82 +107,178 @@ const NewProduct = ({productData}) => {
         removeProduct(prodData.productId); // Eliminamos el producto usando su ID único
     };
 
+    const handleProcessDragEnd = (event) => {
+        const { active, over } = event;
+        if (!active || !over || active.id === over.id) return;
+
+        const [activeProductId, activeProcessId] = active.id.split("#");
+        const [overProductId, overProcessId] = over.id.split("#");
+
+        if (activeProductId !== overProductId) return;
+
+        const productIndex = quotationData.products.findIndex(p => p.productId === activeProductId);
+        if (productIndex === -1) return;
+
+        const processes = quotationData.products[productIndex].processes;
+        const oldIndex = processes.findIndex(p => p.processId === activeProcessId);
+        const newIndex = processes.findIndex(p => p.processId === overProcessId);
+
+        if (oldIndex === -1 || newIndex === -1) return;
+
+        const newProcesses = arrayMove(processes, oldIndex, newIndex);
+
+        const updatedProducts = [...quotationData.products];
+        updatedProducts[productIndex] = {
+            ...updatedProducts[productIndex],
+            processes: newProcesses
+        };
+
+        updateQuotationData({
+            ...quotationData,
+            products: updatedProducts
+        });
+        setIsSaved(false);
+        setActiveId(null);
+    };
+
+
+    const prodStyle = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
     return (
         <>
-            <td className="product-action-buttons">
-                <ButtonDuplicateProduct
-                    productId={prodData.productId}
-                />
-                <ButtonAddProcess
-                    productId={prodData.productId}
-                />
-            </td>
-            <td>
-                <input
-                    className="input-number"
-                    type="number"
-                    name="quantity"
-                    defaultValue={prodData.quantity}
-                    onClick={(e) => e.target.select()}
-                    onInput={handleInputChange}
-                    required
-                />
-            </td>
-            <td>
-                <span>{prodData.productDescription}</span>
-            </td>
-            <td>
-                <input
-                    className="input-number-days"
-                    type="number"
-                    name="productionDays"
-                    value={prodData.productionDays}
-                    onClick={(e) => e.target.select()}
-                    onInput={handleInputChange}
-                />
-            </td>
-            <td>
-                <input
-                    className="input-number"
-                    type="number"
-                    name="tempfinancingCost"
-                    value={(prodData.financingCost * quotationData.exchangeRate).toFixed(0)}
-                    disabled
-                    // onClick={(e) => e.target.select()}
-                    // onInput={handleInputChange}
-                />
-            </td>
-            <td>
-                <input
-                    className="input-number"
-                    type="number"
-                    name="tempshipmentCost"
-                    value={prodData.tempshipmentCost}
-                    onClick={(e) => e.target.select()}
-                    onInput={handleInputChange}
-                />
-            </td>
-            <td>
-                <input
-                    className="input-number"
-                    type="number"
-                    name="tempotherCost"
-                    value={prodData.tempotherCost}
-                    onClick={(e) => e.target.select()}
-                    onInput={handleInputChange}
-                />
-            </td>
-            <td>
-                <span className="pesos-price">$ {prodData.pesosPrice}</span>
-            </td>
-            <td>
-                <IconButton
-                    icon="/delete.png"
-                    text="Eliminar Producto"
-                    onClick={handleDeleteProduct}
-                />
-            </td>
+            <table
+                ref={setNodeRef}
+                style={prodStyle}
+                {...attributes}
+                className="product-container"
+            >
+                <thead key={"product-header"}>
+                    <tr {...listeners} style={{ cursor: "grab" }} key={"product-header"}>
+                        <th >
+                            {/* <img src="/drag-icon.png" style={{ width: "20px", height: "20px" }} alt="Mover" /> */}
+                        </th>
+                        <th>Cantidad</th>
+                        <th>Descripción</th>
+                        <th>Días</th>
+                        <th>Financiero</th>
+                        <th>Fletes</th>
+                        <th>Otros</th>
+                        <th>Precio Unitario</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody key={"body-" + productData.productId} id={"body-" + productData.productId}>
+                    <tr>
+                        <td className="product-action-buttons">
+                            <ButtonDuplicateProduct
+                                productId={productData.productId}
+                            />
+                            <ButtonAddProcess
+                                productId={productData.productId}
+                            />
+                        </td>
+                        <td>
+                            <input
+                                className="input-number"
+                                type="number"
+                                name="quantity"
+                                defaultValue={prodData.quantity}
+                                onClick={(e) => e.target.select()}
+                                onInput={handleInputChange}
+                                required
+                            />
+                        </td>
+                        <td>
+                            <span>{prodData.productDescription}</span>
+                        </td>
+                        <td>
+                            <input
+                                className="input-number-days"
+                                type="number"
+                                name="productionDays"
+                                value={prodData.productionDays}
+                                onClick={(e) => e.target.select()}
+                                onInput={handleInputChange}
+                            />
+                        </td>
+                        <td>
+                            <input
+                                className="input-number"
+                                type="number"
+                                name="tempfinancingCost"
+                                value={(prodData.financingCost * quotationData.exchangeRate).toFixed(0)}
+                                disabled
+                            />
+                        </td>
+                        <td>
+                            <input
+                                className="input-number"
+                                type="number"
+                                name="tempshipmentCost"
+                                value={prodData.tempshipmentCost}
+                                onClick={(e) => e.target.select()}
+                                onInput={handleInputChange}
+                            />
+                        </td>
+                        <td>
+                            <input
+                                className="input-number"
+                                type="number"
+                                name="tempotherCost"
+                                value={prodData.tempotherCost}
+                                onClick={(e) => e.target.select()}
+                                onInput={handleInputChange}
+                            />
+                        </td>
+                        <td>
+                            <span className="pesos-price">$ {prodData.pesosPrice}</span>
+                        </td>
+                        <td>
+                            <IconButton
+                                icon="/delete.png"
+                                text="Eliminar Producto"
+                                onClick={handleDeleteProduct}
+                            />
+                        </td>
+                    </tr>
+                    <tr key={"processes-" + productData.productId} id={"processes-" + productData.productId}>
+                        <td colSpan="11">
+                            {productData.processes && productData.processes.length > 0 ? (
+                                <div>
+                                    <DndContext
+                                        collisionDetection={closestCenter}
+                                        onDragStart={(event) => setActiveId(event.active.id)}
+                                        onDragEnd={handleProcessDragEnd}
+                                    >
+                                        <table className="quotation-table-processes">
+                                            <tbody>
+                                                <SortableContext
+                                                    items={productData.processes.map(p => `${p.productId}#${p.processId}`)}
+                                                    strategy={verticalListSortingStrategy}
+                                                >
+                                                    {productData.processes.map((process) => (
+                                                        <NewProcess key={process.processId} initialProcessData={process} />
+                                                    ))}
+                                                </SortableContext>
+                                            </tbody>
+                                        </table>
+                                    </DndContext>
+                                </div>
+                            ) : (
+                                <p>No hay procesos para este producto</p>
+                            )}
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
         </>
+
+
     );
 };
 

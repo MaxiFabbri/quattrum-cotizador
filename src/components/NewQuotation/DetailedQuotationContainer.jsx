@@ -1,38 +1,43 @@
 import { useContext, useEffect, useState } from "react";
+import { closestCenter, DndContext } from '@dnd-kit/core';
+import { CSS } from "@dnd-kit/utilities";
+import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useParams } from "react-router-dom";
 import "./OneQuotationContainer.css"
 
-import { QuotationHeader, ProductHeader, ProcessHeader } from "./QuotationUtils/NewQuotationHeaders.jsx";
+import { QuotationHeader } from "./QuotationUtils/NewQuotationHeaders.jsx";
 import NewQuotation from "./NewQuotation.jsx";
 import NewProduct from "./QuotationElements/NewProduct.jsx";
-import NewProcess from "./QuotationElements/NewProcess.jsx";
 import { ParametersContext } from '../../context/ParametersContext.jsx';
 import { QuotationContext } from "../../context/QuotationContext.jsx";
 
 import ButtonCalculateQuotation from "./QuotationUtils/ButtonCalculateQuotation.jsx";
 import ButtonAddProduct from "./QuotationUtils/ButtonAddProduct.jsx";
-import ButtonDuplicateQuotatio from "./QuotationUtils/ButtonDuplicateQuotation.jsx";
+import ButtonDuplicateQuotation from "./QuotationUtils/ButtonDuplicateQuotation.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 
 const DetailedQuotationContainer = (quote) => {
     const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
-    const { quotationData, clearQuotationData, updateQuotationData } = useContext(QuotationContext);
+    const { quotationData, clearQuotationData, updateQuotationData, setIsSaved } = useContext(QuotationContext);
+    const [activeId, setActiveId] = useState(null)
+
+
 
     const today = new Date().toISOString().split("T")[0];
     const { id } = useParams()
 
     // Formatear la fecha
-    const formatDate = (utcDate) => {;
+    const formatDate = (utcDate) => {
+        ;
         const date = new Date(utcDate);
         const year = date.getFullYear();
-        const month = String(date.getUTCMonth()+1).padStart(2, "0"); // Asegura 2 dígitos
+        const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Asegura 2 dígitos
         const day = String(date.getUTCDate()).padStart(2, "0"); // Asegura 2 dígitos
         return `${year}-${month}-${day}`;
     };
-    
 
     const adjustProcessesData = (dbProcesses, exchangeRate) => {
-        const newProcessesData = dbProcesses.map((process) => {
+        const newProcessesData = dbProcesses.map((process, index) => {
             let newExchangeRate = process.currency === "Peso" ? exchangeRate : 1;
             return {
                 adjustPercentage: process.adjustPercentage,
@@ -51,6 +56,7 @@ const DetailedQuotationContainer = (quote) => {
                 tempfixedCost: +(process.fixedCost * newExchangeRate).toFixed(2),
                 subTotalProcessCost: +(process.subTotalProcessCost),
                 savedToDb: true,
+                order: index,
             }
         })
         return newProcessesData
@@ -77,6 +83,7 @@ const DetailedQuotationContainer = (quote) => {
                 shipmentCost: +(product.shipmentCost),
                 tempshipmentCost: +(product.shipmentCost * exchangeRate).toFixed(2),
                 otherCost: +(product.otherCost),
+                order: product.order,
                 tempotherCost: +(product.otherCost * exchangeRate).toFixed(2),
                 unitSellingPrice: +(product.unitSellingPrice),
                 pesosPrice: +(product.unitSellingPrice * exchangeRate).toFixed(0),
@@ -104,11 +111,33 @@ const DetailedQuotationContainer = (quote) => {
         const responseProducts = await apiClient.get(`/products/${id}`)
         const newProducts = await adjustProductData(responseProducts.data.response, newData.exchangeRate)
         newData = { ...newData, products: newProducts }
+        console.log("New Data leyendo de la DB: ", newData)
         updateQuotationData(
             newData
         );
         return newData
     }
+
+    const handleProductsDragEnd = (event) => {
+        const { active, over } = event;
+        if (!active || !over || active.id === over.id) return;
+
+        const products = quotationData.products;
+        const oldIndex = quotationData.products.findIndex(p => p.productId === active.id);
+        const newIndex = quotationData.products.findIndex(p => p.productId === over.id);
+
+        if (oldIndex === -1 || newIndex === -1) return;
+
+        const updatedProducts = arrayMove(products, oldIndex, newIndex);
+        console.log("After: ", updatedProducts)
+
+        updateQuotationData({
+            ...quotationData,
+            products: updatedProducts
+        });
+        setIsSaved(false);
+        setActiveId(null);
+    };
 
     useEffect(() => {
         getQuotationDataFromDb(id)
@@ -116,63 +145,50 @@ const DetailedQuotationContainer = (quote) => {
 
     return (
         <div>
-            <div className="quotation-container">
-                <table className="quotation-table-quotation">
-                    <QuotationHeader />
-                    <tbody>
-                        <NewQuotation />
-                    </tbody>
-                </table>
-            </div>
-            {quotationData.products && quotationData.products.length > 0 ? (
-                <>
-                    <div className="quotation-table-products">
-                        {quotationData.products.map((product) => (
-                            <table className="product-container" key={product.productId} id={product.productId}>
-                                <ProductHeader />
-                                <tbody key={"body-" + product.productId} id={"body-" + product.productId}>
-                                    <tr key={product.productId} id={product.productId} className="product-header-row">
-                                        <NewProduct productData={product} />
-                                    </tr>
-                                    <tr key={"processes-" + product.productId} id={"processes-" + product.productId}>
-                                        <td colSpan="10">
-                                            {product.processes && product.processes.length > 0 ? (
-                                                <table className="quotation-table-processes">
-                                                    <tbody>
-                                                        {product.processes.map((process) => (
-                                                            <tr key={process.processId} id={process.processId}>
-                                                                <NewProcess initialProcessData={process} />
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                            ) : (
-                                                <p>No hay procesos para este producto</p>
-                                            )}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            
-                        ))}
-                    </div>
-                    {/* </table> */}
-                    <div className="quotation-buttons-container">
-                        <ButtonAddProduct />
-                        <ButtonCalculateQuotation />
-                        <ButtonDuplicateQuotatio />
-                    </div>
-                </>
-            ) : (
-                <div>
-                    {quotationData.id !== '' ? (
-                        <ButtonAddProduct />
-                    ) : (
-                        <p>Complete la Cotización</p>
-                    )}
+            <DndContext
+                collisionDetection={closestCenter}
+                onDragStart={(event) => setActiveId(event.active.id)}
+                onDragEnd={handleProductsDragEnd}
+            >
+                <div className="quotation-container">
+                    <table className="quotation-table-quotation">
+                        <QuotationHeader />
+                        <tbody>
+                            <NewQuotation />
+                        </tbody>
+                    </table>
                 </div>
-            )}
-        </div>
+                {quotationData.products && quotationData.products.length > 0 ? (
+                    <>
+                        <div className="quotation-table-products">
+                            <SortableContext
+                                items={quotationData.products.map(p => p.productId)}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                {quotationData.products.map((product) => (
+                                    <NewProduct 
+                                        key={product.productId}
+                                        productData={product} />  
+                                ))}
+                            </SortableContext>
+                        </div>
+                        <div className="quotation-buttons-container">
+                            <ButtonAddProduct />
+                            <ButtonCalculateQuotation />
+                            <ButtonDuplicateQuotation />
+                        </div>
+                    </>
+                ) : (
+                    <div>
+                        {quotationData.id !== '' ? (
+                            <ButtonAddProduct />
+                        ) : (
+                            <p>Complete la Cotización</p>
+                        )}
+                    </div>
+                )}
+            </DndContext>
+        </div >
     );
 }
 
