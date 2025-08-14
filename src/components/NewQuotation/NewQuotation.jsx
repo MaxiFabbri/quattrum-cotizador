@@ -11,6 +11,7 @@ import ExchangeRateInput from "./InputComponents/ExchangeRateInput.jsx";
 import QuoteStatusSelect from "./InputComponents/QuoteStatusSelect.jsx";
 import IsKitCheckbox from "./InputComponents/IsKitCheckbox.jsx";
 import MonthlyRateInput from "./InputComponents/MonthlyRateInput.jsx";
+import CalculateFinancingCheckbox from "./InputComponents/CalculateFinancingCheckBox.jsx";
 
 import SelectCustomer from "../Utils/Selectors/SelectCustomer.jsx";
 import SelectCustomerPayMethod from "../Utils/Selectors/SelectCustomerPaymentMethod.jsx";
@@ -95,7 +96,10 @@ const NewQuotation = () => {
                     onSelectCustomerPayMethod={handleCustomerPaymentMethodUpdate}
                 />
             </td>
-            <MonthlyRateInput value={quotationData.monthlyRate} onChange={(e) => handleChange({ monthlyRate: e.target.value })} />
+            <td>
+                <MonthlyRateInput value={quotationData.monthlyRate} onChange={(e) => handleChange({ monthlyRate: e.target.value })} />
+                <CalculateFinancingCheckbox checked={quotationData.calculateFinancing} onChange={(e) => handleChange({ calculateFinancing: e.target.checked })} />
+            </td>
             <CurrencySelect value={quotationData.currency} onChange={(e) => handleChange({ currency: e.target.value })} />
             <ExchangeRateInput value={quotationData.exchangeRate} onChange={(e) => handleChange({ exchangeRate: e.target.value })} />
             <QuoteStatusSelect value={quotationData.quoteStatus} onChange={(e) => handleChange({ ...quotationData, quoteStatus: e.target.value })} />

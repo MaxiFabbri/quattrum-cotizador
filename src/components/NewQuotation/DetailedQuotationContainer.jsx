@@ -105,6 +105,7 @@ const DetailedQuotationContainer = (quote) => {
             customerName: newData.customerId.name,
             paymentMethodName: newData.paymentMethodId.customer_payment_description,
             paymentMethodId: newData.paymentMethodId._id,
+            calculateFinancing: newData.calculateFinancing || false,
         }
 
         // agrego los Productos

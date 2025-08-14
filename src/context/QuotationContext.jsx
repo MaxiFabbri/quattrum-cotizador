@@ -22,6 +22,7 @@ export const QuotationProvider = ({ children }) => {
         quoteUnitSellingPrice: 0,
         quoteProductsDescription: "",
         isKit: false,
+        calculateFinancing: true,
         products: [],
     };
 

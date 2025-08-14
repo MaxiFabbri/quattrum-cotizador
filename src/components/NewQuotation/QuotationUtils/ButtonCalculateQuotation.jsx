@@ -9,7 +9,7 @@ const ButtonCalculateQuotation = () => {
     const { quotationData, updateProduct, updateProcessInProduct, isSaved, setIsSaved } = useContext(QuotationContext);
     const { utilitiesTable, tax } = useContext(ParametersContext);
     const [isUpdated, setIsUpdated] = useState(false);
-    let calculateFinanceCost = false;
+    // let calculateFinanceCost = false;
     let productsTotalCost = []
 
     // Se ejecuta cuando isUpdated cambia a `true`
@@ -159,10 +159,10 @@ const ButtonCalculateQuotation = () => {
             }
             toast.info(`Calculando el costo del producto: ${newProductDescription}`, {
                 position: "top-center",
-                autoClose: 3000
+                autoClose: 1000
             })
 
-            if (calculateFinanceCost) {
+            if (quotationData.calculateFinancing) {
                 // Calculo el costo financiero del producto
                 if(sellingFinanceCost > buyingFinanceCost) {
                     newFinancingCost = sellingFinanceCost - buyingFinanceCost;
@@ -208,6 +208,7 @@ const ButtonCalculateQuotation = () => {
             let sellingFinanceCost = 0;
             let buyingFinanceCost = 0;
             let newFinancingCost = 0;
+            let newProductDescription = "";
             const updatedProcesses = [];
         
             for (const process of product.processes) {
@@ -215,6 +216,7 @@ const ButtonCalculateQuotation = () => {
                 const adjust = 1 + ((Number(process.adjustPercentage) || 0) / 100);
                 const newSubtotalProcessCost = ((process.unitCost * product.quantity) * adjust) + process.fixedCost;
                 totalProductCost += newSubtotalProcessCost;
+                newProductDescription += newProductDescription ? `, ${process.description}` : process.description;
 
                 // Calculo costo financiero de cada proceso
                 // console.log("Calculo el costo financiero del proceso: ", process.description, " con el costo: ", newSubtotalProcessCost);
@@ -224,12 +226,12 @@ const ButtonCalculateQuotation = () => {
                 const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, process.supplierPaymentMethodId, product.productionDays);
                 buyingFinanceCost += buyCost;
             }
-            toast.info(`Calculando el costo del producto: ${product.description}`, {
+            toast.info(`Calculando el costo del producto: ${newProductDescription}`, {
                 position: "top-center",
-                autoClose: 3000
+                autoClose: 1000
             })
 
-            if (calculateFinanceCost) {
+            if (quotationData.calculateFinancing) {
                 // Calculo el costo financiero del producto
                 if(sellingFinanceCost > buyingFinanceCost) {
                     newFinancingCost = sellingFinanceCost - buyingFinanceCost;
@@ -244,11 +246,10 @@ const ButtonCalculateQuotation = () => {
             // console.log("Total Product Cost: ", totalProductCost, " - ", productCost.totalProductCost , " New Financing Cost: ", newFinancingCost);
             const unitSellingPrice = calculateKitUniteSellingPrice(productCost.totalProductCost, newFinancingCost, product.quantity, targetUtilities, quotationTotalCost);
             const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
-            // const newProductDescription = productCost.description;
 
             updateProduct({
                 productId: product.productId,
-                // productDescription: newProductDescription,
+                productDescription: newProductDescription,
                 unitSellingPrice: unitSellingPrice,
                 financingCost: newFinancingCost,
                 pesosPrice: pesosPrice
@@ -322,6 +323,7 @@ const ButtonCalculateQuotation = () => {
             quoteStatus: quotationData.quoteStatus,
             quoteProductsDescription: quotationData.quoteProductsDescription,
             isKit: quotationData.isKit,
+            calculateFinancing: quotationData.calculateFinancing,
         }
         // Actualizo en la DB la información de Quotation en la BD
         try {
@@ -336,7 +338,7 @@ const ButtonCalculateQuotation = () => {
                     autoClose: 800,
                 }
             )
-            // console.log("Cotización guardada: ", responseQuote.data);
+            console.log("Cotización guardada: ", responseQuote.data);
             setIsSaved(true);
         } catch (error) {
             console.error("Error al guardar la cotización: ", error);
@@ -417,8 +419,9 @@ const ButtonCalculateQuotation = () => {
     const calculateQuotation = () => {
         // if (isSaved) return;
         // consulto si se quiere calcular el costo financiero
-        calculateFinanceCost = window.confirm("¿Queres calcular el Costo financiero?")
         
+        console.log("calculateQuotation: ", quotationData.calculateFinancing);
+        // calculateFinanceCost = window.confirm("¿Queres calcular el Costo financiero?")
         if (quotationData.isKit) {
             handleCalculateSetQuotation();
         } else {

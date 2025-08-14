@@ -29,7 +29,7 @@ const ButtonAddProcess = ( {productId} ) => {
     });
 
     useEffect(() => {
-        console.log("QuotationData changed in add process: ", quotationData);
+        // console.log("QuotationData changed in add process: ", quotationData);
         setTempId(uuidv4());
         setProcessData((prevData) => ({
             ...prevData,
