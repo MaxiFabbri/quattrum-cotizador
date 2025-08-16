@@ -41,7 +41,7 @@ const NewProduct = ({ productData }) => {
     // Actualizar el estado global al cambiar algun dato
     useEffect(() => {
         if (!isUpdated) {
-            console.log("Change in prodData: ", prodData);
+            // console.log("Change in prodData: ", prodData);
             updateProduct(prodData, prodData.productId);
             setIsUpdated(true);
         }
