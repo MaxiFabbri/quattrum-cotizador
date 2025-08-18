@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 
 const CustomerContainer = () => {
     const navigate = useNavigate(); // Hook para la navegación
+    const [page, setPage] = useState(1); // Estado para la página actual
     const [customers, setCustomers] = useState([]); // Estado para las cotizaciones
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState("");
@@ -18,8 +19,8 @@ const CustomerContainer = () => {
         // Función para realizar la solicitud GET
         const fetchCustomers = async () => {
             try {
-                const response = await apiClient.get(`/customers/populated/name?name=${filter}`);
-                setCustomers(response.data.response); // Asigna el array de la respuesta
+                const response = await apiClient.get(`/customers/paginated?page=${page}&limit=50&filter=${filter}`);
+                setCustomers(response.data.response); 
             } catch (error) {
                 setError("Error al cargar los clientes");
                 console.error(error);
@@ -29,8 +30,18 @@ const CustomerContainer = () => {
             }
         };
         fetchCustomers();
-    }, [updated, loading, filter]);
+    }, [updated, loading]);
 
+    // Función para manejar la navegación a la página anterior
+    const handlePreviousPage = () => {
+        setPage(prev => prev - 1)
+        setLoading(true);
+    }
+
+    const handleNextPage = () => {
+        setPage(prev => prev + 1)
+        setLoading(true);
+    }
 
     // Función para eliminar un Cliente
     const handleDelete = async (id) => {
@@ -50,6 +61,7 @@ const CustomerContainer = () => {
         const {value} = e.target;
         setUpdated(false);
         setFilter(value);
+        setPage(1);
     }
     // Función para crear un nuevo cliente
     const handleCreateCustomer = () => {
@@ -67,6 +79,7 @@ const CustomerContainer = () => {
                     className="customers-search"
                     type="text"
                     name="filter"
+                    value={filter}
                     placeholder="Buscar cliente"
                     onInput={handleFilterChange}
                 /> 
@@ -75,7 +88,7 @@ const CustomerContainer = () => {
                     text="Nuevo Cliente"
                     onClick={handleCreateCustomer} />
             </div>
-            {customers.length > 0 ? (
+            {customers.docs.length > 0 ? (
                 <table className="customers-table">
                     <thead className="customers-table-header">
                         <tr>
@@ -88,7 +101,7 @@ const CustomerContainer = () => {
                         </tr>
                     </thead>
                     <tbody className="customers-table-body">
-                        {customers.map((customer) => (
+                        {customers.docs.map((customer) => (
                             <Customer
                                 key={customer._id}
                                 customer={customer}
@@ -100,6 +113,27 @@ const CustomerContainer = () => {
             ) : (
                 <p>No se encontraron clientes.</p>
             )}
+            <div className="footer">
+                {customers.hasPrevPage ? (
+                <TextButton 
+                    text="Pagina Anterior" 
+                    onClick={handlePreviousPage} 
+                    />
+                ) :(
+                    <br />
+                )}
+                <h5>
+                    pagina {customers.page} de {customers.totalPages}
+                </h5>
+                {customers.hasNextPage ? (
+                <TextButton 
+                    text="Pagina siguiente" 
+                    onClick={handleNextPage} 
+                    />
+                ) : (
+                    <br />
+                )}
+            </div>
         </>
     )
 }
