@@ -8,6 +8,7 @@ import StatusFilterSelect from "../NewQuotation/InputComponents/StatusFilterSele
 
 const Quotations = () => {
     const [quotations, setQuotations] = useState([]); // Estado para las cotizaciones
+    const [page, setPage] = useState(1); // Estado para la página actual
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState("");
@@ -21,7 +22,7 @@ const Quotations = () => {
     // Función para realizar la solicitud GET
     const fetchQuotations = async () => {
         try {
-            const response = await apiClient.get(`/quotations/filtered?name=${filter}&status=${statusFilter}`);
+            const response = await apiClient.get(`/quotations/paginated?page=${page}&name=${filter}&status=${statusFilter}`);
             setQuotations(response.data.response);
         } catch (error) {
             setError("Error al cargar las cotizaciones");
@@ -43,14 +44,26 @@ const Quotations = () => {
     };
     const handleFilterChange = (e) => {
         const { value } = e.target;
-        setLoading(true)
+        setLoading(true);
         setFilter(value);
+        setPage(1);
     }
     const handleStatusFilterChange = (e) => {
         const { value } = e.target;
         setLoading(true);
         setStatusFilter(value);
+        setPage(1);
     };
+
+    // Función para manejar la navegación a la página anterior
+    const handlePreviousPage = () => {
+        setPage(prev => prev - 1)
+        setLoading(true);
+    }
+    const handleNextPage = () => {
+        setPage(prev => prev + 1)
+        setLoading(true);
+    }
 
     return (
         <>
@@ -91,8 +104,8 @@ const Quotations = () => {
                         <tr>
                             <td colSpan="9">{error}</td>
                         </tr>
-                    ) : quotations.length > 0 ? (
-                        quotations.map((quote) => (
+                    ) : quotations.docs.length > 0 ? (
+                        quotations.docs.map((quote) => (
                             <Quotation
                                 key={quote._id}
                                 quote={quote}
@@ -106,6 +119,27 @@ const Quotations = () => {
                     )}
                 </tbody>
             </table>
+            <div className="footer">
+                {quotations.hasPrevPage ? (
+                <TextButton 
+                    text="Pagina Anterior" 
+                    onClick={handlePreviousPage} 
+                    />
+                ) :(
+                    <br />
+                )}
+                <h5>
+                    pagina {quotations.page} de {quotations.totalPages}
+                </h5>
+                {quotations.hasNextPage ? (
+                <TextButton 
+                    text="Pagina siguiente" 
+                    onClick={handleNextPage} 
+                    />
+                ) : (
+                    <br />
+                )}
+            </div>
         </>
     );
 };
