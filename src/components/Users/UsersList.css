@@ -14,10 +14,15 @@
 .users-list-header {
     display: grid;
     justify-content: center;
-    grid-template-columns: 80% 7%;
+    grid-template-columns: 80% 10%;
+    align-content: center;
+    align-items: center;
     margin-bottom: 5px;
 }
-
+.users-list-header h2{
+    text-align: center;
+    margin: 0;
+}
 
 .users-table tbody{
     background-color: #fff;

@@ -10,8 +10,8 @@ const DropdownMenu = ({ user, role, onLogout }) => {
 
     const menu = (
         <Menu>
-            <MenuItem style={{ fontSize: '1.3em' }} key="1" onClick={() => navigate('/users/password-update')}>Cambiar Contraseña</MenuItem>
-            <MenuItem style={{ fontSize: '1.3em' }} key="2" onClick={onLogout}>Cerrar Sesión</MenuItem>
+            <MenuItem style={{ fontSize: '0.7em', fontWeight: '300' }} key="1" onClick={() => navigate('/users/password-update')}>Cambiar Contraseña</MenuItem>
+            <MenuItem style={{ fontSize: '0.7em', fontWeight: '300' }} key="2" onClick={onLogout}>Cerrar Sesión</MenuItem>
         </Menu>
     );
 

@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AuthProvider, AuthContext } from '../../context/AuthContext.jsx';
+import TextButton from '../Utils/TextButton.jsx';
 import './LoginForm.css';
 
 const LoginForm = () => {
@@ -32,7 +33,10 @@ const LoginForm = () => {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </label>
-                <button type="submit">Iniciar sesión</button>
+                <TextButton 
+                    text="Iniciar sesión"
+                    onClick={handleSubmit}
+                    />
             </form>
 
         </>

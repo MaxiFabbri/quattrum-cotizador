@@ -58,7 +58,6 @@ const UsersList = () => {
                     onClick={() => navigate("/users/new")}
                 />
             </div>
-
             <table className='users-table'>
                 <thead>
                     <tr key="users-thead">
