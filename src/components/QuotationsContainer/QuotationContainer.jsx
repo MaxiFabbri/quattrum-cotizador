@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import "./QuotationsContainer.css";
+import { QuotationContext } from "../../context/QuotationContext.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 import { Link } from "react-router-dom";
 import TextButton from "../Utils/TextButton.jsx";
@@ -11,8 +12,9 @@ const Quotations = () => {
     const [page, setPage] = useState(1); // Estado para la página actual
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [filter, setFilter] = useState("");
-    const [statusFilter, setStatusFilter] = useState(""); // Estado para el filtro de estado
+    // const [filter, setFilter] = useState("");
+    // const [statusFilter, setStatusFilter] = useState(""); // Estado para el filtro de estado
+    const { statusFilter, setStatusFilter, filter, setFilter } = useContext(QuotationContext);
 
 
     useEffect(() => {
@@ -72,6 +74,7 @@ const Quotations = () => {
                     className="quotations-search"
                     type="text"
                     name="filter"
+                    value={filter}
                     placeholder="Buscar cotización por cliente"
                     onInput={handleFilterChange}
                 />

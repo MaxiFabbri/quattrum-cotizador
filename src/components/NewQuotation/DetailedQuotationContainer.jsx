@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { closestCenter, DndContext } from '@dnd-kit/core';
 import { CSS } from "@dnd-kit/utilities";
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { useParams } from "react-router-dom";
 import "./OneQuotationContainer.css"
 
 import { QuotationHeader } from "./QuotationUtils/NewQuotationHeaders.jsx";
@@ -10,6 +10,7 @@ import NewQuotation from "./NewQuotation.jsx";
 import NewProduct from "./QuotationElements/NewProduct.jsx";
 import { ParametersContext } from '../../context/ParametersContext.jsx';
 import { QuotationContext } from "../../context/QuotationContext.jsx";
+import TextButton from "../Utils/TextButton.jsx";
 
 import ButtonCalculateQuotation from "./QuotationUtils/ButtonCalculateQuotation.jsx";
 import ButtonAddProduct from "./QuotationUtils/ButtonAddProduct.jsx";
@@ -20,11 +21,10 @@ const DetailedQuotationContainer = (quote) => {
     const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
     const { quotationData, clearQuotationData, updateQuotationData, setIsSaved } = useContext(QuotationContext);
     const [activeId, setActiveId] = useState(null)
-
-
-
     const today = new Date().toISOString().split("T")[0];
     const { id } = useParams()
+    const navigate = useNavigate();
+
 
     // Formatear la fecha
     const formatDate = (utcDate) => {
@@ -177,6 +177,10 @@ const DetailedQuotationContainer = (quote) => {
                             <ButtonAddProduct />
                             <ButtonCalculateQuotation />
                             <ButtonDuplicateQuotation />
+                            <TextButton
+                                text="Cancelar"
+                                onClick={() => navigate("/")}
+                            />
                         </div>
                     </>
                 ) : (

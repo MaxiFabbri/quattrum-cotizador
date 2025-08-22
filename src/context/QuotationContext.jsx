@@ -28,6 +28,8 @@ export const QuotationProvider = ({ children }) => {
 
     const [isSaved, setIsSaved] = useState(true);
     const [quotationData, setQuotationData] = useState(initialQuotationDataState);
+    const [filter, setFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
 
     const deleteProcessFromDb = async (processId) => {
         // Realiza la operación de eliminación en la base de datos
@@ -173,6 +175,10 @@ export const QuotationProvider = ({ children }) => {
             value={{
                 quotationData,
                 isSaved,
+                filter,
+                setFilter,
+                statusFilter,
+                setStatusFilter,
                 setIsSaved,
                 clearQuotationData,
                 updateQuotationData,
