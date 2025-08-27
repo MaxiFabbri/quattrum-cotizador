@@ -19,7 +19,7 @@ export const ParametersProvider = ({ children }) => {
         try {
             const response = await apiClient.get('general-parameters');
             const { monthlyRate, tax, utilitiesTable, dolar } = response.data.response[0];
-
+            
             setParamMonthlyRate(monthlyRate);
             setTax(tax);
             setUtilitiesTable(utilitiesTable);

@@ -42,6 +42,7 @@ const GeneralParameters = () => {
             updatedTable[0].kitMinimun = newMinimum;
         }
     
+        console.log("Updated Table: ",updatedTable);
         // 🚀 Actualizar estado final
         setNewUtilitiesTable(updatedTable);
     }
@@ -75,7 +76,9 @@ const GeneralParameters = () => {
 
     const handleDelete = (id) => {
         console.log("Eliminar Item ", id);
-        setNewUtilitiesTable(prevItems => prevItems.filter(item => item.id !== id));
+        const updatedTable = [...newUtilitiesTable].filter(item => item.id !== id);
+        // setNewUtilitiesTable(prevItems => prevItems.filter(item => item.id !== id));
+        orderUtilitiesTable(updatedTable);
     }
 
     const handleCancel = () => {

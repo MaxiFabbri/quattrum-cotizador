@@ -39,6 +39,10 @@ const DetailedQuotationContainer = (quote) => {
     const adjustProcessesData = (dbProcesses, exchangeRate) => {
         const newProcessesData = dbProcesses.map((process, index) => {
             let newExchangeRate = process.currency === "Peso" ? exchangeRate : 1;
+            console.log("Process Description: ", process.description)
+            console.log("New Exchange Rate: ", newExchangeRate)
+            console.log("Unit Cost: ", process.unitCost)
+            console.log("New Unit Cost: ", process.unitCost * newExchangeRate)
             return {
                 adjustPercentage: process.adjustPercentage,
                 processId: process._id,
@@ -50,9 +54,9 @@ const DetailedQuotationContainer = (quote) => {
                 supplierPaymentMethodName: process.supplierPaymentMethodId.supplier_payment_description,
                 daysToPayment: process.daysToPayment,
                 currency: process.currency,
-                unitCost: +(process.unitCost).toFixed(4),
+                unitCost: +(process.unitCost),
                 tempunitCost: +(process.unitCost * newExchangeRate).toFixed(2),
-                fixedCost: +(process.fixedCost).toFixed(4),
+                fixedCost: +(process.fixedCost),
                 tempfixedCost: +(process.fixedCost * newExchangeRate).toFixed(2),
                 subTotalProcessCost: +(process.subTotalProcessCost),
                 savedToDb: true,
