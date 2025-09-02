@@ -39,10 +39,10 @@ const DetailedQuotationContainer = (quote) => {
     const adjustProcessesData = (dbProcesses, exchangeRate) => {
         const newProcessesData = dbProcesses.map((process, index) => {
             let newExchangeRate = process.currency === "Peso" ? exchangeRate : 1;
-            console.log("Process Description: ", process.description)
-            console.log("New Exchange Rate: ", newExchangeRate)
-            console.log("Unit Cost: ", process.unitCost)
-            console.log("New Unit Cost: ", process.unitCost * newExchangeRate)
+            // console.log("Process Description: ", process.description)
+            // console.log("New Exchange Rate: ", newExchangeRate)
+            // console.log("Unit Cost: ", process.unitCost)
+            // console.log("New Unit Cost: ", process.unitCost * newExchangeRate)
             return {
                 adjustPercentage: process.adjustPercentage,
                 processId: process._id,
@@ -91,10 +91,12 @@ const DetailedQuotationContainer = (quote) => {
                 tempotherCost: +(product.otherCost * exchangeRate).toFixed(2),
                 unitSellingPrice: +(product.unitSellingPrice),
                 pesosPrice: +(product.unitSellingPrice * exchangeRate).toFixed(0),
+                totalProductCost: +(product.totalProductCost),
                 processes: newProcesses, // Ahora los procesos se incluyen correctamente
                 savedToDb: true,
             };
         }));
+        // console.log("New Products Data: ", newProductsData)
         return newProductsData;
     };
 
@@ -116,7 +118,7 @@ const DetailedQuotationContainer = (quote) => {
         const responseProducts = await apiClient.get(`/products/${id}`)
         const newProducts = await adjustProductData(responseProducts.data.response, newData.exchangeRate)
         newData = { ...newData, products: newProducts }
-        console.log("New Data leyendo de la DB: ", newData)
+        // console.log("New Data leyendo de la DB: ", newData)
         updateQuotationData(
             newData
         );

@@ -1,5 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { QuotationContext } from "../../../context/QuotationContext";
+import { ParametersContext } from "../../../context/ParametersContext";
 import IconButton from "../../Utils/IconButton";
 import ButtonAddProcess from "../QuotationUtils/ButtonAddProcess";
 import ButtonDuplicateProduct from "../QuotationUtils/ButtonDuplicateProduct";
@@ -12,9 +13,11 @@ import { closestCenter, DndContext } from '@dnd-kit/core';
 
 const NewProduct = ({ productData }) => {
     const { quotationData, updateQuotationData, updateProduct, removeProduct, setIsSaved } = useContext(QuotationContext);
+    const { tax } = useContext(ParametersContext);
     const [prodData, setProdData] = useState(productData);
     const [isUpdated, setIsUpdated] = useState(true);
     const [activeId, setActiveId] = useState(null)
+    const [percentageUtilitie, setPercentageUtilitie] = useState(0);
 
     const {
         attributes,
@@ -25,6 +28,21 @@ const NewProduct = ({ productData }) => {
     } = useSortable({
         id: productData.productId
     })
+
+    const calculateUtilitie = () => {
+        // console.log("Product Data: ", productData);
+        const totalSellingPrice = (productData.unitSellingPrice * productData.quantity)
+        // console.log("Total Selling Price: ", totalSellingPrice);
+        const netSellingPrice = totalSellingPrice - ( totalSellingPrice * tax )
+        // console.log("Tax: ", tax);
+        // console.log("Net Selling Price: ", netSellingPrice);
+        const utilitie = netSellingPrice - productData.totalProductCost
+        // console.log("utilitie: ", utilitie);
+        setPercentageUtilitie(((utilitie / totalSellingPrice) * 100).toFixed(2));
+    }
+    useEffect(() => {
+        calculateUtilitie();
+    }, [prodData.pesosPrice]);
 
     // Actualizar el estado local `prodData` cuando cambie `quotationData`
     useEffect(() => {
@@ -94,10 +112,9 @@ const NewProduct = ({ productData }) => {
                 [newName]: convertedValue,
             }))
         }
-
         setProdData((prevData) => ({
             ...prevData,
-            [name]: value,
+            [name]: +value,
         }))
         setIsUpdated(false); // Cambiamos el estado a `false` para indicar que se ha actualizado
     };
@@ -141,7 +158,6 @@ const NewProduct = ({ productData }) => {
         setActiveId(null);
     };
 
-
     const prodStyle = {
         transform: CSS.Transform.toString(transform),
         transition,
@@ -166,6 +182,7 @@ const NewProduct = ({ productData }) => {
                         <th>Financiero</th>
                         <th>Fletes</th>
                         <th>Otros</th>
+                        <th>Utilidad</th>
                         <th>Precio Unitario</th>
                         <th></th>
                     </tr>
@@ -232,6 +249,11 @@ const NewProduct = ({ productData }) => {
                                 onClick={(e) => e.target.select()}
                                 onInput={handleInputChange}
                             />
+                        </td>
+                        <td>
+                            <span className="percentage-utility">
+                                {isNaN(percentageUtilitie) ? '%' : `${percentageUtilitie} %`}
+                            </span>
                         </td>
                         <td>
                             <span className="pesos-price">$ {prodData.pesosPrice}</span>

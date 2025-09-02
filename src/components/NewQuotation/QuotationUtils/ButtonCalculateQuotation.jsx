@@ -177,13 +177,14 @@ const ButtonCalculateQuotation = () => {
             const finalCost = totalProductCost + product.shipmentCost + product.otherCost;
             const unitSellingPrice = parseFloat(calculateUnitSellingPrice(finalCost, newFinancingCost, product.quantity));
             const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
-    
+            console.log("Final Product Cost: ", finalCost, " - ", product.productId , " New Financing Cost: ", newFinancingCost);
             updateProduct({
                 productId: product.productId,
                 productDescription: newProductDescription,
                 financingCost: newFinancingCost,
                 unitSellingPrice,
                 pesosPrice,
+                totalProductCost: finalCost,
             }, product.productId);
     
             product.processes = updatedProcesses; // si necesitás actualizar el array localmente
@@ -243,7 +244,7 @@ const ButtonCalculateQuotation = () => {
                 newFinancingCost = 0;
             }
 
-            // console.log("Total Product Cost: ", totalProductCost, " - ", productCost.totalProductCost , " New Financing Cost: ", newFinancingCost);
+            console.log("Total Product Cost: ", totalProductCost, " - ", productCost.totalProductCost , " New Financing Cost: ", newFinancingCost);
             const unitSellingPrice = calculateKitUniteSellingPrice(productCost.totalProductCost, newFinancingCost, product.quantity, targetUtilities, quotationTotalCost);
             const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
 
@@ -252,6 +253,7 @@ const ButtonCalculateQuotation = () => {
                 productDescription: newProductDescription,
                 unitSellingPrice: unitSellingPrice,
                 financingCost: newFinancingCost,
+                totalProductCost: productCost.totalProductCost,
                 pesosPrice: pesosPrice
             }, product.productId);
 
@@ -357,6 +359,7 @@ const ButtonCalculateQuotation = () => {
                 otherCost: product.otherCost,
                 productDescription: product.productDescription,
                 unitSellingPrice: product.unitSellingPrice,
+                totalProductCost: product.totalProductCost,
                 savedToDb: product.savedToDb,
                 order: index,
             }
