@@ -263,7 +263,7 @@ const NewProduct = ({ productData }) => {
                                 text="Editar Producto"
                                 onClick={() => setEditPrice(prev => !prev)}
                             />
-                            <span className="pesos-price"> $ {prodData.pesosPrice}</span>
+                            <span className="pesos-price"> $ {prodData.pesosPrice.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</span>
                         </td>
                         <td>
                             <IconButton
