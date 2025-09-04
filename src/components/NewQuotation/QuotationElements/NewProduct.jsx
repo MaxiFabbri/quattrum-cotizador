@@ -5,6 +5,7 @@ import IconButton from "../../Utils/IconButton";
 import ButtonAddProcess from "../QuotationUtils/ButtonAddProcess";
 import ButtonDuplicateProduct from "../QuotationUtils/ButtonDuplicateProduct";
 import NewProcess from "./NewProcess";
+import ProductCostDetails from "./ProductCostDetails";
 
 import { CSS } from "@dnd-kit/utilities";
 import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
@@ -18,6 +19,7 @@ const NewProduct = ({ productData }) => {
     const [isUpdated, setIsUpdated] = useState(true);
     const [activeId, setActiveId] = useState(null)
     const [percentageUtilitie, setPercentageUtilitie] = useState(0);
+    const [editPrice, setEditPrice] = useState(false);
 
     const {
         attributes,
@@ -29,19 +31,19 @@ const NewProduct = ({ productData }) => {
         id: productData.productId
     })
 
-    const calculateUtilitie = () => {
+    const calculatePercentageUtilitie = () => {
         // console.log("Product Data: ", productData);
         const totalSellingPrice = (productData.unitSellingPrice * productData.quantity)
         // console.log("Total Selling Price: ", totalSellingPrice);
-        const netSellingPrice = totalSellingPrice - ( totalSellingPrice * tax )
-        // console.log("Tax: ", tax);
+        // const netSellingPrice = totalSellingPrice - ( totalSellingPrice * tax )
+        const netSellingPrice =  totalSellingPrice - (productData.financingCost * (1 + tax))
         // console.log("Net Selling Price: ", netSellingPrice);
-        const utilitie = netSellingPrice - productData.totalProductCost
+        const utilitie = totalSellingPrice - productData.totalProductCost - productData.financingCost - (totalSellingPrice * tax)
         // console.log("utilitie: ", utilitie);
-        setPercentageUtilitie(((utilitie / totalSellingPrice) * 100).toFixed(2));
+        setPercentageUtilitie(((utilitie / netSellingPrice) * 100).toFixed(2));
     }
     useEffect(() => {
-        calculateUtilitie();
+        calculatePercentageUtilitie();
     }, [prodData.pesosPrice]);
 
     // Actualizar el estado local `prodData` cuando cambie `quotationData`
@@ -256,7 +258,12 @@ const NewProduct = ({ productData }) => {
                             </span>
                         </td>
                         <td>
-                            <span className="pesos-price">$ {prodData.pesosPrice}</span>
+                            <IconButton
+                                icon={editPrice ? "/collapse.png" : "/expand.png"}
+                                text="Editar Producto"
+                                onClick={() => setEditPrice(prev => !prev)}
+                            />
+                            <span className="pesos-price"> $ {prodData.pesosPrice}</span>
                         </td>
                         <td>
                             <IconButton
@@ -266,6 +273,7 @@ const NewProduct = ({ productData }) => {
                             />
                         </td>
                     </tr>
+                    {editPrice && <ProductCostDetails productData={prodData} exchangeRate={quotationData.exchangeRate} />}
                     <tr key={"processes-" + productData.productId} id={"processes-" + productData.productId}>
                         <td colSpan="11">
                             {productData.processes && productData.processes.length > 0 ? (
