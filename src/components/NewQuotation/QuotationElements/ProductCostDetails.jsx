@@ -12,10 +12,15 @@ const ProductCostDetails = ({ productData, exchangeRate }) => {
 
   // console.log("Product Cost Details: ", productData)
   // console.log("Parameters tax: ", tax, " Total Tax: ", totalTax)
+  console.log("Total Selling Price: ", totalSellingPrice * exchangeRate)
+  console.log("Total Product Cost: ", productData.totalProductCost * exchangeRate)
+  console.log("Total Tax: ", totalTax * exchangeRate)
+  console.log("Financing Cost: ", productData.financingCost * exchangeRate)
+  console.log("Net Utility: ", netUtitlitie * exchangeRate)
 
   return (
     <tr>
-      <td colspan="9">
+      <td colSpan="9">
         {/* <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', flexDirection: 'column' }}> */}
         <div className="cost-details">
           <span>Venta total: $ {(totalSellingPrice * exchangeRate).toLocaleString('es-AR', { maximumFractionDigits: 0 })}</span>

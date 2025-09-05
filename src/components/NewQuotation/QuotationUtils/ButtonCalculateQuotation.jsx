@@ -166,7 +166,7 @@ const ButtonCalculateQuotation = () => {
                 // Calculo el costo financiero del producto
                 if(sellingFinanceCost > buyingFinanceCost) {
                     newFinancingCost = sellingFinanceCost - buyingFinanceCost;
-                    // console.log("Selling Finance Cost: ", sellingFinanceCost, " Buying Finance Cost: ", buyingFinanceCost, " New Financing Cost: ", newFinancingCost);
+                    console.log("Selling Finance Cost: ", sellingFinanceCost, " Buying Finance Cost: ", buyingFinanceCost, " New Financing Cost: ", newFinancingCost);
                 } else {
                     // console.log("Buying Finance Cost: ", buyingFinanceCost, " Selling Finance Cost: ", sellingFinanceCost, " New Financing Cost: ", newFinancingCost);
                 } 
@@ -177,7 +177,7 @@ const ButtonCalculateQuotation = () => {
             const finalCost = totalProductCost + product.shipmentCost + product.otherCost;
             const unitSellingPrice = parseFloat(calculateUnitSellingPrice(finalCost, newFinancingCost, product.quantity));
             const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
-            console.log("Final Product Cost: ", finalCost, " - ", product.productId , " New Financing Cost: ", newFinancingCost);
+            // console.log("Final Product Cost: ", finalCost, " - ", product.productId , " New Financing Cost: ", newFinancingCost);
             updateProduct({
                 productId: product.productId,
                 productDescription: newProductDescription,
@@ -422,9 +422,7 @@ const ButtonCalculateQuotation = () => {
     const calculateQuotation = () => {
         // if (isSaved) return;
         // consulto si se quiere calcular el costo financiero
-        
-        console.log("calculateQuotation: ", quotationData.calculateFinancing);
-        // calculateFinanceCost = window.confirm("¿Queres calcular el Costo financiero?")
+        // console.log("calculateQuotation: ", quotationData.calculateFinancing);
         if (quotationData.isKit) {
             handleCalculateSetQuotation();
         } else {
