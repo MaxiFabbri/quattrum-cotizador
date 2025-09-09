@@ -43,12 +43,14 @@ const NewQuotation = () => {
         setIsSaved(false);
         console.log("Customer selected:", customer);
         const paymentMethodData = await getPaymentMethodData(customer.customerPaymentMethodId);
+        console.log("Fetched payment method data:", paymentMethodData);
         updateQuotationData({
             customerId: customer._id || "",
             customerName: customer.name || "",
             paymentMethodId: customer.customerPaymentMethodId || "",
             paymentMethodName: paymentMethodData.customer_payment_description || "",
-            paymentDaysToCollect: paymentMethodData.days_to_collect || 0,
+            customerPaymentDetails: paymentMethodData.customer_payment_details || [],
+            // paymentDaysToCollect: paymentMethodData.days_to_collect || 0,
         })
     };
 
@@ -58,6 +60,7 @@ const NewQuotation = () => {
         updateQuotationData({
             paymentMethodId: newCustomerPaymentMethod._id || "",
             paymentMethodName: newCustomerPaymentMethod.customer_payment_description || "",
+            customerPaymentDetails: newCustomerPaymentMethod.customer_payment_details || [],
             // paymentDaysToCollect: newCustomerPaymentMethod.days_to_collect || 0,
         });
     };

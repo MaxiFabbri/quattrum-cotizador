@@ -93,30 +93,40 @@ const ButtonCalculateQuotation = () => {
 
     const getSellingFinanceCost = async (subTotalCost, productionDays) => {;
         let sellFinanceCost = 0;
-        let paymentDetails = [];
-        try {
-            const response = await apiClient.get(`/customer-payment-methods/${quotationData.paymentMethodId}`);
-            paymentDetails = response.data.response.customer_payment_details;
-            // console.log( "Sell Payment ID: ", quotationData.paymentMethodId ," Payment details: ", paymentDetails);
-        } catch (error) {
-            console.log("Error: ", error);
-        }
+        let paymentDetails = quotationData.customerPaymentDetails;
+        // try {
+        //     const response = await apiClient.get(`/customer-payment-methods/${quotationData.paymentMethodId}`);
+        //     paymentDetails = response.data.response.customer_payment_details;
+        //     // console.log( "Sell Payment ID: ", quotationData.paymentMethodId ," Payment details: ", paymentDetails);
+        // } catch (error) {
+        //     console.log("Error: ", error);
+        // }
         sellFinanceCost += paymentDetails.reduce((acc, element) => {
             return acc + calculateItemFinanceCost(subTotalCost, productionDays, element);
         }, 0);
         return sellFinanceCost;
     };
 
-    const getBuyingFinanceCost = async (subTotalCost, paymentId, productionDays) => {
+    // const getBuyingFinanceCost = async (subTotalCost, paymentId, productionDays) => {
+    //     let buyFinanceCost = 0;
+    //     let paymentDetails = [];
+    //     try {
+    //         const response = await apiClient.get(`/supplier-payment-methods/${paymentId}`);
+    //         paymentDetails = response.data.response.supplier_payment_details;
+    //         // console.log( "Buy Payment ID: ", paymentId ," Payment details: ", paymentDetails);
+    //     } catch (error) {
+    //         console.log("Error: ", error);
+    //     }
+    //     buyFinanceCost += paymentDetails.reduce((acc, element) => {
+    //         return acc + calculateItemFinanceCost(subTotalCost, productionDays, element);
+    //     }, 0);
+    //     return buyFinanceCost;
+    // };
+    const getBuyingFinanceCost = async (subTotalCost, supplierPaymentDetails, productionDays) => {
+        console.log("Supplier Payment Details: ", supplierPaymentDetails);
         let buyFinanceCost = 0;
-        let paymentDetails = [];
-        try {
-            const response = await apiClient.get(`/supplier-payment-methods/${paymentId}`);
-            paymentDetails = response.data.response.supplier_payment_details;
-            // console.log( "Buy Payment ID: ", paymentId ," Payment details: ", paymentDetails);
-        } catch (error) {
-            console.log("Error: ", error);
-        }
+        let paymentDetails = supplierPaymentDetails;
+        
         buyFinanceCost += paymentDetails.reduce((acc, element) => {
             return acc + calculateItemFinanceCost(subTotalCost, productionDays, element);
         }, 0);
@@ -141,12 +151,12 @@ const ButtonCalculateQuotation = () => {
     
                 newProductDescription += newProductDescription ? `, ${process.description}` : process.description;
                 
-                // console.log("Calculo el costo financiero del proceso: ", process.description, " con el costo: ", newSubtotalProcessCost);
                 // Calculo costo financiero de cada proceso
                 const sellCost = await getSellingFinanceCost(newSubtotalProcessCost, product.productionDays);
                 sellingFinanceCost += sellCost;
-    
-                const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, process.supplierPaymentMethodId, product.productionDays);
+                console.log("process for finance cost: ", process)
+                // const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, process.supplierPaymentMethodId, product.productionDays);
+                const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, process.supplierPaymentDetails, product.productionDays);
                 buyingFinanceCost += buyCost;
                 
                 // Actualizar el costo del proceso en el producto
@@ -319,6 +329,7 @@ const ButtonCalculateQuotation = () => {
             date: quotationData.date,
             customerId: quotationData.customerId,
             paymentMethodId: quotationData.paymentMethodId,
+            customerPaymentDetails: quotationData.customerPaymentDetails,
             monthlyRate: quotationData.monthlyRate,
             currency: quotationData.currency,
             exchangeRate: quotationData.exchangeRate,
@@ -390,6 +401,7 @@ const ButtonCalculateQuotation = () => {
                     supplierId: process.supplierId,
                     supplierPaymentMethodId: process.supplierPaymentMethodId,
                     daysToPayment: process.daysToPayment,
+                    supplierPaymentDetails: process.supplierPaymentDetails,
                     currency: process.currency,
                     adjustPercentage: process.adjustPercentage,
                     unitCost: process.unitCost,

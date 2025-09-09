@@ -14,6 +14,7 @@ export const QuotationProvider = ({ children }) => {
         customerName: "",
         paymentMethodId: "",
         paymentMethodName: "",
+        customerPaymentDetails: [],
         paymentDaysToCollect: 0,
         monthlyRate: 0,
         currency: "Peso",

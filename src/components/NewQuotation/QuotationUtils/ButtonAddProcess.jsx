@@ -17,6 +17,7 @@ const ButtonAddProcess = ( {productId} ) => {
         supplierName: "",
         supplierPaymentMethodId: "",
         supplierPaymentMethodName: "",
+        supplierPaymentDetails: [],
         daysToPayment: 0,
         currency: quotationData.currency || "Peso",
         unitCost: 0,

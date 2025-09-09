@@ -115,6 +115,7 @@ const NewProcess = ({ initialProcessData }) => {
     const handleSupplierUpdate = async (supplier) => {
         setIsSaved(false)
         const paymentMethodData = await getPaymentMethodData(supplier.supplierPaymentMethodId);
+        console.log("Payment method data: ", paymentMethodData);
         const updatedData = {
             ...processData,
             productId: processData.productId,
@@ -123,6 +124,7 @@ const NewProcess = ({ initialProcessData }) => {
             supplierName: supplier.name || "",
             supplierPaymentMethodId: paymentMethodData._id || "",
             supplierPaymentMethodName: paymentMethodData.supplier_payment_description || "",
+            supplierPaymentDetails: paymentMethodData.supplier_payment_details || [],
             daysToPayment: paymentMethodData.days_to_payment || 0,
         }
         setProcessData(updatedData);
@@ -130,10 +132,12 @@ const NewProcess = ({ initialProcessData }) => {
 
     const handleSupplierPaymentMethodUpdate = (supplierPaymentMethod) => {
         setIsSaved(false)
+        console.log("updating payment method: ", supplierPaymentMethod)
         setProcessData((prevData) => ({
             ...prevData,
             supplierPaymentMethodId: supplierPaymentMethod._id || "",
             supplierPaymentMethodName: supplierPaymentMethod.supplier_payment_description || "",
+            supplierPaymentDetails: supplierPaymentMethod.supplier_payment_details || [],
         }))
 
     }

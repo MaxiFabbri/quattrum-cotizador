@@ -52,6 +52,7 @@ const DetailedQuotationContainer = (quote) => {
                 supplierName: process.supplierId.name,
                 supplierPaymentMethodId: process.supplierPaymentMethodId._id,
                 supplierPaymentMethodName: process.supplierPaymentMethodId.supplier_payment_description,
+                supplierPaymentDetails: process.supplierPaymentMethodId.supplier_payment_details,
                 daysToPayment: process.daysToPayment,
                 currency: process.currency,
                 unitCost: +(process.unitCost),
@@ -111,9 +112,9 @@ const DetailedQuotationContainer = (quote) => {
             customerName: newData.customerId.name,
             paymentMethodName: newData.paymentMethodId.customer_payment_description,
             paymentMethodId: newData.paymentMethodId._id,
+            customerPaymentDetails: newData.paymentMethodId.customer_payment_details,
             calculateFinancing: newData.calculateFinancing || false,
         }
-
         // agrego los Productos
         const responseProducts = await apiClient.get(`/products/${id}`)
         const newProducts = await adjustProductData(responseProducts.data.response, newData.exchangeRate)
