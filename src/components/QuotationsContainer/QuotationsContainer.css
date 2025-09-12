@@ -26,6 +26,7 @@
     margin-top: 2px;
     font-size: 12px;
     text-align: left;
+    margin-bottom: 40px;
 }
 
 .quotations-table th:nth-child(1) { width: 5%; }
