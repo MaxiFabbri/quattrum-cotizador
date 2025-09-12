@@ -24,7 +24,7 @@ const Quotations = () => {
     // Función para realizar la solicitud GET
     const fetchQuotations = async () => {
         try {
-            const response = await apiClient.get(`/quotations/paginated-new?page=${page}&name=${filter}&status=${statusFilter}&limit=25`);
+            const response = await apiClient.get(`/quotations/paginated-new?page=${page}&name=${filter}&status=${statusFilter}`);
             setQuotations(response.data.response);
         } catch (error) {
             setError("Error al cargar las cotizaciones");
