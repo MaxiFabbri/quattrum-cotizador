@@ -12,19 +12,23 @@ const Quotations = () => {
     const [page, setPage] = useState(1); // Estado para la página actual
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    // const [filter, setFilter] = useState("");
-    // const [statusFilter, setStatusFilter] = useState(""); // Estado para el filtro de estado
     const { statusFilter, setStatusFilter, filter, setFilter } = useContext(QuotationContext);
-
+    const [ counter, setCounter ] = useState(0);
 
     useEffect(() => {
-        fetchQuotations();
-    }, [loading]);
+        const loadData = async () => {
+            setLoading(true);
+            await fetchQuotations();
+            setLoading(false);
+        };
+        loadData();
+    }, [page, filter, statusFilter]);
+    
 
     // Función para realizar la solicitud GET
     const fetchQuotations = async () => {
         try {
-            const response = await apiClient.get(`/quotations/paginated-new?page=${page}&name=${filter}&status=${statusFilter}`);
+            const response = await apiClient.get(`/quotations/paginated-new?page=${page}&name=${filter}&status=${statusFilter}&limit=10`);
             setQuotations(response.data.response);
         } catch (error) {
             setError("Error al cargar las cotizaciones");
