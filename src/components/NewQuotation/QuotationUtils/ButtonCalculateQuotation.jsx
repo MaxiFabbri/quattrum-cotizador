@@ -234,7 +234,7 @@ const ButtonCalculateQuotation = () => {
                 const sellCost = await getSellingFinanceCost(newSubtotalProcessCost, product.productionDays);
                 sellingFinanceCost += sellCost;
 
-                const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, process.supplierPaymentMethodId, product.productionDays);
+                const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, process.supplierPaymentDetails, product.productionDays);
                 buyingFinanceCost += buyCost;
             }
             toast.info(`Calculando el costo del producto: ${newProductDescription}`, {
