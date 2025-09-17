@@ -17,7 +17,7 @@ import ButtonAddProduct from "./QuotationUtils/ButtonAddProduct.jsx";
 import ButtonDuplicateQuotation from "./QuotationUtils/ButtonDuplicateQuotation.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 
-const DetailedQuotationContainer = (quote) => {
+const DetailedQuotationContainer = () => {
     const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
     const { quotationData, clearQuotationData, updateQuotationData, setIsSaved } = useContext(QuotationContext);
     const [activeId, setActiveId] = useState(null)
@@ -39,10 +39,6 @@ const DetailedQuotationContainer = (quote) => {
     const adjustProcessesData = (dbProcesses, exchangeRate) => {
         const newProcessesData = dbProcesses.map((process, index) => {
             let newExchangeRate = process.currency === "Peso" ? exchangeRate : 1;
-            // console.log("Process Description: ", process.description)
-            // console.log("New Exchange Rate: ", newExchangeRate)
-            // console.log("Unit Cost: ", process.unitCost)
-            // console.log("New Unit Cost: ", process.unitCost * newExchangeRate)
             return {
                 adjustPercentage: process.adjustPercentage,
                 processId: process._id,
@@ -149,7 +145,7 @@ const DetailedQuotationContainer = (quote) => {
 
     useEffect(() => {
         getQuotationDataFromDb(id)
-    }, []);
+    }, [id]);
 
     return (
         <div>

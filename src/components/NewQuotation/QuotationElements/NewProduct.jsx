@@ -16,7 +16,7 @@ const NewProduct = ({ productData }) => {
     const { quotationData, updateQuotationData, updateProduct, removeProduct, setIsSaved } = useContext(QuotationContext);
     const { tax } = useContext(ParametersContext);
     const [prodData, setProdData] = useState(productData);
-    const [isUpdated, setIsUpdated] = useState(true);
+    const [isProdUpdated, setIsProdUpdated] = useState(true);
     const [activeId, setActiveId] = useState(null)
     const [percentageUtilitie, setPercentageUtilitie] = useState(0);
     const [editPrice, setEditPrice] = useState(false);
@@ -49,6 +49,7 @@ const NewProduct = ({ productData }) => {
     // Actualizar el estado local `prodData` cuando cambie `quotationData`
     useEffect(() => {
         updateProdData();
+        setIsProdUpdated(true);
     }, [quotationData]);
 
     const updateProdData = () => {
@@ -60,47 +61,47 @@ const NewProduct = ({ productData }) => {
 
     // Actualizar el estado global al cambiar algun dato
     useEffect(() => {
-        if (!isUpdated) {
-            // console.log("Change in prodData: ", prodData);
+        if (!isProdUpdated) {
+            console.log("Change in prodData: ", prodData);
             updateProduct(prodData, prodData.productId);
-            setIsUpdated(true);
+            setIsProdUpdated(true);
         }
-    }, [isUpdated]);
+    }, [isProdUpdated]);
 
     // Actualizar los valores cuando cambie quotationData.exchangeRate
-    useEffect(() => {
-        const updatedProduct = {
-            ...prodData,
-            processes: prodData.processes.map((process) => {
-                if (process.currency === "Peso") {
-                    return {
-                        ...process,
-                        fixedCost: process.tempfixedCost / quotationData.exchangeRate,
-                        unitCost: process.tempunitCost / quotationData.exchangeRate
-                    };
-                }
-                return process;
-            })
-        }
+    // useEffect(() => {
+    //     const updatedProduct = {
+    //         ...prodData,
+    //         processes: prodData.processes.map((process) => {
+    //             if (process.currency === "Peso") {
+    //                 return {
+    //                     ...process,
+    //                     fixedCost: process.tempfixedCost / quotationData.exchangeRate,
+    //                     unitCost: process.tempunitCost / quotationData.exchangeRate
+    //                 };
+    //             }
+    //             return process;
+    //         })
+    //     }
 
-        setProdData((prevData) => ({
-            ...prevData,
-            financingCost: prevData.tempfinancingCost / quotationData.exchangeRate,
-            shipmentCost: prevData.tempshipmentCost / quotationData.exchangeRate,
-            otherCost: prevData.tempotherCost / quotationData.exchangeRate,
-            processes: prodData.processes.map((process) => {
-                if (process.currency === "Peso") {
-                    return {
-                        ...process,
-                        fixedCost: process.tempfixedCost / quotationData.exchangeRate,
-                        unitCost: process.tempunitCost / quotationData.exchangeRate
-                    };
-                }
-                return process;
-            })
-        }))
-        setIsUpdated(false);
-    }, [quotationData.exchangeRate]);
+    //     setProdData((prevData) => ({
+    //         ...prevData,
+    //         financingCost: prevData.tempfinancingCost / quotationData.exchangeRate,
+    //         shipmentCost: prevData.tempshipmentCost / quotationData.exchangeRate,
+    //         otherCost: prevData.tempotherCost / quotationData.exchangeRate,
+    //         processes: prodData.processes.map((process) => {
+    //             if (process.currency === "Peso") {
+    //                 return {
+    //                     ...process,
+    //                     fixedCost: process.tempfixedCost / quotationData.exchangeRate,
+    //                     unitCost: process.tempunitCost / quotationData.exchangeRate
+    //                 };
+    //             }
+    //             return process;
+    //         })
+    //     }))
+    //     setIsProdUpdated(false);
+    // }, [quotationData.exchangeRate]);
 
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {
@@ -118,7 +119,7 @@ const NewProduct = ({ productData }) => {
             ...prevData,
             [name]: +value,
         }))
-        setIsUpdated(false); // Cambiamos el estado a `false` para indicar que se ha actualizado
+        setIsProdUpdated(false); // Cambiamos el estado a `false` para indicar que se ha actualizado
     };
 
     // Eliminar el producto del contexto

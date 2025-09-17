@@ -6,9 +6,8 @@ import { QuotationContext } from "../../context/QuotationContext.jsx";
 import "./Quotation.css";
 
 const Quotation = ({ quote, onDelete }) => {
-    const navigate = useNavigate(); // Hook para la navegación
+    const navigate = useNavigate();
     const { setIsSaved } = useContext(QuotationContext);
-
 
     // Manejo de clic en la fila
     const handleRowClick = () => {
@@ -18,7 +17,6 @@ const Quotation = ({ quote, onDelete }) => {
 
     // Formatear la fecha
     const formatDate = (utcDate) => {
-        ;
         const date = new Date(utcDate);
         const year = date.getFullYear();
         const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Asegura 2 dígitos

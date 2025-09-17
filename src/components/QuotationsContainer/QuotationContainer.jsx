@@ -13,7 +13,6 @@ const Quotations = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { statusFilter, setStatusFilter, filter, setFilter } = useContext(QuotationContext);
-    const [ counter, setCounter ] = useState(0);
 
     useEffect(() => {
         const loadData = async () => {
@@ -24,7 +23,6 @@ const Quotations = () => {
         loadData();
     }, [page, filter, statusFilter]);
     
-
     // Función para realizar la solicitud GET
     const fetchQuotations = async () => {
         try {
@@ -40,14 +38,19 @@ const Quotations = () => {
     // Función para eliminar una cotización
     const handleDelete = async (id) => {
         if (window.confirm("¿Estás seguro de que deseas eliminar esta cotización?")) {
-            setLoading(true)
+            setLoading(true);
             try {
                 await apiClient.delete(`/quotations/${id}`);
+                await fetchQuotations(); // ← recarga los datos actualizados
             } catch (error) {
                 console.error("Error al eliminar la cotización:", error);
+                setError("Error al eliminar la cotización");
+            } finally {
+                setLoading(false);
             }
         }
     };
+    
     const handleFilterChange = (e) => {
         const { value } = e.target;
         setLoading(true);

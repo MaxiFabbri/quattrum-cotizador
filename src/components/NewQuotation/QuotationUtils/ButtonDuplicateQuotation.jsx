@@ -3,12 +3,13 @@ import { QuotationContext } from "../../../context/QuotationContext.jsx";
 import { ParametersContext } from "../../../context/ParametersContext.jsx";
 import { apiClient } from "../../../config/axiosConfig.js";
 import TextButton from "../../Utils/TextButton";
+import { useNavigate } from "react-router-dom";
 
 const ButtonDuplicateQuotation = () => {
-    const { quotationData, updateProduct, updateProcessInProduct, updateQuotationData } = useContext(QuotationContext);
+    const { quotationData, updateProduct, updateProcessInProduct, updateQuotationData, calculateQuotation } = useContext(QuotationContext);
     const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
     const today = new Date().toISOString().split("T")[0];
-    const [isUpdated, setIsUpdated] = useState(false);
+    const navigate = useNavigate();
 
     const saveDuplicatedtedQuotation = async () => {
         console.log("Quotation to Duplicate: ", quotationData);
@@ -101,12 +102,14 @@ const ButtonDuplicateQuotation = () => {
                 }
             });
         });
+        calculateQuotation();
+        // Una vez que terminé de grabar todo, navego a la nueva cotización
+        navigate(`/detailed-quotation/${newQuotationId}`);
     }
 
     const handleDuplicateQuotation = async () => {
         saveDuplicatedtedQuotation()
     }
-
 
     return (
         <TextButton
