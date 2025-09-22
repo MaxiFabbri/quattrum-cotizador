@@ -37,6 +37,7 @@ export const QuotationProvider = ({ children }) => {
     const [quotationData, setQuotationData] = useState(initialQuotationDataState);
     // Se ejecuta cuando isUpdated cambia a `true`
     useEffect(() => {
+        console.log("isUpdated changed in context: ", isUpdated);
         if (isUpdated) {
             saveCalculatedQuotation();
             setIsUpdated(false); // Resetear el estado para futuras ejecuciones
@@ -115,7 +116,6 @@ export const QuotationProvider = ({ children }) => {
     const getBuyingFinanceCost = async (subTotalCost, supplierPaymentDetails, productionDays) => {
         let buyFinanceCost = 0;
         let paymentDetails = supplierPaymentDetails;
-        console.log("Supplier Payment Details: ", paymentDetails);
         buyFinanceCost += paymentDetails.reduce((acc, element) => {
             return acc + calculateItemFinanceCost(subTotalCost, productionDays, element);
         }, 0);
@@ -244,7 +244,6 @@ export const QuotationProvider = ({ children }) => {
             }, product.productId);
 
             console.log("Precio unitario Calculado: ", unitSellingPrice, " Pesos Price: ", pesosPrice);
-            // })
         }
         setIsUpdated(true);
     };
@@ -298,7 +297,7 @@ export const QuotationProvider = ({ children }) => {
     };
 
     const saveCalculatedQuotation = async () => {
-        console.log("Quotation to save: ", quotationData);
+        console.log("Calculated Quotation to save: ", quotationData);
         // preparo la informacion de Quotation para guardar en la DB
         const quotationId = quotationData.id;
         const quotationToSave = {
@@ -573,8 +572,7 @@ export const QuotationProvider = ({ children }) => {
                 addProcessToProduct,
                 updateProcessInProduct,
                 removeProcessInProduct,
-                calculateQuotation,
-                isUpdated
+                calculateQuotation
             }}
         >
             {children}

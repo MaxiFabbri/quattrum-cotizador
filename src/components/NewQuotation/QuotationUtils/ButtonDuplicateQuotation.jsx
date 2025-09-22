@@ -6,15 +6,14 @@ import TextButton from "../../Utils/TextButton";
 import { useNavigate } from "react-router-dom";
 
 const ButtonDuplicateQuotation = () => {
-    const { quotationData, updateProduct, updateProcessInProduct, updateQuotationData, calculateQuotation } = useContext(QuotationContext);
+    const { quotationData, updateProduct, updateProcessInProduct, updateQuotationData, calculateQuotation, clearQuotationData } = useContext(QuotationContext);
     const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
     const today = new Date().toISOString().split("T")[0];
     const navigate = useNavigate();
 
-    const saveDuplicatedtedQuotation = async () => {
-        console.log("Quotation to Duplicate: ", quotationData);
-        let newQuotationId = ""
-        // preparo la informacion de Quotation para guardar en la DB
+    const saveDuplicatedQuotation = async () => {
+        let newQuotationId = "";
+
         const quotationToSave = {
             date: today,
             customerId: quotationData.customerId,
@@ -25,14 +24,13 @@ const ButtonDuplicateQuotation = () => {
             quoteStatus: quotationData.quoteStatus,
             quoteProductsDescription: quotationData.quoteProductsDescription,
             isKit: quotationData.isKit,
-        }
-        console.log("Quotation to save: ", quotationToSave);
-        // grabo en la DB la información de Quotation y rescato el Id
+        };
+
         try {
             const responseQuote = await apiClient.post("/quotations", quotationToSave);
             console.log("Cotización guardada: ", responseQuote.data);
             newQuotationId = responseQuote.data.response._id;
-            // Actualizo el ID de la cotización en el context
+
             updateQuotationData({
                 id: newQuotationId,
                 date: today,
@@ -41,12 +39,15 @@ const ButtonDuplicateQuotation = () => {
             });
         } catch (error) {
             console.error("Error al guardar la cotización: ", error);
+            return;
         }
 
-        // Paso por todos los productos
-        quotationData.products.map(async (product) => {
+        await Promise.resolve();
+        
+        // Procesar todos los productos y procesos
+        const productPromises = quotationData.products.map(async (product) => {
             let newProductId = product.productId;
-            // preparo la informacion de Product para guardar en la DB
+
             const productToSave = {
                 quotationId: newQuotationId,
                 quantity: product.quantity,
@@ -56,15 +57,16 @@ const ButtonDuplicateQuotation = () => {
                 otherCost: product.otherCost,
                 productDescription: product.productDescription,
                 unitSellingPrice: product.unitSellingPrice,
+                totalProductCost: product.totalProductCost,
                 savedToDb: product.savedToDb,
-            }
+                order: product.order,
+            };
 
-            // guardo en la DB la información de Product
             try {
-                // Si el producto no está guardado, lo guardo
                 const responseProduct = await apiClient.post('/products/', productToSave);
+                console.log("Producto guardado: ", responseProduct.data.response);
                 newProductId = responseProduct.data.response._id;
-                // Actualizo el ID del producto en el context
+
                 updateProduct({
                     productId: newProductId,
                     quotationId: newQuotationId,
@@ -73,8 +75,9 @@ const ButtonDuplicateQuotation = () => {
             } catch (error) {
                 console.error("Error al guardar el producto: ", error);
             }
-            product.processes.map(async (process) => {
-                // preparo la informacion de Process para guardar en la DB con el ID del producto
+
+            // Procesar todos los procesos del producto
+            const processPromises = product.processes.map(async (process) => {
                 const processToSave = {
                     productId: newProductId,
                     description: process.description,
@@ -85,30 +88,34 @@ const ButtonDuplicateQuotation = () => {
                     adjustPercentage: process.adjustPercentage,
                     unitCost: process.unitCost,
                     fixedCost: process.fixedCost,
+                    order: process.order,
                     subTotalProcessCost: +process.subTotalProcessCost,
-                }
-                // guardo en la DB la información de Process
+                };
+
                 try {
                     const responseProcess = await apiClient.post('/processes/', processToSave);
-                    // Actualizo el ID del proceso y el ID de Producto en el context
                     updateProcessInProduct({
                         processId: responseProcess.data.response._id,
                         productId: newProductId,
                         savedToDb: true,
                     }, process.processId);
-
                 } catch (error) {
                     console.error("Error al guardar el proceso: ", error);
                 }
             });
+            await Promise.all(processPromises);
         });
+
+        await Promise.all(productPromises);
+
         calculateQuotation();
-        // Una vez que terminé de grabar todo, navego a la nueva cotización
+
+        // Navegar a la nueva cotización
         navigate(`/detailed-quotation/${newQuotationId}`);
-    }
+    };
 
     const handleDuplicateQuotation = async () => {
-        saveDuplicatedtedQuotation()
+        saveDuplicatedQuotation()
     }
 
     return (

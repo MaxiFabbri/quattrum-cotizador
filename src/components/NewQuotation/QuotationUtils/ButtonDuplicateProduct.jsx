@@ -6,7 +6,7 @@ import IconButton from "../../Utils/IconButton.jsx";
 
 const ButtonDuplicateProduct = ({ productId }) => {
     const { quotationData, addProduct } = useContext(QuotationContext);
-    const [isUpdated, setIsUpdated] = useState(false);
+    // const [isUpdated, setIsUpdated] = useState(false);
 
     const handleDuplicateProduct = async () => {
         const productToDuplicate = quotationData.products.find(product => product.productId === productId);
