@@ -26,8 +26,7 @@ const Quotations = () => {
     // Función para realizar la solicitud GET
     const fetchQuotations = async () => {
         try {
-            const response = await apiClient.get(`/quotations/paginated-new?page=${page}&name=${filter}&status=${statusFilter}&limit=10`);
-            console.log("Cotizaciones cargadas: ", response.data.response);
+            const response = await apiClient.get(`/quotations/paginated-new?page=${page}&name=${filter}&status=${statusFilter}&limit=25`);
             setQuotations(response.data.response);
         } catch (error) {
             setError("Error al cargar las cotizaciones");
@@ -115,16 +114,13 @@ const Quotations = () => {
                             <td colSpan="9">{error}</td>
                         </tr>
                     ) : quotations.docs.length > 0 ? (
-                        quotations.docs.map((quote) => {
-                            // console.log("Renderizando Quotation con:", quote);
-                            return (
-                                <Quotation
-                                    key={quote._id}
-                                    quote={quote}
-                                    onDelete={handleDelete}
-                                />
-                            );
-                        })
+                        quotations.docs.map((quote) => (
+                            <Quotation
+                                key={quote._id}
+                                quote={quote}
+                                onDelete={handleDelete}
+                            />
+                        ))                        
                     ) : (
                         <tr>
                             <td colSpan="9">No se encontraron cotizaciones.</td>
