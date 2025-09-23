@@ -39,10 +39,9 @@ export const ParametersProvider = ({ children }) => {
         try {
             const response = await apiDolar.get();
             const newDolar = response.data.venta;
-            console.log("Dolar Price de la API: ", newDolar);
 
             if (newDolar !== dolarPrice) {
-                console.log("NewDolar: ", newDolar, " vs ", dolarPrice);
+                // console.log("NewDolar: ", newDolar, " vs ", dolarPrice);
                 updateDolarPrice(newDolar);
             }
         } catch (error) {
@@ -82,7 +81,7 @@ export const ParametersProvider = ({ children }) => {
 
     const updateDolarPrice = async (newDolar) => {
         try {
-            console.log('Actualizando dolar en Context:', newDolar);
+            // console.log('Actualizando dolar en Context:', newDolar);
             setDolarPrice(newDolar);
             await apiClient.put('general-parameters/67ddd1f2ef05d862858798c3', { dolar: newDolar });
         } catch (error) {

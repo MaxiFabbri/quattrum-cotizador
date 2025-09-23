@@ -37,7 +37,6 @@ export const QuotationProvider = ({ children }) => {
     const [quotationData, setQuotationData] = useState(initialQuotationDataState);
     // Se ejecuta cuando isUpdated cambia a `true`
     useEffect(() => {
-        console.log("isUpdated changed in context: ", isUpdated);
         if (isUpdated) {
             saveCalculatedQuotation();
             setIsUpdated(false); // Resetear el estado para futuras ejecuciones
@@ -252,15 +251,12 @@ export const QuotationProvider = ({ children }) => {
         const targetUtility = utilitiesTable.find((utility) => totalProductCost < utility.upTo);
         let minUtilitie = targetUtility.productMinimun;
         let percentageUtilitie = targetUtility.productUtilitie / 100;
-        // console.log("Target Utility: ", targetUtility, " Min Utilitie: ", minUtilitie, " Percentage Utilitie: ", percentageUtilitie);
-        // console.log("Total Product Cost: ", totalProductCost);
 
         // calculo utilidad por porjentaje
         let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
         // Si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
         if (newNetProductCost * percentageUtilitie < minUtilitie) {
             // si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
-            // console.log("Utilidad por porcentaje: ", newNetProductCost * percentageUtilitie, " - ", percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
             newNetProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax))
         }
 
@@ -272,12 +268,11 @@ export const QuotationProvider = ({ children }) => {
     };
 
     const calculateKitUniteSellingPrice = (totalProductCost, financingCost, quantity, targetUtilities, totalQuotationCost) => {
-        // console.log("Calculando KIT: ", totalProductCost, financingCost);
+
         // Calculo las utilidades deseadas de los parametros generales
         // calculo el minutilitie que le corresponde a este producto por regla de 3 simple
         let minUtilitie = (totalProductCost / totalQuotationCost) * targetUtilities.kitMinimun
         let percentageUtilitie = targetUtilities.kitUtilitie / 100;
-        // console.log("Utilidad por % Target: ", percentageUtilitie, " minima: ", minUtilitie);
         const totalFinancingCost = parseFloat(financingCost / (1 - tax))
 
         // calculo utilidad por porjentaje
@@ -286,8 +281,6 @@ export const QuotationProvider = ({ children }) => {
         // Si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
         if (newNetProductCost * percentageUtilitie < minUtilitie) {
             // si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
-            // console.log("El Precio total por porcentaje es menor al minimo, lo cambio por el minimo");
-            // console.log("Utilidad por porcentaje: ", newNetProductCost * percentageUtilitie, " vs Costo total por minimo: ", minUtilitie);
             newNetProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax))
         }
 
@@ -297,7 +290,6 @@ export const QuotationProvider = ({ children }) => {
     };
 
     const saveCalculatedQuotation = async () => {
-        console.log("Calculated Quotation to save: ", quotationData);
         // preparo la informacion de Quotation para guardar en la DB
         const quotationId = quotationData.id;
         const quotationToSave = {
@@ -326,7 +318,6 @@ export const QuotationProvider = ({ children }) => {
                     autoClose: 800,
                 }
             )
-            console.log("Cotización guardada: ", responseQuote.data);
             setIsSaved(true);
         } catch (error) {
             console.error("Error al guardar la cotización: ", error);
@@ -448,7 +439,6 @@ export const QuotationProvider = ({ children }) => {
     // Función para agregar un producto al array de productos
     const addProduct = (prodData) => {
         setIsSaved(false);
-        console.log("adding product: ", prodData)
         setQuotationData((prevData) => ({
             ...prevData,
             products: [...prevData.products, prodData],
@@ -472,9 +462,7 @@ export const QuotationProvider = ({ children }) => {
     const removeProduct = (productId) => {
         setIsSaved(false);
         quotationData.products.map((product) => {
-            console.log("checking Product for removal: ", product)
             if (product.productId === productId && product.savedToDb) {
-                console.log("removing Product: ", product)
                 deleteProductFromDb(productId)
             }
         })
@@ -486,7 +474,6 @@ export const QuotationProvider = ({ children }) => {
 
     // Función para agregar un proceso a un producto específico
     const addProcessToProduct = (newProcess) => {
-        console.log("add Process")
         setIsSaved(false);
         setQuotationData((prevData) => ({
             ...prevData,
@@ -499,7 +486,6 @@ export const QuotationProvider = ({ children }) => {
     };
 
     const updateProcessInProduct = (updatedProcess, procId) => {
-        // console.log("update Process ", isSaved)
         setQuotationData((prevData) => {
             const updatedProducts = prevData.products.map((product) => {
                 if (product.productId === updatedProcess.productId) {

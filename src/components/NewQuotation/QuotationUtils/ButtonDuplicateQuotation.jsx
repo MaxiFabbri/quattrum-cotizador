@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 const ButtonDuplicateQuotation = () => {
     const { quotationData, updateProduct, updateProcessInProduct, updateQuotationData, calculateQuotation, clearQuotationData } = useContext(QuotationContext);
     const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
+    const [shouldCalculate, setShouldCalculate] = useState(false);
     const today = new Date().toISOString().split("T")[0];
     const navigate = useNavigate();
 
@@ -28,7 +29,6 @@ const ButtonDuplicateQuotation = () => {
 
         try {
             const responseQuote = await apiClient.post("/quotations", quotationToSave);
-            console.log("Cotización guardada: ", responseQuote.data);
             newQuotationId = responseQuote.data.response._id;
 
             updateQuotationData({
@@ -43,7 +43,6 @@ const ButtonDuplicateQuotation = () => {
         }
 
         await Promise.resolve();
-        
         // Procesar todos los productos y procesos
         const productPromises = quotationData.products.map(async (product) => {
             let newProductId = product.productId;
@@ -64,7 +63,6 @@ const ButtonDuplicateQuotation = () => {
 
             try {
                 const responseProduct = await apiClient.post('/products/', productToSave);
-                console.log("Producto guardado: ", responseProduct.data.response);
                 newProductId = responseProduct.data.response._id;
 
                 updateProduct({
@@ -97,6 +95,7 @@ const ButtonDuplicateQuotation = () => {
                     updateProcessInProduct({
                         processId: responseProcess.data.response._id,
                         productId: newProductId,
+                        tempunitCost: process.unitCost * quotationToSave.exchangeRate,
                         savedToDb: true,
                     }, process.processId);
                 } catch (error) {
@@ -107,16 +106,21 @@ const ButtonDuplicateQuotation = () => {
         });
 
         await Promise.all(productPromises);
-
-        calculateQuotation();
-
-        // Navegar a la nueva cotización
-        navigate(`/detailed-quotation/${newQuotationId}`);
+        setShouldCalculate(true)
     };
 
     const handleDuplicateQuotation = async () => {
         saveDuplicatedQuotation()
     }
+
+    useEffect(() => {
+        if (shouldCalculate) {
+            calculateQuotation();
+            setShouldCalculate(false); // Resetear el flag
+            // Navegar a la nueva cotización
+            navigate(`/detailed-quotation/${quotationData.id}`);
+        }
+    }, [shouldCalculate]);
 
     return (
         <TextButton
