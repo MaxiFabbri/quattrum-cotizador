@@ -6,6 +6,7 @@ import { QuotationContext } from "../../context/QuotationContext.jsx";
 import "./Quotation.css";
 
 const Quotation = ({ quote, onDelete }) => {
+    console.log("Rendering Quotation:", quote);
     const navigate = useNavigate();
     const { setIsSaved } = useContext(QuotationContext);
 

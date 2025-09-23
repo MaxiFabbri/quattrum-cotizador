@@ -62,46 +62,10 @@ const NewProduct = ({ productData }) => {
     // Actualizar el estado global al cambiar algun dato
     useEffect(() => {
         if (!isProdUpdated) {
-            console.log("Change in prodData: ", prodData);
             updateProduct(prodData, prodData.productId);
             setIsProdUpdated(true);
         }
     }, [isProdUpdated]);
-
-    // Actualizar los valores cuando cambie quotationData.exchangeRate
-    // useEffect(() => {
-    //     const updatedProduct = {
-    //         ...prodData,
-    //         processes: prodData.processes.map((process) => {
-    //             if (process.currency === "Peso") {
-    //                 return {
-    //                     ...process,
-    //                     fixedCost: process.tempfixedCost / quotationData.exchangeRate,
-    //                     unitCost: process.tempunitCost / quotationData.exchangeRate
-    //                 };
-    //             }
-    //             return process;
-    //         })
-    //     }
-
-    //     setProdData((prevData) => ({
-    //         ...prevData,
-    //         financingCost: prevData.tempfinancingCost / quotationData.exchangeRate,
-    //         shipmentCost: prevData.tempshipmentCost / quotationData.exchangeRate,
-    //         otherCost: prevData.tempotherCost / quotationData.exchangeRate,
-    //         processes: prodData.processes.map((process) => {
-    //             if (process.currency === "Peso") {
-    //                 return {
-    //                     ...process,
-    //                     fixedCost: process.tempfixedCost / quotationData.exchangeRate,
-    //                     unitCost: process.tempunitCost / quotationData.exchangeRate
-    //                 };
-    //             }
-    //             return process;
-    //         })
-    //     }))
-    //     setIsProdUpdated(false);
-    // }, [quotationData.exchangeRate]);
 
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {

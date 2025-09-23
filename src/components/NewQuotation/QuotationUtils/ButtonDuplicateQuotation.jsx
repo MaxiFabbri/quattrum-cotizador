@@ -95,6 +95,7 @@ const ButtonDuplicateQuotation = () => {
                     updateProcessInProduct({
                         processId: responseProcess.data.response._id,
                         productId: newProductId,
+                        // tempunitCost: parseFloat((process.unitCost * quotationToSave.exchangeRate).toFixed(2)),
                         tempunitCost: process.unitCost * quotationToSave.exchangeRate,
                         savedToDb: true,
                     }, process.processId);

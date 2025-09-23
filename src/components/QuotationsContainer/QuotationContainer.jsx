@@ -27,6 +27,7 @@ const Quotations = () => {
     const fetchQuotations = async () => {
         try {
             const response = await apiClient.get(`/quotations/paginated-new?page=${page}&name=${filter}&status=${statusFilter}&limit=50`);
+            console.log("Cotizaciones cargadas: ", response.data.response);
             setQuotations(response.data.response);
         } catch (error) {
             setError("Error al cargar las cotizaciones");

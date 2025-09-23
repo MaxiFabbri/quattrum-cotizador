@@ -42,6 +42,7 @@ const NewProcess = ({ initialProcessData }) => {
             );
             if (process) {
                 if (JSON.stringify(processData) !== JSON.stringify(process)) {
+                    console.log("Updating process data: ", process);
                     setProcessData(process);
                 }
             }
@@ -115,7 +116,6 @@ const NewProcess = ({ initialProcessData }) => {
     const handleSupplierUpdate = async (supplier) => {
         setIsSaved(false)
         const paymentMethodData = await getPaymentMethodData(supplier.supplierPaymentMethodId);
-        console.log("Payment method data: ", paymentMethodData);
         const updatedData = {
             ...processData,
             productId: processData.productId,
