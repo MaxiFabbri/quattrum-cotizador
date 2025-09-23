@@ -116,13 +116,16 @@ const Quotations = () => {
                             <td colSpan="9">{error}</td>
                         </tr>
                     ) : quotations.docs.length > 0 ? (
-                        quotations.docs.map((quote) => (
-                            <Quotation
-                                key={quote._id}
-                                quote={quote}
-                                onDelete={handleDelete}
-                            />
-                        ))
+                        quotations.docs.map((quote) => {
+                            console.log("Renderizando Quotation con:", quote);
+                            return (
+                                <Quotation
+                                    key={quote._id}
+                                    quote={quote}
+                                    onDelete={handleDelete}
+                                />
+                            );
+                        })
                     ) : (
                         <tr>
                             <td colSpan="9">No se encontraron cotizaciones.</td>
