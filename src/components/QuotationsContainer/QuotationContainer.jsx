@@ -26,7 +26,7 @@ const Quotations = () => {
     // Función para realizar la solicitud GET
     const fetchQuotations = async () => {
         try {
-            const response = await apiClient.get(`/quotations/paginated-new?page=${page}&name=${filter}&status=${statusFilter}&limit=50`);
+            const response = await apiClient.get(`/quotations/paginated-new?page=${page}&name=${filter}&status=${statusFilter}&limit=10`);
             console.log("Cotizaciones cargadas: ", response.data.response);
             setQuotations(response.data.response);
         } catch (error) {
@@ -51,7 +51,6 @@ const Quotations = () => {
             }
         }
     };
-    
     const handleFilterChange = (e) => {
         const { value } = e.target;
         setLoading(true);
@@ -117,7 +116,7 @@ const Quotations = () => {
                         </tr>
                     ) : quotations.docs.length > 0 ? (
                         quotations.docs.map((quote) => {
-                            console.log("Renderizando Quotation con:", quote);
+                            // console.log("Renderizando Quotation con:", quote);
                             return (
                                 <Quotation
                                     key={quote._id}
