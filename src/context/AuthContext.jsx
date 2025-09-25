@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }) => {
             );
             console.log('CheckAuth response: ', response);
             if (response.status === 200) {
-                console.log('Usuario autenticado', response.data);
+                console.log('Usuario autenticado');
                 setUserName(response.data.first_name);
                 setUserRole(response.data.role);
                 setIsAuthenticated(true);

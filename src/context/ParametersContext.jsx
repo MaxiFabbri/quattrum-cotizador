@@ -24,7 +24,6 @@ export const ParametersProvider = ({ children }) => {
             setTax(tax);
             setUtilitiesTable(utilitiesTable);
             setDolarPrice(dolar);
-            console.log("Dolar Price de la DB ", dolar);
 
             setIsParamsLoaded(true); // Marcamos que la carga de parámetros ha terminado
         } catch (error) {

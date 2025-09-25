@@ -84,7 +84,6 @@ export const QuotationProvider = ({ children }) => {
             }, product.productId);
             // }
         });
-        console.log("Products Total Cost: ", productsTotalCost);
         return totalQuotationCost;
     };
 
@@ -111,7 +110,6 @@ export const QuotationProvider = ({ children }) => {
         }, 0);
         return sellFinanceCost;
     };
-
     const getBuyingFinanceCost = async (subTotalCost, supplierPaymentDetails, productionDays) => {
         let buyFinanceCost = 0;
         let paymentDetails = supplierPaymentDetails;
@@ -290,6 +288,7 @@ export const QuotationProvider = ({ children }) => {
     };
 
     const saveCalculatedQuotation = async () => {
+        console.log("Guardando cotización: ", quotationData);
         // preparo la informacion de Quotation para guardar en la DB
         const quotationId = quotationData.id;
         const quotationToSave = {
@@ -414,7 +413,6 @@ export const QuotationProvider = ({ children }) => {
             console.error("Error al eliminar el proceso:", error);
         }
     }
-
     const deleteProductFromDb = async (productId) => {
         try {
             await apiClient.delete(`/products/${productId}`)
@@ -430,7 +428,6 @@ export const QuotationProvider = ({ children }) => {
             ...updatedData,
         }));
     };
-
     // Funcion para vaciar el objeto quotationData
     const clearQuotationData = () => {
         setQuotationData(initialQuotationDataState);
@@ -444,7 +441,6 @@ export const QuotationProvider = ({ children }) => {
             products: [...prevData.products, prodData],
         }));
     };
-
     // Función para actualizar un producto específico
     const updateProduct = (updatedProduct, id) => {
         setQuotationData((prevData) => ({
@@ -458,7 +454,6 @@ export const QuotationProvider = ({ children }) => {
             }),
         }));
     };
-
     const removeProduct = (productId) => {
         setIsSaved(false);
         quotationData.products.map((product) => {

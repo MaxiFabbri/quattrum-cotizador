@@ -56,7 +56,6 @@ const NewQuotation = () => {
 
     const handleCustomerPaymentMethodUpdate = (newCustomerPaymentMethod) => {
         setIsSaved(false);
-        console.log("Customer payment method updated:", newCustomerPaymentMethod);
         updateQuotationData({
             paymentMethodId: newCustomerPaymentMethod._id || "",
             paymentMethodName: newCustomerPaymentMethod.customer_payment_description || "",

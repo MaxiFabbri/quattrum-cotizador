@@ -144,7 +144,8 @@ const DetailedQuotationContainer = () => {
     };
 
     useEffect(() => {
-        getQuotationDataFromDb(id)
+        clearQuotationData();
+        getQuotationDataFromDb(id);
     }, [id]);
 
     return (

@@ -42,7 +42,6 @@ const NewProcess = ({ initialProcessData }) => {
             );
             if (process) {
                 if (JSON.stringify(processData) !== JSON.stringify(process)) {
-                    console.log("Updating process data: ", process);
                     setProcessData(process);
                 }
             }
