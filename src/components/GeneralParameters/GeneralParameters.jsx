@@ -30,10 +30,8 @@ const GeneralParameters = () => {
         // 🧮 Paso 3: Calcular productMinimun y KitMinimun
         for (let i = 1; i < updatedTable.length; i++) {
             const anterior = updatedTable[i - 1];
-            console.log("Anterior: ", anterior);
             updatedTable[i].productMinimun = Math.floor((anterior.upTo/(1-(anterior.productUtilitie/100))) - anterior.upTo );
             updatedTable[i].kitMinimun = Math.floor((anterior.upTo/(1-(anterior.kitUtilitie/100))) - anterior.upTo );
-            // updatedTable[i].kitMinimun = Math.floor(anterior.upTo * anterior.kitUtilitie / 100);
         }
     
         // El primero siempre arranca en newMinimum
