@@ -6,7 +6,7 @@ import TextButton from "../../Utils/TextButton";
 import { useNavigate } from "react-router-dom";
 
 const ButtonDuplicateQuotation = () => {
-    const { quotationData, updateProduct, updateProcessInProduct, updateQuotationData, calculateQuotation, clearQuotationData } = useContext(QuotationContext);
+    const { quotationData, updateProduct, updateProcessInProduct, updateQuotationData, calculateQuotation } = useContext(QuotationContext);
     const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
     const [shouldCalculate, setShouldCalculate] = useState(false);
     const today = new Date().toISOString().split("T")[0];
@@ -55,7 +55,9 @@ const ButtonDuplicateQuotation = () => {
                 shipmentCost: product.shipmentCost,
                 otherCost: product.otherCost,
                 productDescription: product.productDescription,
+                calculatedSellingPrice: product.calculatedSellingPrice,
                 unitSellingPrice: product.unitSellingPrice,
+                isManual: product.isManual,
                 totalProductCost: product.totalProductCost,
                 savedToDb: product.savedToDb,
                 order: product.order,
@@ -109,13 +111,13 @@ const ButtonDuplicateQuotation = () => {
         setShouldCalculate(true)
     };
 
-    const handleDuplicateQuotation = async () => {
+    const handleDuplicateQuotation = () => {
         saveDuplicatedQuotation()
     }
 
     useEffect(() => {
         if (shouldCalculate) {
-            calculateQuotation();
+            calculateQuotation(false);
             setShouldCalculate(false); // Resetear el flag
             // Navegar a la nueva cotización
             navigate(`/detailed-quotation/${quotationData.id}`);

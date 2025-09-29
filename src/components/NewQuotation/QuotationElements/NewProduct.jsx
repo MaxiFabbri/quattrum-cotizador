@@ -20,6 +20,15 @@ const NewProduct = ({ productData }) => {
     const [activeId, setActiveId] = useState(null)
     const [percentageUtilitie, setPercentageUtilitie] = useState(0);
     const [editPrice, setEditPrice] = useState(false);
+    const [isManualPrice, setIsManualPrice] = useState(prodData.isManual || false);
+    const [pesosPrice, setPesosPrice] = useState(+(prodData.unitSellingPrice * quotationData.exchangeRate).toFixed(0) || 0);
+
+    if (prodData.calculatedSellingPrice == null || Number.isNaN(prodData.calculatedSellingPrice)) {
+        setProdData((prevData) => ({
+            ...prevData,
+            calculatedSellingPrice: prevData.unitSellingPrice
+        }));
+    }
 
     const {
         attributes,
@@ -32,19 +41,21 @@ const NewProduct = ({ productData }) => {
     })
 
     const calculatePercentageUtilitie = () => {
-        // console.log("Product Data: ", productData);
-        const totalSellingPrice = (productData.unitSellingPrice * productData.quantity)
-        // console.log("Total Selling Price: ", totalSellingPrice);
-        // const netSellingPrice = totalSellingPrice - ( totalSellingPrice * tax )
-        const netSellingPrice =  totalSellingPrice - (productData.financingCost * (1 + tax))
-        // console.log("Net Selling Price: ", netSellingPrice);
-        const utilitie = totalSellingPrice - productData.totalProductCost - productData.financingCost - (totalSellingPrice * tax)
-        // console.log("utilitie: ", utilitie);
+        const totalSellingPrice = (prodData.unitSellingPrice * prodData.quantity)
+        const netSellingPrice = totalSellingPrice - (prodData.financingCost * (1 + tax))
+        const utilitie = totalSellingPrice - prodData.totalProductCost - prodData.financingCost - (totalSellingPrice * tax)
         setPercentageUtilitie(((utilitie / netSellingPrice) * 100).toFixed(2));
     }
     useEffect(() => {
         calculatePercentageUtilitie();
     }, [prodData.pesosPrice]);
+
+    useEffect(() => {
+        if (!prodData.isManual) {
+            setIsManualPrice(false);
+            setPesosPrice(+(prodData.calculatedSellingPrice * quotationData.exchangeRate).toFixed(0) || 0);
+        }
+    }, [prodData.isManual]);
 
     // Actualizar el estado local `prodData` cuando cambie `quotationData`
     useEffect(() => {
@@ -89,6 +100,19 @@ const NewProduct = ({ productData }) => {
     // Eliminar el producto del contexto
     const handleDeleteProduct = () => {
         removeProduct(prodData.productId); // Eliminamos el producto usando su ID único
+    };
+    const handlePriceChange = (e) => {
+        const newPrice = parseFloat(e.target.value);
+        setPesosPrice(newPrice);
+        setIsManualPrice(true);
+        const newUnitPrice = +(newPrice / quotationData.exchangeRate);
+        setProdData((prevData) => ({
+            ...prevData,
+            pesosPrice: newPrice,
+            unitSellingPrice: newUnitPrice,
+            isManual: true,
+        }))
+        setIsProdUpdated(false);
     };
 
     const handleProcessDragEnd = (event) => {
@@ -228,8 +252,14 @@ const NewProduct = ({ productData }) => {
                                 text="Editar Producto"
                                 onClick={() => setEditPrice(prev => !prev)}
                             />
-                            <span className="pesos-price"> $ {(prodData.pesosPrice || 0).toLocaleString('es-AR', { maximumFractionDigits: 0 })}</span>
-                            {/* <span className="pesos-price"> $ {prodData.pesosPrice}</span> */}
+                            <input
+                                type="number"
+                                value={pesosPrice || ''}
+                                onChange={handlePriceChange}
+                                className={`pesos-price ${isManualPrice ? 'manual' : 'auto'}`}
+                                style={{ width: '100px', textAlign: 'right' }}
+                            />
+
                         </td>
                         <td>
                             <IconButton
@@ -268,10 +298,8 @@ const NewProduct = ({ productData }) => {
                             )}
                         </td>
                     </tr>
-
                 </tbody>
             </table>
-
         </>
 
 

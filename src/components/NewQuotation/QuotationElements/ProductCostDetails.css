@@ -4,3 +4,9 @@
     align-items: flex-end;
     flex-direction: column;
 }
+.manual {
+    color: blueviolet;
+}
+.auto {
+    color: black;
+}

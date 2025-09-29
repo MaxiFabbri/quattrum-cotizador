@@ -21,6 +21,8 @@ const ButtonAddProduct = () => {
         tempotherCost: 0,
         totalProductCost: 0,
         unitSellingPrice: 0,
+        calculatedSellingPrice: 0,
+        isManual: false,
         productDescription: "",
         processes: [],
         savedToDb: false,

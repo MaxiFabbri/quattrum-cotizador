@@ -15,6 +15,8 @@ import TextButton from "../Utils/TextButton.jsx";
 import ButtonCalculateQuotation from "./QuotationUtils/ButtonCalculateQuotation.jsx";
 import ButtonAddProduct from "./QuotationUtils/ButtonAddProduct.jsx";
 import ButtonDuplicateQuotation from "./QuotationUtils/ButtonDuplicateQuotation.jsx";
+import ButtonSaveQuotation from "./QuotationUtils/ButtonSaveQuotation.jsx";
+
 import { apiClient } from "../../config/axiosConfig.js";
 
 const DetailedQuotationContainer = () => {
@@ -87,6 +89,8 @@ const DetailedQuotationContainer = () => {
                 order: product.order,
                 tempotherCost: +(product.otherCost * exchangeRate).toFixed(2),
                 unitSellingPrice: +(product.unitSellingPrice),
+                isManual: product.isManual,
+                calculatedSellingPrice: +(product.calculatedSellingPrice),
                 pesosPrice: +(product.unitSellingPrice * exchangeRate).toFixed(0),
                 totalProductCost: +(product.totalProductCost),
                 processes: newProcesses, // Ahora los procesos se incluyen correctamente
@@ -180,6 +184,7 @@ const DetailedQuotationContainer = () => {
                         <div className="quotation-buttons-container">
                             <ButtonAddProduct />
                             <ButtonCalculateQuotation />
+                            <ButtonSaveQuotation />
                             <ButtonDuplicateQuotation />
                             <TextButton
                                 text="Cancelar"

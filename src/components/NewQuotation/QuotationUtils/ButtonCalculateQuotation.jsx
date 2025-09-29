@@ -3,12 +3,16 @@ import { QuotationContext } from "../../../context/QuotationContext.jsx";
 import TextButton from "../../Utils/TextButton";
 
 const ButtonCalculateQuotation = () => {
-    const { isSaved, calculateQuotation } = useContext(QuotationContext);
+    const { calculateQuotation } = useContext(QuotationContext);
+
+    const calculateQuotationHandler = async () => {
+        calculateQuotation(true);
+    }
 
     return (
         <TextButton
-            text={isSaved ? "Guardado" : "Calcular y Guardar"}
-            onClick={calculateQuotation}
+            text={"Calcular y Guardar"}
+            onClick={calculateQuotationHandler}
         />
     );
 }

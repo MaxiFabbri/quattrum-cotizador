@@ -13,6 +13,7 @@ import { QuotationContext } from "../../context/QuotationContext";
 
 import ButtonCalculateQuotation from "./QuotationUtils/ButtonCalculateQuotation.jsx";
 import ButtonAddProduct from "./QuotationUtils/ButtonAddProduct";
+import ButtonSaveQuotation from "./QuotationUtils/ButtonSaveQuotation.jsx";
 
 const NewQuotationContainer = () => {
     const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
@@ -82,6 +83,7 @@ const NewQuotationContainer = () => {
                         <div className="quotation-buttons-container">
                             <ButtonAddProduct />
                             <ButtonCalculateQuotation />
+                            <ButtonSaveQuotation />
                         </div>
                     </>
                 ) : (

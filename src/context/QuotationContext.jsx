@@ -38,7 +38,7 @@ export const QuotationProvider = ({ children }) => {
     // Se ejecuta cuando isUpdated cambia a `true`
     useEffect(() => {
         if (isUpdated) {
-            saveCalculatedQuotation();
+            saveQuotation();
             setIsUpdated(false); // Resetear el estado para futuras ejecuciones
         }
     }, [isUpdated]);
@@ -119,7 +119,7 @@ export const QuotationProvider = ({ children }) => {
         return buyFinanceCost;
     };
 
-    const handleCalculateQuotation = async () => {
+    const handleCalculateQuotation = async (recalculateAll) => {
         for (const product of quotationData.products) {
             let totalProductCost = 0;
             let newProductDescription = "";
@@ -167,16 +167,33 @@ export const QuotationProvider = ({ children }) => {
             }
 
             const finalCost = totalProductCost + product.shipmentCost + product.otherCost;
-            const unitSellingPrice = parseFloat(calculateUnitSellingPrice(finalCost, newFinancingCost, product.quantity));
-            const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
-            updateProduct({
-                productId: product.productId,
-                productDescription: newProductDescription,
-                financingCost: newFinancingCost,
-                unitSellingPrice,
-                pesosPrice,
-                totalProductCost: finalCost,
-            }, product.productId);
+            const calculatedSellingPrice = parseFloat(calculateUnitSellingPrice(finalCost, newFinancingCost, product.quantity));
+            const pesosPrice = parseFloat((calculatedSellingPrice * quotationData.exchangeRate).toFixed(0));
+            console.log("Recalculate all en handleCalculateQuotation: ", recalculateAll, " unit selling Price: ", product.unitSellingPrice);
+
+            if (!recalculateAll) {
+                updateProduct({
+                    productId: product.productId,
+                    productDescription: newProductDescription,
+                    calculatedSellingPrice,
+                    unitSellingPrice: product.unitSellingPrice,
+                    isManual: product.isManual,
+                    financingCost: newFinancingCost,
+                    totalProductCost: finalCost,
+                    pesosPrice: pesosPrice
+                }, product.productId);
+            } else {
+                updateProduct({
+                    productId: product.productId,
+                    productDescription: newProductDescription,
+                    calculatedSellingPrice,
+                    unitSellingPrice: calculatedSellingPrice,
+                    isManual: false,
+                    financingCost: newFinancingCost,
+                    totalProductCost: finalCost,
+                    pesosPrice: pesosPrice
+                }, product.productId);
+            }
 
             product.processes = updatedProcesses; // si necesitás actualizar el array localmente
         }
@@ -184,7 +201,7 @@ export const QuotationProvider = ({ children }) => {
         setIsUpdated(true);
     };
 
-    const handleCalculateSetQuotation = async () => {
+    const handleCalculateSetQuotation = async (recalculateAll) => {
         const quotationTotalCost = getQuotationTotalCost();
         // Calculo las utilidades deseadas de los parametros generales
         const targetUtilities = utilitiesTable.find((utility) => quotationTotalCost < utility.upTo);
@@ -228,19 +245,33 @@ export const QuotationProvider = ({ children }) => {
                 newFinancingCost = 0;
             }
 
-            const unitSellingPrice = calculateKitUniteSellingPrice(productCost.totalProductCost, newFinancingCost, product.quantity, targetUtilities, quotationTotalCost);
-            const pesosPrice = parseFloat((unitSellingPrice * quotationData.exchangeRate).toFixed(0));
+            const calculatedSellingPrice = calculateKitUniteSellingPrice(productCost.totalProductCost, newFinancingCost, product.quantity, targetUtilities, quotationTotalCost);
+            const pesosPrice = parseFloat((calculatedSellingPrice * quotationData.exchangeRate).toFixed(0));
 
-            updateProduct({
-                productId: product.productId,
-                productDescription: newProductDescription,
-                unitSellingPrice: unitSellingPrice,
-                financingCost: newFinancingCost,
-                totalProductCost: productCost.totalProductCost,
-                pesosPrice: pesosPrice
-            }, product.productId);
+            if (!recalculateAll) {
+                updateProduct({
+                    productId: product.productId,
+                    productDescription: newProductDescription,
+                    calculatedSellingPrice,
+                    unitSellingPrice: product.unitSellingPrice,
+                    isManual: product.isManual,
+                    financingCost: newFinancingCost,
+                    totalProductCost: productCost.totalProductCost,
+                    pesosPrice: pesosPrice
+                }, product.productId);
+            } else {
+                updateProduct({
+                    productId: product.productId,
+                    productDescription: newProductDescription,
+                    calculatedSellingPrice,
+                    unitSellingPrice: calculatedSellingPrice,
+                    isManual: false,
+                    financingCost: newFinancingCost,
+                    totalProductCost: productCost.totalProductCost,
+                    pesosPrice: pesosPrice
+                }, product.productId);
+            }
 
-            console.log("Precio unitario Calculado: ", unitSellingPrice, " Pesos Price: ", pesosPrice);
         }
         setIsUpdated(true);
     };
@@ -287,7 +318,7 @@ export const QuotationProvider = ({ children }) => {
         return unitSellingPrice;
     };
 
-    const saveCalculatedQuotation = async () => {
+    const saveQuotation = async () => {
         console.log("Guardando cotización: ", quotationData);
         // preparo la informacion de Quotation para guardar en la DB
         const quotationId = quotationData.id;
@@ -324,6 +355,7 @@ export const QuotationProvider = ({ children }) => {
 
         // Paso por todos los productos
         quotationData.products.map(async (product, index) => {
+            console.log("Guardando producto: ", product);
             let newProductId = product.productId;
             // preparo la informacion de Product para guardar en la DB
             const productToSave = {
@@ -334,7 +366,9 @@ export const QuotationProvider = ({ children }) => {
                 shipmentCost: product.shipmentCost,
                 otherCost: product.otherCost,
                 productDescription: product.productDescription,
+                calculatedSellingPrice: product.calculatedSellingPrice,
                 unitSellingPrice: product.unitSellingPrice,
+                isManual: product.isManual,
                 totalProductCost: product.totalProductCost,
                 savedToDb: product.savedToDb,
                 order: index,
@@ -396,11 +430,12 @@ export const QuotationProvider = ({ children }) => {
         });
     };
 
-    const calculateQuotation = () => {
+    const calculateQuotation = (calculateAll) => {
+        console.log("Calculando cotización... Recalcular todo: ", calculateAll);
         if (quotationData.isKit) {
-            handleCalculateSetQuotation();
+            handleCalculateSetQuotation(calculateAll);
         } else {
-            handleCalculateQuotation();
+            handleCalculateQuotation(calculateAll);
         }
         setIsSaved(true)
     }
@@ -441,7 +476,6 @@ export const QuotationProvider = ({ children }) => {
             products: [...prevData.products, prodData],
         }));
     };
-    // Función para actualizar un producto específico
     const updateProduct = (updatedProduct, id) => {
         setQuotationData((prevData) => ({
             ...prevData,
@@ -479,7 +513,6 @@ export const QuotationProvider = ({ children }) => {
             }),
         }));
     };
-
     const updateProcessInProduct = (updatedProcess, procId) => {
         setQuotationData((prevData) => {
             const updatedProducts = prevData.products.map((product) => {
@@ -503,7 +536,6 @@ export const QuotationProvider = ({ children }) => {
             };
         });
     };
-
     const removeProcessInProduct = (productId, processId) => {
         setIsSaved(false);
         // Encuentra el producto y proceso específicos
@@ -539,6 +571,7 @@ export const QuotationProvider = ({ children }) => {
         <QuotationContext.Provider
             value={{
                 quotationData,
+                saveQuotation,
                 isSaved,
                 filter,
                 setFilter,
