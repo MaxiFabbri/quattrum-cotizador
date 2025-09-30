@@ -59,6 +59,7 @@ const NewProduct = ({ productData }) => {
 
     // Actualizar el estado local `prodData` cuando cambie `quotationData`
     useEffect(() => {
+        setPesosPrice(+(prodData.unitSellingPrice * quotationData.exchangeRate).toFixed(0) || 0);
         updateProdData();
         setIsProdUpdated(true);
     }, [quotationData]);

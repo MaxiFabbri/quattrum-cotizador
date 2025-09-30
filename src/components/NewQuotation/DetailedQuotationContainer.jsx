@@ -20,12 +20,16 @@ import ButtonSaveQuotation from "./QuotationUtils/ButtonSaveQuotation.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 
 const DetailedQuotationContainer = () => {
-    const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
     const { quotationData, clearQuotationData, updateQuotationData, setIsSaved } = useContext(QuotationContext);
     const [activeId, setActiveId] = useState(null)
-    const today = new Date().toISOString().split("T")[0];
     const { id } = useParams()
     const navigate = useNavigate();
+
+    useEffect(() => {
+        clearQuotationData();
+        getQuotationDataFromDb(id);
+    }, [id]);
+    
 
 
     // Formatear la fecha
@@ -147,11 +151,6 @@ const DetailedQuotationContainer = () => {
         setActiveId(null);
     };
 
-    useEffect(() => {
-        clearQuotationData();
-        getQuotationDataFromDb(id);
-    }, [id]);
-
     return (
         <div>
             <DndContext
@@ -175,9 +174,9 @@ const DetailedQuotationContainer = () => {
                                 strategy={verticalListSortingStrategy}
                             >
                                 {quotationData.products.map((product) => (
-                                    <NewProduct 
+                                    <NewProduct
                                         key={product.productId}
-                                        productData={product} />  
+                                        productData={product} />
                                 ))}
                             </SortableContext>
                         </div>
