@@ -37,21 +37,31 @@ export const QuotationProvider = ({ children }) => {
     const [quotationData, setQuotationData] = useState(initialQuotationDataState);
     // Se ejecuta cuando isUpdated cambia a `true`
     useEffect(() => {
+        console.log("isUpdated changed: ", isUpdated, " - ", quotationData);
         if (isUpdated) {
             saveQuotation();
             setIsUpdated(false); // Resetear el estado para futuras ejecuciones
         }
     }, [isUpdated]);
 
+
+
     const getQuotationTotalCost = () => {
         let totalQuotationCost = 0;
         // Paso por los productos y actualizo los Costos totales de los productos y el Costo total de la cotizacion
         // for (const product of quotationData.products) {
         quotationData.products.map((product) => {
+            // Actualizo los costos del producto en base a TC
+            product.shipmentCost = +product.enteredShipmentCost / quotationData.exchangeRate;
+            product.otherCost = +product.enteredOtherCost / quotationData.exchangeRate;
+
             let totalProductCost = 0;
             let newProductDescription = ""
             // Paso por los procesos del producto y actualizo el subtotal y la descripción
             product.processes = product.processes.map((process) => {
+                // Actualizo los costos del proceso en la moneda de la cotización
+                process.unitCost = +process.enteredUnitCost / (process.currency === "Peso" ? quotationData.exchangeRate : 1);
+                process.fixedCost = +process.enteredFixedCost / (process.currency === "Peso" ? quotationData.exchangeRate : 1);
                 // Calculo el coeficiente de ajuste
                 const adjust = +(1 + (Number(process.adjustPercentage) || 0) / 100)
                 const newSubtotalProcessCost = +(((process.unitCost * product.quantity) * adjust) + process.fixedCost)
@@ -62,7 +72,11 @@ export const QuotationProvider = ({ children }) => {
                     newProductDescription = newProductDescription + ", " + process.description
                 }
                 // Actualizo el subtotal del proceso en el context         
-                updateProcessInProduct({ subTotalProcessCost: newSubtotalProcessCost }, process.processId);
+                updateProcessInProduct({ 
+                    subTotalProcessCost: newSubtotalProcessCost,
+                    unitCost: process.unitCost,
+                    fixedCost: process.fixedCost 
+                }, process.processId);
                 return {
                     ...process,
                     subTotalProcessCost: newSubtotalProcessCost,
@@ -81,6 +95,8 @@ export const QuotationProvider = ({ children }) => {
             // Actualizo el producto en el context
             updateProduct({
                 productDescription: newProductDescription,
+                shipmentCost: product.shipmentCost,
+                otherCost: product.otherCost
             }, product.productId);
             // }
         });
@@ -130,6 +146,9 @@ export const QuotationProvider = ({ children }) => {
             const updatedProcesses = [];
 
             for (const process of product.processes) {
+                // Actualizo los costos del proceso en la moneda de la cotización
+                process.unitCost = +process.enteredUnitCost / (process.currency === "Peso" ? quotationData.exchangeRate : 1);
+                process.fixedCost = +process.enteredFixedCost / (process.currency === "Peso" ? quotationData.exchangeRate : 1);
 
                 const adjust = 1 + ((Number(process.adjustPercentage) || 0) / 100);
                 const newSubtotalProcessCost = ((process.unitCost * product.quantity) * adjust) + process.fixedCost;
@@ -142,6 +161,7 @@ export const QuotationProvider = ({ children }) => {
                 sellingFinanceCost += sellCost;
                 const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, process.supplierPaymentDetails, product.productionDays);
                 buyingFinanceCost += buyCost;
+                console.log("Proceso: ", process.description, +(sellCost - buyCost).toFixed(2), "Selling Finance cost: ", sellCost, " Buying Finance Cost: ", buyCost);
 
                 // Actualizar el costo del proceso en el producto
                 updateProcessInProduct({ subTotalProcessCost: newSubtotalProcessCost }, process.processId);
@@ -165,13 +185,15 @@ export const QuotationProvider = ({ children }) => {
             } else {
                 newFinancingCost = 0;
             }
+            // Actualizo los costos del producto en base a TC
+            product.shipmentCost = +product.enteredShipmentCost / quotationData.exchangeRate;
+            product.otherCost = +product.enteredOtherCost / quotationData.exchangeRate;
 
             const finalCost = totalProductCost + product.shipmentCost + product.otherCost;
             const calculatedSellingPrice = parseFloat(calculateUnitSellingPrice(finalCost, newFinancingCost, product.quantity));
             const pesosPrice = parseFloat((calculatedSellingPrice * quotationData.exchangeRate).toFixed(0));
-            console.log("Recalculate all en handleCalculateQuotation: ", recalculateAll, " unit selling Price: ", product.unitSellingPrice);
 
-            if (!recalculateAll) {
+            if (!recalculateAll && product.isManual) {
                 updateProduct({
                     productId: product.productId,
                     productDescription: newProductDescription,
@@ -195,7 +217,7 @@ export const QuotationProvider = ({ children }) => {
                 }, product.productId);
             }
 
-            product.processes = updatedProcesses; // si necesitás actualizar el array localmente
+            product.processes = updatedProcesses;
         }
 
         setIsUpdated(true);
@@ -219,6 +241,7 @@ export const QuotationProvider = ({ children }) => {
             const updatedProcesses = [];
 
             for (const process of product.processes) {
+
                 const adjust = 1 + ((Number(process.adjustPercentage) || 0) / 100);
                 const newSubtotalProcessCost = ((process.unitCost * product.quantity) * adjust) + process.fixedCost;
                 totalProductCost += newSubtotalProcessCost;
@@ -227,9 +250,10 @@ export const QuotationProvider = ({ children }) => {
                 // Calculo costo financiero de cada proceso
                 const sellCost = await getSellingFinanceCost(newSubtotalProcessCost, product.productionDays);
                 sellingFinanceCost += sellCost;
-
                 const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, process.supplierPaymentDetails, product.productionDays);
                 buyingFinanceCost += buyCost;
+
+                console.log("Proceso: ", process.description, +(sellCost - buyCost).toFixed(2), "Selling Finance cost: ", sellCost, " Buying Finance Cost: ", buyCost);
             }
             toast.info(`Calculando el costo del producto: ${newProductDescription}`, {
                 position: "top-center",
@@ -355,7 +379,6 @@ export const QuotationProvider = ({ children }) => {
 
         // Paso por todos los productos
         quotationData.products.map(async (product, index) => {
-            console.log("Guardando producto: ", product);
             let newProductId = product.productId;
             // preparo la informacion de Product para guardar en la DB
             const productToSave = {
@@ -364,7 +387,9 @@ export const QuotationProvider = ({ children }) => {
                 productionDays: product.productionDays,
                 financingCost: product.financingCost,
                 shipmentCost: product.shipmentCost,
+                enteredShipmentCost: product.enteredShipmentCost,
                 otherCost: product.otherCost,
+                enteredOtherCost: product.enteredOtherCost,
                 productDescription: product.productDescription,
                 calculatedSellingPrice: product.calculatedSellingPrice,
                 unitSellingPrice: product.unitSellingPrice,
@@ -393,6 +418,7 @@ export const QuotationProvider = ({ children }) => {
                 console.error("Error al guardar el producto: ", error);
             }
             product.processes.map(async (process, index) => {
+                // console.log("Guardando proceso: ", process);
                 // preparo la informacion de Process para guardar en la DB con el ID del producto
                 const processToSave = {
                     productId: newProductId,
@@ -403,7 +429,9 @@ export const QuotationProvider = ({ children }) => {
                     supplierPaymentDetails: process.supplierPaymentDetails,
                     currency: process.currency,
                     adjustPercentage: process.adjustPercentage,
+                    enteredUnitCost: process.enteredUnitCost,
                     unitCost: process.unitCost,
+                    enteredFixedCost: process.enteredFixedCost,
                     fixedCost: process.fixedCost,
                     subTotalProcessCost: +process.subTotalProcessCost,
                     order: index,
@@ -431,7 +459,7 @@ export const QuotationProvider = ({ children }) => {
     };
 
     const calculateQuotation = (calculateAll) => {
-        console.log("Calculando cotización... Recalcular todo: ", calculateAll);
+        console.log("Calculando cotización... Recalcular todo: ", calculateAll, quotationData);
         if (quotationData.isKit) {
             handleCalculateSetQuotation(calculateAll);
         } else {

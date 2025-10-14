@@ -1,8 +1,11 @@
 .quotations-header {
     display: grid;
-    grid-template-columns: 16% 67% 8% 8%;
+    grid-template-columns: 16% 3% 64% 8% 8%;
     align-content: center;
+    justify-content: center;
     align-items: center;
+    justify-items: center;
+
     height: 40px;
 }
 .quotations-header h3 {

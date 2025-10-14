@@ -30,8 +30,6 @@ const DetailedQuotationContainer = () => {
         getQuotationDataFromDb(id);
     }, [id]);
     
-
-
     // Formatear la fecha
     const formatDate = (utcDate) => {
         ;
@@ -57,10 +55,12 @@ const DetailedQuotationContainer = () => {
                 supplierPaymentDetails: process.supplierPaymentMethodId.supplier_payment_details,
                 daysToPayment: process.daysToPayment,
                 currency: process.currency,
+                enteredUnitCost: +(process.enteredUnitCost).toFixed(2),
                 unitCost: +(process.unitCost),
-                tempunitCost: +(process.unitCost * newExchangeRate).toFixed(2),
+                tempunitCost: +(process.enteredUnitCost).toFixed(2),
+                enteredFixedCost: +(process.enteredFixedCost).toFixed(2),
                 fixedCost: +(process.fixedCost),
-                tempfixedCost: +(process.fixedCost * newExchangeRate).toFixed(2),
+                tempfixedCost: +(process.enteredFixedCost).toFixed(2),
                 subTotalProcessCost: +(process.subTotalProcessCost),
                 savedToDb: true,
                 order: index,
@@ -87,9 +87,11 @@ const DetailedQuotationContainer = () => {
                 productionDays: product.productionDays,
                 financingCost: +(product.financingCost),
                 tempfinancingCost: +(product.financingCost * exchangeRate).toFixed(2),
+                enteredShipmentCost: +(product.enteredShipmentCost).toFixed(2),
                 shipmentCost: +(product.shipmentCost),
                 tempshipmentCost: +(product.shipmentCost * exchangeRate).toFixed(2),
                 otherCost: +(product.otherCost),
+                enteredOtherCost: +(product.enteredOtherCost).toFixed(2),
                 order: product.order,
                 tempotherCost: +(product.otherCost * exchangeRate).toFixed(2),
                 unitSellingPrice: +(product.unitSellingPrice),
@@ -101,7 +103,6 @@ const DetailedQuotationContainer = () => {
                 savedToDb: true,
             };
         }));
-        // console.log("New Products Data: ", newProductsData)
         return newProductsData;
     };
 
@@ -127,6 +128,7 @@ const DetailedQuotationContainer = () => {
         updateQuotationData(
             newData
         );
+        console.log("Quotation Data setted in context: ", newData)
         return newData
     }
 

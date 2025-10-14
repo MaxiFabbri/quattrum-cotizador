@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, use } from "react";
 import { QuotationContext } from "../../../context/QuotationContext";
 import { ParametersContext } from "../../../context/ParametersContext";
 import IconButton from "../../Utils/IconButton";
@@ -16,12 +16,15 @@ const NewProduct = ({ productData }) => {
     const { quotationData, updateQuotationData, updateProduct, removeProduct, setIsSaved } = useContext(QuotationContext);
     const { tax } = useContext(ParametersContext);
     const [prodData, setProdData] = useState(productData);
+
     const [isProdUpdated, setIsProdUpdated] = useState(true);
     const [activeId, setActiveId] = useState(null)
     const [percentageUtilitie, setPercentageUtilitie] = useState(0);
     const [editPrice, setEditPrice] = useState(false);
     const [isManualPrice, setIsManualPrice] = useState(prodData.isManual || false);
     const [pesosPrice, setPesosPrice] = useState(+(prodData.unitSellingPrice * quotationData.exchangeRate).toFixed(0) || 0);
+    const [newEnteredShipmentCost, setNewEnteredShipmentCost] = useState(prodData.enteredShipmentCost) || 0;
+    const [newEnteredOtherCost, setNewEnteredOtherCost] = useState(prodData.enteredOtherCost) || 0;
 
     if (prodData.calculatedSellingPrice == null || Number.isNaN(prodData.calculatedSellingPrice)) {
         setProdData((prevData) => ({
@@ -46,11 +49,27 @@ const NewProduct = ({ productData }) => {
         const utilitie = totalSellingPrice - prodData.totalProductCost - prodData.financingCost - (totalSellingPrice * tax)
         setPercentageUtilitie(((utilitie / netSellingPrice) * 100).toFixed(2));
     }
+
+    useEffect(() => {
+        const exchange = quotationData.exchangeRate;
+        setProdData((prevData) => ({
+            ...prevData,
+            enteredShipmentCost: newEnteredShipmentCost,
+            shipmentCost: newEnteredShipmentCost / exchange,
+            tempshipmentCost: newEnteredShipmentCost,
+            enteredOtherCost: newEnteredOtherCost,
+            otherCost: newEnteredOtherCost / exchange,
+            tempotherCost: newEnteredOtherCost,
+        }))
+        setIsProdUpdated(false);
+    }, [newEnteredShipmentCost, newEnteredOtherCost]);
+
     useEffect(() => {
         calculatePercentageUtilitie();
     }, [prodData.pesosPrice]);
 
     useEffect(() => {
+        console.log("Manual Price en useEffect isManual: ", isManualPrice)
         if (!prodData.isManual) {
             setIsManualPrice(false);
             setPesosPrice(+(prodData.calculatedSellingPrice * quotationData.exchangeRate).toFixed(0) || 0);
@@ -59,10 +78,9 @@ const NewProduct = ({ productData }) => {
 
     // Actualizar el estado local `prodData` cuando cambie `quotationData`
     useEffect(() => {
-        setPesosPrice(+(prodData.unitSellingPrice * quotationData.exchangeRate).toFixed(0) || 0);
-        updateProdData();
-        setIsProdUpdated(true);
-    }, [quotationData]);
+        setIsManualPrice(productData.isManual);
+        setPesosPrice(+(productData.unitSellingPrice * quotationData.exchangeRate).toFixed(0) || 0);
+    }, [productData]);
 
     const updateProdData = () => {
         const newProductData = quotationData.products.find((product) => product.productId === prodData.productId);
@@ -226,10 +244,12 @@ const NewProduct = ({ productData }) => {
                             <input
                                 className="input-number"
                                 type="number"
-                                name="tempshipmentCost"
-                                value={prodData.tempshipmentCost}
+                                name="shipmentCost"
+                                value={newEnteredShipmentCost}
                                 onClick={(e) => e.target.select()}
-                                onInput={handleInputChange}
+                                onInput={e => {
+                                    setNewEnteredShipmentCost(Number(e.target.value))
+                                }}
                             />
                         </td>
                         <td>
@@ -237,9 +257,11 @@ const NewProduct = ({ productData }) => {
                                 className="input-number"
                                 type="number"
                                 name="tempotherCost"
-                                value={prodData.tempotherCost}
+                                value={newEnteredOtherCost}
                                 onClick={(e) => e.target.select()}
-                                onInput={handleInputChange}
+                                onInput={e => {
+                                    setNewEnteredOtherCost(Number(e.target.value))
+                                }}
                             />
                         </td>
                         <td>

@@ -13,8 +13,8 @@ const NewProcess = ({ initialProcessData }) => {
     const { updateProcessInProduct, removeProcessInProduct, quotationData, setIsSaved } = useContext(QuotationContext);
 
     const [processData, setProcessData] = useState(initialProcessData);
-    const [newTempUnitCost, setNewTempUnitCost] = useState(processData.tempunitCost) || 0;
-    const [newTempFixedCost, setNewTempFixedCost] = useState(processData.tempfixedCost) || 0;
+    const [newTempUnitCost, setNewTempUnitCost] = useState(processData.enteredUnitCost) || 0;
+    const [newTempFixedCost, setNewTempFixedCost] = useState(processData.enteredFixedCost) || 0;
 
     const {
         attributes,
@@ -59,7 +59,7 @@ const NewProcess = ({ initialProcessData }) => {
     useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedProcessData(processData);
-        }, 300);
+        }, 1000);
         return () => {
             clearTimeout(handler); // Limpiar el temporizador previo
         };
@@ -70,10 +70,13 @@ const NewProcess = ({ initialProcessData }) => {
         if (processData.currency === "Peso") {
             exchange = quotationData.exchangeRate;
         }
+        // console.log("recalculating costs for processData: ", quotationData.exchangeRate, " - ", exchange)
         setProcessData((prevData) => ({
             ...prevData,
+            enteredUnitCost: newTempUnitCost,
             unitCost: newTempUnitCost / exchange,
             tempunitCost: newTempUnitCost,
+            enteredFixedCost: newTempFixedCost,
             fixedCost: newTempFixedCost / exchange,
             tempfixedCost: newTempFixedCost,
         }))
@@ -103,7 +106,6 @@ const NewProcess = ({ initialProcessData }) => {
     }
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {
-        // console.log("handleInputChange");
         setIsSaved(false)
         const { name, value } = e.target;
         setProcessData((prevData) => ({

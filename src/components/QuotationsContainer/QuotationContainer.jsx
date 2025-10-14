@@ -4,6 +4,7 @@ import { QuotationContext } from "../../context/QuotationContext.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 import { Link } from "react-router-dom";
 import TextButton from "../Utils/TextButton.jsx";
+import IconButton from "../Utils/IconButton.jsx";
 import Quotation from "../Quotation/Quotation.jsx";
 import StatusFilterSelect from "../NewQuotation/InputComponents/StatusFilterSelect.jsx";
 
@@ -12,6 +13,7 @@ const Quotations = () => {
     const [page, setPage] = useState(1); // Estado para la página actual
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [search, setSearch] = useState(false);
     const { statusFilter, setStatusFilter, filter, setFilter } = useContext(QuotationContext);
 
     useEffect(() => {
@@ -21,8 +23,8 @@ const Quotations = () => {
             setLoading(false);
         };
         loadData();
-    }, [page, filter, statusFilter]);
-    
+    }, [page, search]);
+
     // Función para realizar la solicitud GET
     const fetchQuotations = async () => {
         try {
@@ -52,7 +54,6 @@ const Quotations = () => {
     };
     const handleFilterChange = (e) => {
         const { value } = e.target;
-        setLoading(true);
         setFilter(value);
         setPage(1);
     }
@@ -83,6 +84,12 @@ const Quotations = () => {
                     value={filter}
                     placeholder="Buscar cotización por cliente"
                     onInput={handleFilterChange}
+                />
+                <IconButton
+                    icon="/search.png"
+                    onClick={() => {
+                        setSearch(!search);
+                    }}
                 />
                 <h3>Lista de Cotizaciones</h3>
                 <Link to="/new-quotation">
@@ -120,7 +127,7 @@ const Quotations = () => {
                                 quote={quote}
                                 onDelete={handleDelete}
                             />
-                        ))                        
+                        ))
                     ) : (
                         <tr>
                             <td colSpan="9">No se encontraron cotizaciones.</td>
@@ -130,20 +137,20 @@ const Quotations = () => {
             </table>
             <div className="footer">
                 {quotations.hasPrevPage ? (
-                <TextButton 
-                    text="Pagina Anterior" 
-                    onClick={handlePreviousPage} 
+                    <TextButton
+                        text="Pagina Anterior"
+                        onClick={handlePreviousPage}
                     />
-                ) :(
+                ) : (
                     <br />
                 )}
                 <h5>
                     pagina {quotations.page} de {quotations.totalPages}
                 </h5>
                 {quotations.hasNextPage ? (
-                <TextButton 
-                    text="Pagina siguiente" 
-                    onClick={handleNextPage} 
+                    <TextButton
+                        text="Pagina siguiente"
+                        onClick={handleNextPage}
                     />
                 ) : (
                     <br />

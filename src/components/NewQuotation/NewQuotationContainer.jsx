@@ -27,7 +27,7 @@ const NewQuotationContainer = () => {
             id: '',
             date: today,
             monthlyRate: paramMonthlyRate,
-            exchangeRate: dolarPrice,
+            exchangeRate: +(dolarPrice),
         });
     }, [dolarPrice, paramMonthlyRate, today]);
 

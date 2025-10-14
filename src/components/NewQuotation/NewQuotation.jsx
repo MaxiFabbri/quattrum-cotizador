@@ -103,7 +103,7 @@ const NewQuotation = () => {
                 <CalculateFinancingCheckbox checked={quotationData.calculateFinancing} onChange={(e) => handleChange({ calculateFinancing: e.target.checked })} />
             </td>
             <CurrencySelect value={quotationData.currency} onChange={(e) => handleChange({ currency: e.target.value })} />
-            <ExchangeRateInput value={quotationData.exchangeRate} onChange={(e) => handleChange({ exchangeRate: e.target.value })} />
+            <ExchangeRateInput value={quotationData.exchangeRate} onChange={(e) => handleChange({ exchangeRate: +(e.target.value) })} />
             <QuoteStatusSelect value={quotationData.quoteStatus} onChange={(e) => handleChange({ ...quotationData, quoteStatus: e.target.value })} />
             <IsKitCheckbox checked={quotationData.isKit} onChange={(e) => handleChange({ isKit: e.target.checked })} />
             

@@ -53,7 +53,9 @@ const ButtonDuplicateQuotation = () => {
                 productionDays: product.productionDays,
                 financingCost: product.financingCost,
                 shipmentCost: product.shipmentCost,
+                enteredShipmentCost: product.enteredShipmentCost,
                 otherCost: product.otherCost,
+                enteredOtherCost: product.enteredOtherCost,
                 productDescription: product.productDescription,
                 calculatedSellingPrice: product.calculatedSellingPrice,
                 unitSellingPrice: product.unitSellingPrice,
@@ -62,6 +64,7 @@ const ButtonDuplicateQuotation = () => {
                 savedToDb: product.savedToDb,
                 order: product.order,
             };
+            console.log("productToSave en duplicate Quotation: ", productToSave);
 
             try {
                 const responseProduct = await apiClient.post('/products/', productToSave);
@@ -70,6 +73,11 @@ const ButtonDuplicateQuotation = () => {
                 updateProduct({
                     productId: newProductId,
                     quotationId: newQuotationId,
+                    financingCost: productToSave.financingCost,
+                    shipmentCost: productToSave.shipmentCost,
+                    otherCost: productToSave.otherCost,
+                    unitSellingPrice: productToSave.unitSellingPrice,
+                    totalProductCost: productToSave.totalProductCost,
                     savedToDb: true,
                 }, product.productId);
             } catch (error) {
@@ -86,18 +94,23 @@ const ButtonDuplicateQuotation = () => {
                     daysToPayment: process.daysToPayment,
                     currency: process.currency,
                     adjustPercentage: process.adjustPercentage,
-                    unitCost: process.unitCost,
-                    fixedCost: process.fixedCost,
+                    enteredUnitCost: process.enteredUnitCost,
+                    unitCost: +(process.enteredUnitCost / (process.currency === "Peso" ? quotationToSave.exchangeRate : 1)),
+                    enteredFixedCost: process.enteredFixedCost,
+                    fixedCost: +(process.enteredFixedCost / (process.currency === "Peso" ? quotationToSave.exchangeRate : 1)),
                     order: process.order,
                     subTotalProcessCost: +process.subTotalProcessCost,
                 };
+                console.log("processToSave", processToSave);
 
                 try {
                     const responseProcess = await apiClient.post('/processes/', processToSave);
+                    console.log("responseProcess", responseProcess);
                     updateProcessInProduct({
                         processId: responseProcess.data.response._id,
                         productId: newProductId,
-                        // tempunitCost: process.unitCost * quotationToSave.exchangeRate,
+                        unitCost: processToSave.unitCost,
+                        fixedCost: processToSave.fixedCost,
                         savedToDb: true,
                     }, process.processId);
                 } catch (error) {
