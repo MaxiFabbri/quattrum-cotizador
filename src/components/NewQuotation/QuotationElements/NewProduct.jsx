@@ -69,7 +69,6 @@ const NewProduct = ({ productData }) => {
     }, [prodData.pesosPrice]);
 
     useEffect(() => {
-        console.log("Manual Price en useEffect isManual: ", isManualPrice)
         if (!prodData.isManual) {
             setIsManualPrice(false);
             setPesosPrice(+(prodData.calculatedSellingPrice * quotationData.exchangeRate).toFixed(0) || 0);

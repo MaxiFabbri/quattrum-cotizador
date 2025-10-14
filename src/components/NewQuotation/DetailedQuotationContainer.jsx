@@ -128,7 +128,6 @@ const DetailedQuotationContainer = () => {
         updateQuotationData(
             newData
         );
-        console.log("Quotation Data setted in context: ", newData)
         return newData
     }
 

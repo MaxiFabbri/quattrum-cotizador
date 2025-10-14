@@ -12,7 +12,6 @@ const EditCustomer = () => {
     const [loading, setLoading] = useState(true);
 
     const { id } = useParams()
-    // console.log("id: ", id);
 
     const fetchCustomerData = async () => {
         try {

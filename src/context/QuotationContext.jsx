@@ -37,7 +37,6 @@ export const QuotationProvider = ({ children }) => {
     const [quotationData, setQuotationData] = useState(initialQuotationDataState);
     // Se ejecuta cuando isUpdated cambia a `true`
     useEffect(() => {
-        console.log("isUpdated changed: ", isUpdated, " - ", quotationData);
         if (isUpdated) {
             saveQuotation();
             setIsUpdated(false); // Resetear el estado para futuras ejecuciones
@@ -161,7 +160,7 @@ export const QuotationProvider = ({ children }) => {
                 sellingFinanceCost += sellCost;
                 const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, process.supplierPaymentDetails, product.productionDays);
                 buyingFinanceCost += buyCost;
-                console.log("Proceso: ", process.description, +(sellCost - buyCost).toFixed(2), "Selling Finance cost: ", sellCost, " Buying Finance Cost: ", buyCost);
+                // console.log("Proceso: ", process.description, +(sellCost - buyCost).toFixed(2), "Selling Finance cost: ", sellCost, " Buying Finance Cost: ", buyCost);
 
                 // Actualizar el costo del proceso en el producto
                 updateProcessInProduct({ subTotalProcessCost: newSubtotalProcessCost }, process.processId);
@@ -180,7 +179,7 @@ export const QuotationProvider = ({ children }) => {
                 // Calculo el costo financiero del producto
                 if (sellingFinanceCost > buyingFinanceCost) {
                     newFinancingCost = sellingFinanceCost - buyingFinanceCost;
-                    console.log("Selling Finance Cost: ", sellingFinanceCost, " Buying Finance Cost: ", buyingFinanceCost, " New Financing Cost: ", newFinancingCost);
+                    // console.log("Selling Finance Cost: ", sellingFinanceCost, " Buying Finance Cost: ", buyingFinanceCost, " New Financing Cost: ", newFinancingCost);
                 }
             } else {
                 newFinancingCost = 0;
@@ -253,7 +252,7 @@ export const QuotationProvider = ({ children }) => {
                 const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, process.supplierPaymentDetails, product.productionDays);
                 buyingFinanceCost += buyCost;
 
-                console.log("Proceso: ", process.description, +(sellCost - buyCost).toFixed(2), "Selling Finance cost: ", sellCost, " Buying Finance Cost: ", buyCost);
+                // console.log("Proceso: ", process.description, +(sellCost - buyCost).toFixed(2), "Selling Finance cost: ", sellCost, " Buying Finance Cost: ", buyCost);
             }
             toast.info(`Calculando el costo del producto: ${newProductDescription}`, {
                 position: "top-center",

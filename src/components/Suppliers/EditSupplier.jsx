@@ -39,7 +39,7 @@ const EditSupplier = () => {
         }));
     }
     const handleSupplierPaymentMethodUpdate = async (supplierPaymentMethod) => {
-        // console.log("Supplier Payment Method en handle supplier payment method update: ", supplierPaymentMethod);
+
         const updatedData = {
             ...newSupplierData,
             supplierPaymentMethodId: supplierPaymentMethod._id || "",
@@ -118,12 +118,6 @@ const EditSupplier = () => {
         }
         return true;
     }
-
-
-    // useEffect(() => {
-    //     console.log("id: ", id);
-    //     console.log("new Supplier Data: ", newSupplierData)
-    // }, [newSupplierData]);
 
     return (
         <>

@@ -17,7 +17,6 @@ const EditUserForm = () => {
 
     const getUserData = async () => {
         if (id && id !== "new") {
-            console.log("User ID:", id);
             try {
                 setLoading(true);
                 const response = await apiClient.get(`/users/${id}`);
