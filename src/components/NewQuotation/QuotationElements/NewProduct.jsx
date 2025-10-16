@@ -81,12 +81,9 @@ const NewProduct = ({ productData }) => {
         setPesosPrice(+(productData.unitSellingPrice * quotationData.exchangeRate).toFixed(0) || 0);
     }, [productData]);
 
-    const updateProdData = () => {
-        const newProductData = quotationData.products.find((product) => product.productId === prodData.productId);
-        if (JSON.stringify(newProductData) !== JSON.stringify(prodData)) {
-            setProdData(newProductData);
-        }
-    }
+    useEffect(() => {
+        updateProdData();
+    }, [quotationData]);
 
     // Actualizar el estado global al cambiar algun dato
     useEffect(() => {
@@ -95,6 +92,13 @@ const NewProduct = ({ productData }) => {
             setIsProdUpdated(true);
         }
     }, [isProdUpdated]);
+
+    const updateProdData = () => {
+        const newProductData = quotationData.products.find((product) => product.productId === prodData.productId);
+        if (JSON.stringify(newProductData) !== JSON.stringify(prodData)) {
+            setProdData(newProductData);
+        }
+    }
 
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {
