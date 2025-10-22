@@ -2,6 +2,7 @@ import { createContext, useState, useEffect, useContext } from "react";
 import { apiClient } from "../config/axiosConfig.js";
 import { ParametersContext } from "./ParametersContext.jsx";
 import { toast } from "react-toastify";
+import { validateQuotation } from "../components/NewQuotation/QuotationUtils/validateQuotation.jsx";
 
 
 export const QuotationContext = createContext();
@@ -42,8 +43,6 @@ export const QuotationProvider = ({ children }) => {
             setIsUpdated(false); // Resetear el estado para futuras ejecuciones
         }
     }, [isUpdated]);
-
-
 
     const getQuotationTotalCost = () => {
         let totalQuotationCost = 0;
@@ -458,7 +457,20 @@ export const QuotationProvider = ({ children }) => {
     };
 
     const calculateQuotation = (calculateAll) => {
-        console.log("Calculando cotización... Recalcular todo: ", calculateAll, quotationData);
+        // console.log("Calculando cotización... Recalcular todo: ", calculateAll, quotationData);
+
+        const isQuotationValid = validateQuotation(quotationData)
+        console.log("isQuotationValid: ", isQuotationValid);
+        if (!isQuotationValid.isValid) {
+            isQuotationValid.errors.map((error) => {
+                toast.error(error, {
+                    position: "top-center",
+                    autoClose: 6000
+                });
+            });
+            return;
+        }
+
         if (quotationData.isKit) {
             handleCalculateSetQuotation(calculateAll);
         } else {

@@ -16,7 +16,9 @@ import CalculateFinancingCheckbox from "./InputComponents/CalculateFinancingChec
 import SelectCustomer from "../Utils/Selectors/SelectCustomer.jsx";
 import SelectCustomerPayMethod from "../Utils/Selectors/SelectCustomerPaymentMethod.jsx";
 import { useAddProductWithQuotation } from "./QuotationUtils/useAddProductWithQuotation.jsx";
+import { validateNewQuotation } from "./QuotationUtils/validateQuotation.jsx";
 import IconButton from "../Utils/IconButton.jsx";
+import { toast } from "react-toastify";
 
 
 const NewQuotation = () => {
@@ -66,6 +68,16 @@ const NewQuotation = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const { isValid, errors } = validateNewQuotation(quotationData);
+        if (!isValid) {
+            errors.map((error) => {
+                toast.error(error, {
+                    position: "top-center",
+                    autoClose: 6000
+                });
+            });
+            return;
+        }
         try {
             console.log("Submitting quotation:", quotationData)
             const response = await apiClient.post("/quotations", quotationData);
