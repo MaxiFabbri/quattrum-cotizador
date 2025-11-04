@@ -43,7 +43,7 @@ const SelectCustomerPayMethod = ({ defaultPayment, onSelectCustomerPayMethod }) 
     };
 
     return (
-        <div>
+        <>
             <input
                 type="text"
                 placeholder="Buscar Condición de venta"
@@ -60,7 +60,7 @@ const SelectCustomerPayMethod = ({ defaultPayment, onSelectCustomerPayMethod }) 
                     </li>
                 ))}
             </ul>
-        </div>
+        </>
     );
 };
 

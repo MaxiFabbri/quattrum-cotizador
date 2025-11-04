@@ -3,6 +3,9 @@ import { useParams, useNavigate } from "react-router-dom"
 import TextButton from "../Utils/TextButton.jsx";
 import SelectCustomerPayMethod from "../Utils/Selectors/SelectCustomerPaymentMethod.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
+import ContanctTableItem from "./ContactTableItem.jsx";
+import IconButton from "../Utils/IconButton.jsx";
+import { v4 as uuidv4 } from 'uuid';
 import "./EditCustomer.css";
 
 
@@ -34,7 +37,6 @@ const EditCustomer = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        console.log("update customerData: ", name, value);
         setNewCustomerData((prevData) => ({
             ...prevData,
             [name]: value,
@@ -59,9 +61,12 @@ const EditCustomer = () => {
             name: newCustomerData.name,
             code: newCustomerData.code || "",
             cuit: newCustomerData.cuit || "",
+            deliveryAddress: newCustomerData.deliveryAddress || "",
             email: newCustomerData.email || "",
             phone: newCustomerData.phone || "",
             customerPaymentMethodId: newCustomerData.customerPaymentMethodId,
+            customerContact: newCustomerData.customerContact || [],
+            customerNote: newCustomerData.customerNote || "",
         }
         try {
             const response = await apiClient.post("/customers", data);
@@ -75,6 +80,7 @@ const EditCustomer = () => {
         }
     }
     const updateCustomer = async () => {
+        console.log("Updating customer data: ", newCustomerData);
         try {
             const response = await apiClient.put(`/customers/${id}`, newCustomerData);
         } catch (error) {
@@ -120,12 +126,50 @@ const EditCustomer = () => {
         }
         return true;
     }
+    const handleAddItem = () => {
+        setNewCustomerData((prevData) => ({
+            ...prevData,
+            customerContact: [...((prevData.customerContact) || []),
+                {
+                    id: uuidv4(),
+                    name: "",
+                    position: "",
+                    email: "",
+                    phone: ""
+                }
+            ]
+        }));
+    }
+
+    const handleDelete = (id) => {
+        console.log("Eliminar Item ", id);
+        const updatedTable = (newCustomerData.customerContact || []).filter(item => item.id !== id);
+        setNewCustomerData((prevData) => ({
+            ...prevData,
+            customerContact: updatedTable
+        }));
+    };
+
+    const handleChange = (e, itemId) => {
+        console.log("handleChange itemId: ", itemId);
+        console.log("event target: ", e.target);
+        const { name, value } = e.target;
+
+        console.log("Modificando itemId: ", itemId, " name: ", name, " value: ", value);
+        const updatedTable = newCustomerData.customerContact.map(item =>
+            item.id === itemId ? { ...item, [name]: value } : item
+        );
+        console.log("Updated Contacts Table after modif: ", updatedTable);
+
+        setNewCustomerData((prevData) => ({
+            ...prevData,
+            customerContact: updatedTable
+        }));
+    }
 
 
     useEffect(() => {
-        console.log("id: ", id);
         console.log("new customer Data: ", newCustomerData)
-        console.log("Forma de cobro: ", newCustomerData.customerPaymentMethodId?.customer_payment_description)
     }, [newCustomerData]);
 
     return (
@@ -171,6 +215,16 @@ const EditCustomer = () => {
                                 />
                             </p>
                             <p>
+                                <span>Dir. de Entrega: </span>
+                                <input
+                                    type="text"
+                                    name="deliveryAddress"
+                                    placeholder="Dirección de entrega"
+                                    defaultValue={newCustomerData.deliveryAddress}
+                                    onInput={handleInputChange}
+                                />
+                            </p>
+                            <p>
                                 <span>Teléfono: </span>
                                 <input
                                     className="input"
@@ -192,13 +246,54 @@ const EditCustomer = () => {
                                 />
                             </p>
                             <div>
-                                <span>Método de pago: </span>
+                                <span>Forma de pago: </span>
                                 <SelectCustomerPayMethod
                                     defaultPayment={newCustomerData.customerPaymentMethodId?.customer_payment_description}
                                     onSelectCustomerPayMethod={handleCustomerPaymentMethodUpdate}
                                 />
                             </div>
-
+                            <div className="contacts-table-border">
+                            <table className="contacts-table">
+                                <thead>
+                                    <tr>
+                                        <th colSpan="6" className="contacts-table-title">Contactos</th>
+                                    </tr>
+                                    <tr>
+                                        <th className="contacts-table-th" style={{ width: "50px" }}> </th>
+                                        <th className="contacts-table-th" style={{ width: "150px" }}>Nombre</th>
+                                        <th className="contacts-table-th" style={{ width: "150px" }}>Cargo</th>
+                                        <th className="contacts-table-th" style={{ width: "150px" }}>Mail</th>
+                                        <th className="contacts-table-th" style={{ width: "150px" }}>Telefono</th>
+                                        <th className="contacts-table-th" style={{ width: "50px" }}>
+                                            <IconButton
+                                                icon="/create.png"
+                                                title="Agregar Item"
+                                                onClick={() => handleAddItem()}
+                                            />
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {newCustomerData.customerContact.map((item) => (
+                                        <ContanctTableItem
+                                            key={item.id}
+                                            item={item}
+                                            handleDelete={handleDelete}
+                                            handleChange={(e) => handleChange(e, item.id)}
+                                        />
+                                    ))}
+                                </tbody>
+                            </table>
+                            </div>
+                            <p>
+                                <span>Nota</span>
+                                <textarea
+                                    name="customerNote"
+                                    placeholder="Notas adicionales..."
+                                    defaultValue={newCustomerData.customerNote}
+                                    onInput={handleInputChange}
+                                />
+                            </p>
                         </div>
                         <div className="customerActions">
                             <TextButton text="Guardar" onClick={handleSaveCustomer} />

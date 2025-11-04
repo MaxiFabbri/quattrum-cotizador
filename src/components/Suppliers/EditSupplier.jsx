@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import TextButton from "../Utils/TextButton.jsx";
 import SelectSupplierPayMethod from "../Utils/Selectors/SelectSupplierPaymentMethod.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
+import "./EditSupplier.css";
 
 
 const EditSupplier = () => {
@@ -60,6 +61,7 @@ const EditSupplier = () => {
             phone: newSupplierData.phone || "",
             email: newSupplierData.email || "",
             supplierPaymentMethodId: newSupplierData.supplierPaymentMethodId,
+            supplierNote: newSupplierData.supplierNote || "",
         }
         try {
             const response = await apiClient.post("/suppliers", data);
@@ -73,6 +75,7 @@ const EditSupplier = () => {
         }
     }
     const updateSupplier = async () => {
+        console.log("Actualizando proveedor con datos:", newSupplierData);
         try {
             const response = await apiClient.put(`/suppliers/${id}`, newSupplierData);
         } catch (error) {
@@ -124,10 +127,10 @@ const EditSupplier = () => {
             {loading ?
                 <p>Cargando...</p>
                 :
-                <div className="detailedCustomer">
+                <div className="detailedSupplier">
                     <h2>Proveedor</h2>
-                    <div className="customerData">
-                        <div className="customerInfo">
+                    <div className="supplierData">
+                        <div className="supplierInfo">
                             <p>
                                 <span>Nombre: </span>
                                 <input
@@ -188,9 +191,18 @@ const EditSupplier = () => {
                                     onSelectSupplierPayMethod={handleSupplierPaymentMethodUpdate}
                                 />
                             </div>
+                            <p>
+                                <span>Nota</span>
+                                <textarea
+                                    name="supplierNote"
+                                    placeholder="Notas adicionales..."
+                                    defaultValue={newSupplierData.supplierNote}
+                                    onInput={handleInputChange}
+                                />
+                            </p>
 
                         </div>
-                        <div className="customerActions">
+                        <div className="supplierActions">
                             <TextButton text="Guardar" onClick={handleSaveSupplier} />
                             <TextButton text="Cancelar" onClick={handleCancel} />
                         </div>
