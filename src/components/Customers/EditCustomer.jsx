@@ -32,6 +32,17 @@ const EditCustomer = () => {
             fetchCustomerData();
         } else {
             setLoading(false);
+            setNewCustomerData({
+                name: "",
+                code: "",
+                cuit: "",
+                deliveryAddress: "",
+                email: "",
+                phone: "",
+                customerPaymentMethodId: "",
+                customerContact: [],
+                customerNote: "",
+            });
         }
     }, []);
 
@@ -151,26 +162,15 @@ const EditCustomer = () => {
     };
 
     const handleChange = (e, itemId) => {
-        console.log("handleChange itemId: ", itemId);
-        console.log("event target: ", e.target);
         const { name, value } = e.target;
-
-        console.log("Modificando itemId: ", itemId, " name: ", name, " value: ", value);
         const updatedTable = newCustomerData.customerContact.map(item =>
             item.id === itemId ? { ...item, [name]: value } : item
         );
-        console.log("Updated Contacts Table after modif: ", updatedTable);
-
         setNewCustomerData((prevData) => ({
             ...prevData,
             customerContact: updatedTable
         }));
     }
-
-
-    useEffect(() => {
-        console.log("new customer Data: ", newCustomerData)
-    }, [newCustomerData]);
 
     return (
         <>
