@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { ParametersProvider } from './context/ParametersContext.jsx'
 import { QuotationProvider } from './context/QuotationContext.jsx'
+import { JobProvider } from './context/JobContext.jsx'
 
 import './index.css'
 import App from './App.jsx'
@@ -16,7 +17,9 @@ createRoot(document.getElementById('root')).render(
       <ParametersProvider>
         <BrowserRouter>
           <QuotationProvider>
-            <App />
+            <JobProvider>
+              <App />
+            </JobProvider>
           </QuotationProvider>
         </BrowserRouter>
       </ParametersProvider>

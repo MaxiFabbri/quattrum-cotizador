@@ -340,6 +340,25 @@ export const QuotationProvider = ({ children }) => {
         return unitSellingPrice;
     };
 
+    const changeQuotationStatus = async (newStatus, quotationId) => {
+        try {
+            const responseQuote = await toast.promise(
+                apiClient.put(`/quotations/${quotationId}`, newStatus),
+                {
+                    pending: "Guardando cotización...",
+                    success: "Cotización guardada correctamente",
+                    error: "Error al guardar la cotización",
+                },
+                {
+                    autoClose: 800,
+                }
+            )
+        } catch (error) {
+            console.error("Error al guardar la cotización: ", error);
+        }
+        
+    };
+
     const saveQuotation = async () => {
         console.log("Guardando cotización: ", quotationData);
         // preparo la informacion de Quotation para guardar en la DB
@@ -619,6 +638,7 @@ export const QuotationProvider = ({ children }) => {
                 setIsSaved,
                 clearQuotationData,
                 updateQuotationData,
+                changeQuotationStatus,
                 addProduct,
                 updateProduct,
                 removeProduct,

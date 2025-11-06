@@ -16,6 +16,7 @@ import ButtonCalculateQuotation from "./QuotationUtils/ButtonCalculateQuotation.
 import ButtonAddProduct from "./QuotationUtils/ButtonAddProduct.jsx";
 import ButtonDuplicateQuotation from "./QuotationUtils/ButtonDuplicateQuotation.jsx";
 import ButtonSaveQuotation from "./QuotationUtils/ButtonSaveQuotation.jsx";
+import ButtonApproveQuotation from "./QuotationUtils/ButtonApproveQuotation.jsx";
 
 import { apiClient } from "../../config/axiosConfig.js";
 
@@ -186,6 +187,7 @@ const DetailedQuotationContainer = () => {
                             <ButtonCalculateQuotation />
                             <ButtonSaveQuotation />
                             <ButtonDuplicateQuotation />
+                            <ButtonApproveQuotation />
                             <TextButton
                                 text="Cancelar"
                                 onClick={() => navigate("/")}
