@@ -8,8 +8,8 @@ import "./OneQuotationContainer.css"
 import { QuotationHeader } from "./QuotationUtils/NewQuotationHeaders.jsx";
 import NewQuotation from "./NewQuotation.jsx";
 import NewProduct from "./QuotationElements/NewProduct.jsx";
-import { ParametersContext } from '../../context/ParametersContext.jsx';
 import { QuotationContext } from "../../context/QuotationContext.jsx";
+import { JobContext } from "../../context/JobContext.jsx";
 import TextButton from "../Utils/TextButton.jsx";
 
 import ButtonCalculateQuotation from "./QuotationUtils/ButtonCalculateQuotation.jsx";
@@ -22,12 +22,14 @@ import { apiClient } from "../../config/axiosConfig.js";
 
 const DetailedQuotationContainer = () => {
     const { quotationData, clearQuotationData, updateQuotationData, setIsSaved } = useContext(QuotationContext);
+    const { clearJobData } = useContext(JobContext);
     const [activeId, setActiveId] = useState(null)
     const { id } = useParams()
     const navigate = useNavigate();
 
     useEffect(() => {
         clearQuotationData();
+        clearJobData();
         getQuotationDataFromDb(id);
     }, [id]);
     
@@ -187,7 +189,8 @@ const DetailedQuotationContainer = () => {
                             <ButtonCalculateQuotation />
                             <ButtonSaveQuotation />
                             <ButtonDuplicateQuotation />
-                            <ButtonApproveQuotation />
+                            {quotationData.quoteStatus === 'Cotizado' ? ( <ButtonApproveQuotation /> ) : (null)}
+                            
                             <TextButton
                                 text="Cancelar"
                                 onClick={() => navigate("/")}

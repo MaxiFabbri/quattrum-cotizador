@@ -19,6 +19,7 @@ export const JobProvider = ({ children }) => {
         customerId: "",
         paymentMethodId: "",
         customerPaymentDetails: [],
+        monthlyRate: 0,
         currency: "Peso",
         exchangeRate: 0,
         jobStatus: "Aprobado",
@@ -31,7 +32,7 @@ export const JobProvider = ({ children }) => {
     // Se ejecuta cuando isUpdated cambia a `true`
     useEffect(() => {
         if (isUpdated) {
-            saveJob();
+            saveJobData();
             setIsUpdated(false); // Resetear el estado para futuras ejecuciones
         }
     }, [isUpdated]);
@@ -42,17 +43,17 @@ export const JobProvider = ({ children }) => {
 
     // Función para actualizar la cotización completa
     const updateJobData = (updatedData) => {
-        console.log("Actualizando jobData con: ", updatedData);
         setJobData((prevData) => ({
             ...prevData,
             ...updatedData,
         }));
         setIsUpdated(false)
     };
+
     // Funcion para vaciar el objeto jobData
-    // const clearJobData = () => {
-    //     setJobData(initialJobDataState);
-    // }
+    const clearJobData = () => {
+        setJobData(initialJobDataState);
+    }
     const saveJobData = async () => {
         console.log("Guardando Job: ", jobData);
         // preparo la informacion de job para guardar en la DB
@@ -73,7 +74,7 @@ export const JobProvider = ({ children }) => {
         }
         // Actualizo en la DB la información de job en la BD
         try {
-            const responseQuote = await toast.promise(
+            const responseJob = await toast.promise(
                 apiClient.put(`/jobs/${jobId}`, jobToSave),
                 {
                     pending: "Guardando el trabajo...",
@@ -84,51 +85,40 @@ export const JobProvider = ({ children }) => {
                     autoClose: 800,
                 }
             )
-            setIsSaved(true);
+            setIsUpdated(false);
         } catch (error) {
             console.error("Error al guardar el trabajo: ", error);
         }
 
         // Paso por todos los productos
-        // jobData.jobProducts.map(async (product, index) => {
-        //     let newJobProductId = jobProduct.productId;
-        //     // preparo la informacion de Product para guardar en la DB
-        //     const productToSave = {
-        //         jobId: jobId,
-        //         quantity: product.quantity,
-        //         productionDays: product.productionDays,
-        //         financingCost: product.financingCost,
-        //         shipmentCost: product.shipmentCost,
-        //         enteredShipmentCost: product.enteredShipmentCost,
-        //         otherCost: product.otherCost,
-        //         enteredOtherCost: product.enteredOtherCost,
-        //         productDescription: product.productDescription,
-        //         calculatedSellingPrice: product.calculatedSellingPrice,
-        //         unitSellingPrice: product.unitSellingPrice,
-        //         isManual: product.isManual,
-        //         totalProductCost: product.totalProductCost,
-        //         savedToDb: product.savedToDb,
-        //         order: index,
-        //     }
+        jobData.jobProducts.map(async (product, index) => {
+            let newJobProductId = product.jobProductId;
+            // preparo la informacion de Product para guardar en la DB
+            const productToSave = {
+                jobId: jobId,
+                quantity: product.quantity,
+                productionDays: product.productionDays,
+                financingCost: product.financingCost,
+                shipmentCost: product.shipmentCost,
+                enteredShipmentCost: product.enteredShipmentCost,
+                otherCost: product.otherCost,
+                enteredOtherCost: product.enteredOtherCost,
+                jobProductDescription: product.productDescription,
+                calculatedSellingPrice: product.calculatedSellingPrice,
+                unitSellingPrice: product.unitSellingPrice,
+                isManual: product.isManual,
+                totalProductCost: product.totalProductCost,
+                jobProductNote: product.jobProductNote,
+                jobProductStatus: product.jobProductStatus,
+                order: index,
+            }
 
-        //     // guardo en la DB la información de Product
-        //     try {
-        //         if (product.savedToDb) {
-        //             // Si el producto ya está guardado, lo actualizo
-        //             const responseProduct = await apiClient.put(`/products/${product.productId}`, productToSave);
-        //         } else {
-        //             // Si el producto no está guardado, lo guardo
-        //             const responseProduct = await apiClient.post('/products/', productToSave);
-        //             newProductId = responseProduct.data.response._id;
-        //             // Actualizo el ID del producto en el context
-        //             updateProduct({
-        //                 productId: newProductId,
-        //                 savedToDb: true,
-        //             }, product.productId);
-        //         }
-        //     } catch (error) {
-        //         console.error("Error al guardar el producto: ", error);
-        //     }
+            // guardo en la DB la información de Product
+            try {
+                const responseProduct = await apiClient.put(`/job-products/${product.jobProductId}`, productToSave);
+            } catch (error) {
+                console.error("Error al guardar el producto: ", error);
+            }
         //     product.processes.map(async (process, index) => {
         //         // console.log("Guardando proceso: ", process);
         //         // preparo la informacion de Process para guardar en la DB con el ID del producto
@@ -167,7 +157,7 @@ export const JobProvider = ({ children }) => {
         //             console.error("Error al guardar el proceso: ", error);
         //         }
         //     });
-        // });
+        });
     };
 
     const deleteJobProcessFromDb = async (jobProceId) => {
@@ -186,8 +176,6 @@ export const JobProvider = ({ children }) => {
         }
     }
 
-    
-
     // Función para agregar un producto al array de productos
     const addJobProduct = (jobProdData) => {
         console.log("Agregando jobProduct: ", jobProdData);
@@ -201,11 +189,11 @@ export const JobProvider = ({ children }) => {
     const updateJobProduct = (updatedJobProduct, id) => {
         setJobData((prevData) => ({
             ...prevData,
-            jobProducts: prevData.jobProducts.map((jobProduct) => {
-                if (jobProduct.jobProductId === id) {
-                    return { ...jobProduct, ...updatedJobProduct };
+            jobProducts: prevData.jobProducts.map((jobProd) => {
+                if (jobProd.jobProductId === id) {
+                    return { ...jobProd, ...updatedJobProduct };
                 } else {
-                    return jobProduct;
+                    return jobProd;
                 }
             }),
         }));
@@ -224,19 +212,19 @@ export const JobProvider = ({ children }) => {
     };
 
     // Función para agregar un proceso a un producto específico
-    const addJobProcessToProduct = (newProcess) => {
+    const addJobProcessToProduct = (newJobProcess) => {
         setIsSaved(false);
-        setjobData((prevData) => ({
+        setJobData((prevData) => ({
             ...prevData,
-            products: prevData.products.map((product) => {
-                return product.productId === newProcess.productId
-                    ? { ...product, processes: [...product.processes, newProcess] }
-                    : product;
+            jobProducts: prevData.jobProducts.map((jobProduct) => {
+                return jobProduct.jobProdId === newJobProcess.jobProductId
+                    ? { ...jobProduct, jobProcesses: [...jobProduct.jobProcesses, newJobProcess] }
+                    : jobProduct;
             }),
         }));
     };
-    const updateJobProcessInProduct = (updatedProcess, procId) => {
-        setjobData((prevData) => {
+    const updateJobProcessInProduct = (updatedJobProcess, jobProcId) => {
+        setJobData((prevData) => {
             const updatedProducts = prevData.products.map((product) => {
                 if (product.productId === updatedProcess.productId) {
                     const updatedProcesses = product.processes.map((process) => {
@@ -258,7 +246,7 @@ export const JobProvider = ({ children }) => {
             };
         });
     };
-    const removeJobProcessInProduct = (productId, processId) => {
+    const removeJobProcessInProduct = (jobProductId, jobProcId) => {
         setIsUpdated(false)
         // Encuentra el producto y proceso específicos
         const updatedProducts = jobData.products.map((product) => {
@@ -293,15 +281,17 @@ export const JobProvider = ({ children }) => {
         <JobContext.Provider
             value={{
                 jobData,
+                setJobData,
                 saveJobData,
-                // clearJobData,
+                clearJobData,
                 updateJobData,
                 addJobProduct,
                 updateJobProduct,
                 removeJobProduct,
                 addJobProcessToProduct,
                 updateJobProcessInProduct,
-                removeJobProcessInProduct
+                removeJobProcessInProduct,
+                setIsUpdated
             }}
         >
             {children}

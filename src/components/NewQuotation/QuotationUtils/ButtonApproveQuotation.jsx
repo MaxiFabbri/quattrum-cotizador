@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const ButtonApproveQuotation = () => {
     const { quotationData, changeQuotationStatus } = useContext(QuotationContext);
-    const { JobData, updateJobData, addJobProduct } = useContext(JobContext);
+    const { JobData, updateJobData, addJobProduct, addJobProcessToProduct } = useContext(JobContext);
     const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
     const [shouldCalculate, setShouldCalculate] = useState(false);
     const today = new Date().toISOString().split("T")[0];
@@ -20,9 +20,11 @@ const ButtonApproveQuotation = () => {
         const jobToSave = {
             quotationId: quotationData.id,
             approvalDate: today,
+            deliveryDate: today,
             customerId: quotationData.customerId,
             paymentMethodId: quotationData.paymentMethodId,
             customerPaymentDetails: quotationData.customerPaymentDetails,
+            monthlyRate: quotationData.monthlyRate,
             currency: quotationData.currency,
             exchangeRate: quotationData.exchangeRate,
             jobStatus: "Aprobado",
@@ -67,7 +69,9 @@ const ButtonApproveQuotation = () => {
                 productionDays: product.productionDays,
                 financingCost: product.financingCost,
                 shipmentCost: product.shipmentCost,
+                enteredShipmentCost: product.enteredShipmentCost,
                 otherCost: product.otherCost,
+                enteredOtherCost: product.enteredOtherCost,
                 unitSellingPrice: product.unitSellingPrice,
                 calculatedSellingPrice: product.calculatedSellingPrice,
                 isManual: product.isManual,
@@ -99,45 +103,45 @@ const ButtonApproveQuotation = () => {
                     order: product.order,
                     jobProductNote: "",
                     jobProcesses: []
-                }, product.productId);
+                });
             } catch (error) {
                 console.error("Error al guardar el producto: ", error);
             }
 
             // Procesar todos los procesos del producto
-            // const processPromises = product.processes.map(async (process) => {
-            //     const processToSave = {
-            //         productId: newProductId,
-            //         description: process.description,
-            //         supplierId: process.supplierId,
-            //         supplierPaymentMethodId: process.supplierPaymentMethodId,
-            //         daysToPayment: process.daysToPayment,
-            //         currency: process.currency,
-            //         adjustPercentage: process.adjustPercentage,
-            //         enteredUnitCost: process.enteredUnitCost,
-            //         unitCost: +(process.enteredUnitCost / (process.currency === "Peso" ? quotationToSave.exchangeRate : 1)),
-            //         enteredFixedCost: process.enteredFixedCost,
-            //         fixedCost: +(process.enteredFixedCost / (process.currency === "Peso" ? quotationToSave.exchangeRate : 1)),
-            //         order: process.order,
-            //         subTotalProcessCost: +process.subTotalProcessCost,
-            //     };
-            //     console.log("processToSave", processToSave);
+            const jobProcessPromises = product.processes.map(async (process) => {
+                const jobProcessToSave = {
+                    jobProductId: newJobProductId,
+                    description: process.description,
+                    supplierId: process.supplierId,
+                    supplierPaymentMethodId: process.supplierPaymentMethodId,
+                    supplierPaymentDetails: process.supplierPaymentDetails,
+                    currency: process.currency,
+                    unitCost: process.unitCost,
+                    enteredUnitCost: process.enteredUnitCost,
+                    fixedCost: process.fixedCost,
+                    enteredFixedCost: process.enteredFixedCost,
+                    adjustPercentage: process.adjustPercentage,
+                    subTotalProcessCost: +process.subTotalProcessCost,
+                    order: process.order,
+                    jobProcessNotes: ""
+                };
+                console.log("jobProcessToSave", jobProcessToSave);
 
-            //     try {
-            //         const responseProcess = await apiClient.post('/processes/', processToSave);
-            //         console.log("responseProcess", responseProcess);
-            //         updateProcessInProduct({
-            //             processId: responseProcess.data.response._id,
-            //             productId: newProductId,
-            //             unitCost: processToSave.unitCost,
-            //             fixedCost: processToSave.fixedCost,
-            //             savedToDb: true,
-            //         }, process.processId);
-            //     } catch (error) {
-            //         console.error("Error al guardar el proceso: ", error);
-            //     }
-            // });
-            // await Promise.all(processPromises);
+                try {
+                    const responseJobProcess = await apiClient.post('/job-processes/', jobProcessToSave);
+                    console.log("responseJobProcess", responseJobProcess);
+                    
+                    addJobProcessToProduct({
+                        jobProcId: responseJobProcess.data.response._id,
+                        ...jobProcessToSave
+                    });
+                
+                } catch (error) {
+                    console.error("Error al guardar el proceso: ", error);
+                }
+            });
+            await Promise.all(jobProcessPromises);
         });
 
         await Promise.all(jobProductPromises);
