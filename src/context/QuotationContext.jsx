@@ -645,7 +645,10 @@ export const QuotationProvider = ({ children }) => {
                 addProcessToProduct,
                 updateProcessInProduct,
                 removeProcessInProduct,
-                calculateQuotation
+                calculateQuotation,
+                calculateItemFinanceCost,
+                calculateUnitSellingPrice,
+                calculateKitUniteSellingPrice,
             }}
         >
             {children}

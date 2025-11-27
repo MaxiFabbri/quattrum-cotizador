@@ -60,11 +60,10 @@ const DetailedQuotationContainer = () => {
                 currency: process.currency,
                 enteredUnitCost: +(process.enteredUnitCost).toFixed(2),
                 unitCost: +(process.unitCost),
-                tempunitCost: +(process.enteredUnitCost).toFixed(2),
                 enteredFixedCost: +(process.enteredFixedCost).toFixed(2),
                 fixedCost: +(process.fixedCost),
-                tempfixedCost: +(process.enteredFixedCost).toFixed(2),
                 subTotalProcessCost: +(process.subTotalProcessCost),
+                jobProcessNote: process.jobProcessNote,
                 savedToDb: true,
                 order: index,
             }

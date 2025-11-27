@@ -6,32 +6,27 @@ import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-ki
 import "./JobContainer.css"
 
 import { JobHeader } from "./JobElements/JobHeader.jsx";
-import { QuotationHeader } from "../NewQuotation/QuotationUtils/NewQuotationHeaders.jsx";
 import NewJob from "./NewJob.jsx";
 import JobProduct from "./JobElements/JobProduct.jsx";
 
-import { QuotationContext } from "../../context/QuotationContext.jsx";
 import { JobContext } from "../../context/JobContext.jsx";
 import TextButton from "../Utils/TextButton.jsx";
 import ButtonSaveJob from "./JobsUtils/ButtonSaveJob.jsx";
-
-
-
+import ButtonAddJobProduct from "./JobsUtils/ButtonAddJobProduct.jsx";
+import ButtonCalculateJob from "./JobsUtils/ButtonCalculateJob.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 
 const DetailedJobContainer = () => {
-    const { quotationData, clearQuotationData, updateQuotationData, setIsSaved } = useContext(QuotationContext);
-    const { jobData, updateJobData, clearJobData } = useContext(JobContext);
+    const { jobData, updateJobData, clearJobData, setIsSaved } = useContext(JobContext);
     const [activeId, setActiveId] = useState(null)
     const { id } = useParams()
     const navigate = useNavigate();
 
     useEffect(() => {
-        clearQuotationData();
         clearJobData();
         getJobDataFromDb(id);
     }, [id]);
-    
+
     // Formatear la fecha
     const formatDate = (utcDate) => {
         ;
@@ -65,10 +60,9 @@ const DetailedJobContainer = () => {
 
                 supplierName: process.supplierId.name,
                 supplierPaymentMethodName: process.supplierPaymentMethodId.supplier_payment_description,
-                // daysToPayment: process.daysToPayment,
                 // tempunitCost: +(process.enteredUnitCost).toFixed(2),
                 // tempfixedCost: +(process.enteredFixedCost).toFixed(2),
-                // savedToDb: true,
+                savedToDb: true,
             }
         })
         return newProcessesData
@@ -84,7 +78,6 @@ const DetailedJobContainer = () => {
     const adjustJobProductData = async (jobProducts, exchangeRate) => {	
         const newJobProductsData = await Promise.all(jobProducts.map(async (jobProduct) => {
             const newJobProcesses = await getJobProcessData(jobProduct._id, exchangeRate);
-            console.log("New Job Processes for Job Product: ", newJobProcesses)
             return {
                 jobProductId: jobProduct._id,
                 jobId: jobProduct.jobId,
@@ -97,6 +90,7 @@ const DetailedJobContainer = () => {
                 enteredOtherCost: +(jobProduct.enteredOtherCost),
                 unitSellingPrice: +(jobProduct.unitSellingPrice),
                 calculatedSellingPrice: +(jobProduct.calculatedSellingPrice),
+                approvedSellingPrice: +(jobProduct.approvedSellingPrice),
                 isManual: jobProduct.isManual,
                 jobProductDescription: jobProduct.jobProductDescription,
                 totalProductCost: +(jobProduct.totalProductCost),
@@ -115,6 +109,7 @@ const DetailedJobContainer = () => {
 
         let newData = {
             jobId: recievedData._id,
+            calculateFinancing: recievedData.calculateFinancing,
             quotationId: recievedData.quotationId,
             approvalDate: formatDate(recievedData.approvalDate),
             deliveryDate: formatDate(recievedData.deliveryDate) || "",
@@ -126,6 +121,7 @@ const DetailedJobContainer = () => {
             monthlyRate: recievedData.monthlyRate,
             currency: recievedData.currency,
             exchangeRate: recievedData.exchangeRate,
+            approvedExchangeRate: recievedData.approvedExchangeRate,
             jobStatus: recievedData.jobStatus,
             isKit: recievedData.isKit || false,
             jobNotes: recievedData.jobNotes || "",
@@ -141,36 +137,39 @@ const DetailedJobContainer = () => {
         return newData
     }
 
-    const handleProductsDragEnd = (event) => {
+    const handleJobProductsDragEnd = (event) => {
         const { active, over } = event;
         if (!active || !over || active.id === over.id) return;
 
-        const products = jobData.products;
-        const oldIndex = jobData.products.findIndex(p => p.productId === active.id);
-        const newIndex = jobData.products.findIndex(p => p.productId === over.id);
+        const jobProducts = jobData.jobProducts;
+        const oldIndex = jobData.jobProducts.findIndex(p => p.jobProductId === active.id);
+        const newIndex = jobData.jobProducts.findIndex(p => p.jobProductId === over.id);
 
         if (oldIndex === -1 || newIndex === -1) return;
 
-        const updatedProducts = arrayMove(products, oldIndex, newIndex);
-        console.log("After: ", updatedProducts)
+        const updatedJobProducts = arrayMove(jobProducts, oldIndex, newIndex);
 
-        updateQuotationData({
+        updateJobData({
             ...jobData,
-            products: updatedProducts
+            jobProducts: updatedJobProducts
         });
         setIsSaved(false);
         setActiveId(null);
     };
+    const dragStart = (event) => {
+        setActiveId(event.active.id);
+    }
 
     return (
         <div>
             <DndContext
                 collisionDetection={closestCenter}
-                onDragStart={(event) => setActiveId(event.active.id)}
-                onDragEnd={handleProductsDragEnd}
+                // onDragStart={(event) => setActiveId(event.active.id)}
+                onDragStart={dragStart}
+                onDragEnd={handleJobProductsDragEnd}
             >
-                <div className="quotation-container">
-                    <table className="quotation-table-quotation">
+                <div className="job-container">
+                    <table className="job-table-job">
                         <JobHeader />
                         <tbody>
                             <NewJob />
@@ -178,7 +177,7 @@ const DetailedJobContainer = () => {
                     </table>
                 </div>
                 <>
-                    <div className="quotation-table-products">
+                    <div className="job-table-products">
                         <SortableContext
                             items={jobData.jobProducts.map(p => p.jobProductId)}
                             strategy={verticalListSortingStrategy}
@@ -190,17 +189,14 @@ const DetailedJobContainer = () => {
                             ))}
                         </SortableContext>
                     </div>
-                    <div className="quotation-buttons-container">
+                    <div className="job-buttons-container">
                         <ButtonSaveJob />
-                        {/* <ButtonAddProduct />
-                        <ButtonCalculateQuotation />
-                        <ButtonSaveQuotation />
-                        <ButtonDuplicateQuotation />
-                        <ButtonApproveQuotation />
+                        <ButtonAddJobProduct />
+                        <ButtonCalculateJob />
                         <TextButton
                             text="Cancelar"
                             onClick={() => navigate("/")}
-                        /> */}
+                        />
                     </div>
                 </>
             </DndContext>

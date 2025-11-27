@@ -2,14 +2,19 @@ import { createContext, useState, useEffect, useContext } from "react";
 import { apiClient } from "../config/axiosConfig.js";
 import { ParametersContext } from "./ParametersContext.jsx";
 import { toast } from "react-toastify";
+import validateJob from "../components/Jobs/JobsUtils/validateJob.jsx";
+import useCalculateFunctions from "../components/Utils/CalculateFunctions.jsx";
 
 export const JobContext = createContext();
 
 export const JobProvider = ({ children }) => {
     const [isUpdated, setIsUpdated] = useState(false);
+    // const { calculateUnitSellingPrice, calculateKitUniteSellingPrice } = useContext(QuotationContext);
     const [isSaved, setIsSaved] = useState(true);
     const [filter, setFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
+    const { utilitiesTable, tax } = useContext(ParametersContext);
+    const { calculateUnitSellingPrice, calculateKitUniteSellingPrice, getSellingFinanceCost, getBuyingFinanceCost } = useCalculateFunctions();
 
     const initialJobDataState = {
         jobId: "",
@@ -115,60 +120,262 @@ export const JobProvider = ({ children }) => {
 
             // guardo en la DB la información de Product
             try {
-                const responseProduct = await apiClient.put(`/job-products/${product.jobProductId}`, productToSave);
+                if (product.savedToDb) {
+                    // Si el producto ya está guardado, lo actualizo
+                    const responseProduct = await apiClient.put(`/job-products/${product.jobProductId}`, productToSave);
+                } else {
+                    // Si el producto no está guardado, lo creo
+                    const responseProduct = await apiClient.post(`/job-products`, productToSave);
+                    newJobProductId = responseProduct.data.response._id;
+                    // Actualizo el jobProductId temporal con el ID real de la DB
+                    updateJobProduct({
+                        jobProductId: newJobProductId,
+                        savedToDb: true,
+                    }, product.jobProductId);
+                }
             } catch (error) {
                 console.error("Error al guardar el producto: ", error);
             }
-        //     product.processes.map(async (process, index) => {
-        //         // console.log("Guardando proceso: ", process);
-        //         // preparo la informacion de Process para guardar en la DB con el ID del producto
-        //         const processToSave = {
-        //             productId: newProductId,
-        //             description: process.description,
-        //             supplierId: process.supplierId,
-        //             supplierPaymentMethodId: process.supplierPaymentMethodId,
-        //             daysToPayment: process.daysToPayment,
-        //             supplierPaymentDetails: process.supplierPaymentDetails,
-        //             currency: process.currency,
-        //             adjustPercentage: process.adjustPercentage,
-        //             enteredUnitCost: process.enteredUnitCost,
-        //             unitCost: process.unitCost,
-        //             enteredFixedCost: process.enteredFixedCost,
-        //             fixedCost: process.fixedCost,
-        //             subTotalProcessCost: +process.subTotalProcessCost,
-        //             order: index,
-        //         }
-        //         // guardo en la DB la información de Process
-        //         try {
-        //             if (process.savedToDb) {
-        //                 // Si el proceso ya está guardado, lo actualizo
-        //                 const responseProcess = await apiClient.put(`/processes/${process.processId}`, processToSave);
-        //             } else {
-        //                 // Si el proceso no está guardado, lo guardo
-        //                 const responseProcess = await apiClient.post('/processes/', processToSave);
-        //                 // Actualizo el ID del proceso y el ID de Producto en el context
-        //                 updateProcessInProduct({
-        //                     processId: responseProcess.data.response._id,
-        //                     productId: newProductId,
-        //                     savedToDb: true,
-        //                 }, process.processId);
-        //             }
-        //         } catch (error) {
-        //             console.error("Error al guardar el proceso: ", error);
-        //         }
-        //     });
+            product.processes.map(async (process, index) => {
+                // preparo la informacion de Process para guardar en la DB con el ID del producto
+                const processToSave = {
+                    jobProductId: newJobProductId,
+                    description: process.description,
+                    supplierId: process.supplierId,
+                    supplierPaymentMethodId: process.supplierPaymentMethodId,
+                    supplierPaymentDetails: process.supplierPaymentDetails,
+                    currency: process.currency,
+                    unitCost: process.unitCost,
+                    enteredUnitCost: process.enteredUnitCost,
+                    fixedCost: process.fixedCost,
+                    enteredFixedCost: process.enteredFixedCost,
+                    adjustPercentage: process.adjustPercentage,
+                    subTotalProcessCost: +process.subTotalProcessCost,
+                    order: index,
+                    jobProcessNote: process.jobProcessNote,
+                    jobProcessStatus: process.jobProcessStatus,
+                }
+                // guardo en la DB la información de Process
+                try {
+                    if (process.savedToDb) {
+                        // Si el proceso ya está guardado en la DB, lo actualizo
+                        const responseProcess = await apiClient.put(`/job-processes/${process.jobProcId}`, processToSave);
+                    } else {
+                        // Si el proceso no está guardado en la DB, lo creo
+                        const responseProcess = await apiClient.post(`/job-processes`, processToSave);
+                        // Actualizo el jobProcId temporal con el ID real de la DB
+                        updateJobProcessInProduct({
+                            jobProcId: responseProcess.data.response._id,
+                            jobProductId: newJobProductId,
+                            savedToDb: true
+                        }, process.jobProcId);
+                    }
+                } catch (error) {
+                        console.error("Error al guardar el proceso: ", error);
+                }
+            });
         });
     };
 
-    const deleteJobProcessFromDb = async (jobProceId) => {
+    const calculateJobData = (calculateAll) => {
+        console.log("Calculando Job... Recalcular todo: ", calculateAll, jobData);
+
+        const isJobValid = validateJob(jobData)
+        console.log("isJobValid: ", isJobValid);
+        if (!isJobValid.isValid) {
+            isJobValid.errors.map((error) => {
+                toast.error(error, {
+                    position: "top-center",
+                    autoClose: 6000
+                });
+            });
+            return;
+        }
+
+        if (jobData.isKit) {
+            handleCalculateSetJob(calculateAll);
+        } else {
+            handleCalculateJob(calculateAll);
+        }
+        setIsSaved(true)
+    }
+
+    const handleCalculateJob = async (recalculateAll) => {
+        console.log("handleCalculateJob... ",jobData);
+        for (const jobProduct of jobData.jobProducts) {
+            let totalProductCost = 0;
+            let newProductDescription = "";
+            let sellingFinanceCost = 0;
+            let buyingFinanceCost = 0;
+            let newFinancingCost = 0;
+
+            const updatedJobProcesses = [];
+
+            for (const jobProcess of jobProduct.processes) {
+                // Actualizo los costos del proceso en la moneda de la cotización
+                jobProcess.unitCost = +jobProcess.enteredUnitCost / (jobProcess.currency === "Peso" ? jobData.exchangeRate : 1);
+                jobProcess.fixedCost = +jobProcess.enteredFixedCost / (jobProcess.currency === "Peso" ? jobData.exchangeRate : 1);
+
+                const adjust = 1 + ((Number(jobProcess.adjustPercentage) || 0) / 100);
+                const newSubtotalProcessCost = ((jobProcess.unitCost * jobProduct.quantity) * adjust) + jobProcess.fixedCost;
+                totalProductCost += newSubtotalProcessCost;
+
+                newProductDescription += newProductDescription ? `, ${jobProcess.description}` : jobProcess.description;
+
+                // Calculo costo financiero de cada proceso
+                const sellCost = await getSellingFinanceCost(newSubtotalProcessCost, jobProduct.productionDays, jobData.customerPaymentDetails, jobData.monthlyRate);
+                sellingFinanceCost += sellCost;
+                const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, jobProcess.supplierPaymentDetails, jobProduct.productionDays);
+                buyingFinanceCost += buyCost;
+                // console.log("Proceso: ", process.description, +(sellCost - buyCost).toFixed(2), "Selling Finance cost: ", sellCost, " Buying Finance Cost: ", buyCost);
+
+                // Actualizar el costo del proceso en el producto
+                updateJobProcessInProduct({ subTotalProcessCost: newSubtotalProcessCost }, jobProcess.jobProcId);
+
+                updatedJobProcesses.push({
+                    ...jobProcess,
+                    subTotalProcessCost: newSubtotalProcessCost,
+                });
+            }
+            toast.info(`Calculando el costo del producto: ${newProductDescription}`, {
+                position: "top-center",
+                autoClose: 1000
+            })
+
+            if (jobData.calculateFinancing) {
+                // Calculo el costo financiero del producto
+                if (sellingFinanceCost > buyingFinanceCost) {
+                    newFinancingCost = sellingFinanceCost - buyingFinanceCost;
+                    // console.log("Selling Finance Cost: ", sellingFinanceCost, " Buying Finance Cost: ", buyingFinanceCost, " New Financing Cost: ", newFinancingCost);
+                }
+            } else {
+                newFinancingCost = 0;
+            }
+            // Actualizo los costos del producto en base a TC
+            jobProduct.shipmentCost = +jobProduct.enteredShipmentCost / jobData.exchangeRate;
+            jobProduct.otherCost = +jobProduct.enteredOtherCost / jobData.exchangeRate;
+
+            const finalCost = totalProductCost + jobProduct.shipmentCost + jobProduct.otherCost;
+            const calculatedSellingPrice = parseFloat(calculateUnitSellingPrice(finalCost, newFinancingCost, jobProduct.quantity ));
+            const pesosPrice = parseFloat((calculatedSellingPrice * jobData.exchangeRate).toFixed(0));
+
+            if (!recalculateAll && jobProduct.isManual) {
+                updateJobProduct({
+                    jobProductId: jobProduct.productId,
+                    jobProductDescription: newProductDescription,
+                    calculatedSellingPrice,
+                    unitSellingPrice: jobProduct.unitSellingPrice,
+                    isManual: jobProduct.isManual,
+                    financingCost: newFinancingCost,
+                    totalProductCost: finalCost,
+                    pesosPrice: pesosPrice
+                }, jobProduct.jobProductId);
+            } else {
+                console.log("Actualizando jobProduct automáticamente: ", jobProduct);
+                updateJobProduct({
+                    jobProductId: jobProduct.jobProductId,
+                    productDescription: newProductDescription,
+                    calculatedSellingPrice,
+                    unitSellingPrice: calculatedSellingPrice,
+                    isManual: false,
+                    financingCost: newFinancingCost,
+                    totalProductCost: finalCost,
+                    pesosPrice: pesosPrice
+                }, jobProduct.jobProductId);
+            }
+
+            jobProduct.processes = updatedJobProcesses;
+        }
+        setIsUpdated(true);
+    };
+
+    const handleCalculateSetJob = async (recalculateAll) => {
+        const quotationTotalCost = getQuotationTotalCost();
+        // Calculo las utilidades deseadas de los parametros generales
+        const targetUtilities = utilitiesTable.find((utility) => quotationTotalCost < utility.upTo);
+
+        for (const product of quotationData.products) {
+            // Calculo las utilidades deseadas de los parametros generales
+            const productCost = productsTotalCost.find((el) => el.id === product.productId);
+
+            // Calculo el costo Financiero
+            let totalProductCost = 0;
+            let sellingFinanceCost = 0;
+            let buyingFinanceCost = 0;
+            let newFinancingCost = 0;
+            let newProductDescription = "";
+            const updatedProcesses = [];
+
+            for (const process of product.processes) {
+
+                const adjust = 1 + ((Number(process.adjustPercentage) || 0) / 100);
+                const newSubtotalProcessCost = ((process.unitCost * product.quantity) * adjust) + process.fixedCost;
+                totalProductCost += newSubtotalProcessCost;
+                newProductDescription += newProductDescription ? `, ${process.description}` : process.description;
+
+                // Calculo costo financiero de cada proceso
+                const sellCost = await getSellingFinanceCost(newSubtotalProcessCost, product.productionDays);
+                sellingFinanceCost += sellCost;
+                const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, process.supplierPaymentDetails, product.productionDays);
+                buyingFinanceCost += buyCost;
+
+                // console.log("Proceso: ", process.description, +(sellCost - buyCost).toFixed(2), "Selling Finance cost: ", sellCost, " Buying Finance Cost: ", buyCost);
+            }
+            toast.info(`Calculando el costo del producto: ${newProductDescription}`, {
+                position: "top-center",
+                autoClose: 1000
+            })
+
+            if (quotationData.calculateFinancing) {
+                // Calculo el costo financiero del producto
+                if (sellingFinanceCost > buyingFinanceCost) {
+                    newFinancingCost = sellingFinanceCost - buyingFinanceCost;
+                }
+            } else {
+                newFinancingCost = 0;
+            }
+
+            const calculatedSellingPrice = calculateKitUniteSellingPrice(productCost.totalProductCost, newFinancingCost, product.quantity, targetUtilities, quotationTotalCost);
+            const pesosPrice = parseFloat((calculatedSellingPrice * quotationData.exchangeRate).toFixed(0));
+
+            if (!recalculateAll) {
+                updateProduct({
+                    productId: product.productId,
+                    productDescription: newProductDescription,
+                    calculatedSellingPrice,
+                    unitSellingPrice: product.unitSellingPrice,
+                    isManual: product.isManual,
+                    financingCost: newFinancingCost,
+                    totalProductCost: productCost.totalProductCost,
+                    pesosPrice: pesosPrice
+                }, product.productId);
+            } else {
+                updateProduct({
+                    productId: product.productId,
+                    productDescription: newProductDescription,
+                    calculatedSellingPrice,
+                    unitSellingPrice: calculatedSellingPrice,
+                    isManual: false,
+                    financingCost: newFinancingCost,
+                    totalProductCost: productCost.totalProductCost,
+                    pesosPrice: pesosPrice
+                }, product.productId);
+            }
+
+        }
+        setIsUpdated(true);
+    };
+
+    const deleteJobProcessFromDb = async (jobProcId) => {
         // Realiza la operación de eliminación en la base de datos
         try {
-            await apiClient.delete(`/job-processes/${jobProceId}`);
+            await apiClient.delete(`/job-processes/${jobProcId}`);
         } catch (error) {
             console.error("Error al eliminar el proceso:", error);
         }
     }
     const deleteJobProductFromDb = async (jobProdId) => {
+        console.log("Eliminando jobProduct de la DB con ID: ", jobProdId);
         try {
             await apiClient.delete(`/job-products/${jobProdId}`)
         } catch (error) {
@@ -179,7 +386,6 @@ export const JobProvider = ({ children }) => {
     // Función para agregar un producto al array de productos
     const addJobProduct = (jobProdData) => {
         console.log("Agregando jobProduct: ", jobProdData);
-        console.log("jobData antes de agregar jobProduct: ", jobData);
         setIsUpdated(false)
         setJobData((prevData) => ({
             ...prevData,
@@ -198,82 +404,88 @@ export const JobProvider = ({ children }) => {
             }),
         }));
     };
-    const removeJobProduct = (productId) => {
+    const removeJobProduct = (id) => {
         setIsSaved(false);
-        jobData.products.map((product) => {
-            if (product.productId === productId && product.savedToDb) {
-                deleteProductFromDb(productId)
+        jobData.jobProducts.map((jobProduct) => {
+            if (jobProduct.jobProductId === id && jobProduct.savedToDb) {
+                deleteJobProductFromDb(id)
             }
         })
-        setjobData((prevData) => ({
+        setJobData((prevData) => ({
             ...prevData,
-            products: prevData.products.filter((product) => product.productId !== productId),
+            jobProducts: prevData.jobProducts.filter((product) => product.jobProductId !== id),
         }));
     };
 
     // Función para agregar un proceso a un producto específico
     const addJobProcessToProduct = (newJobProcess) => {
+        console.log("Agregando jobProcess: ", newJobProcess);
         setIsSaved(false);
         setJobData((prevData) => ({
             ...prevData,
             jobProducts: prevData.jobProducts.map((jobProduct) => {
-                return jobProduct.jobProdId === newJobProcess.jobProductId
-                    ? { ...jobProduct, jobProcesses: [...jobProduct.jobProcesses, newJobProcess] }
+                console.log("Map de los jobProducts: ", jobProduct);
+                return jobProduct.jobProductId === newJobProcess.jobProductId
+                    ? { ...jobProduct, processes: [...jobProduct.processes, newJobProcess] }
                     : jobProduct;
             }),
         }));
     };
     const updateJobProcessInProduct = (updatedJobProcess, jobProcId) => {
         setJobData((prevData) => {
-            const updatedProducts = prevData.products.map((product) => {
-                if (product.productId === updatedProcess.productId) {
-                    const updatedProcesses = product.processes.map((process) => {
-                        if (process.processId === procId) {
-                            return { ...process, ...updatedProcess };
+            const updatedJobProducts = prevData.jobProducts.map((jobProduct) => {
+                if (jobProduct.jobProductId === updatedJobProcess.jobProductId) {
+                    const updatedJobProcesses = jobProduct.processes.map((process) => {
+                        if (process.jobProcId === jobProcId) {
+                            return { ...process, ...updatedJobProcess };
                         } else {
                             return process;
                         }
                     });
-                    return { ...product, processes: updatedProcesses };
+                    return { ...jobProduct, processes: updatedJobProcesses };
                 } else {
-                    return product;
+                    return jobProduct;
                 }
             });
 
             return {
                 ...prevData,
-                products: updatedProducts,
+                jobProducts: updatedJobProducts,
             };
         });
     };
-    const removeJobProcessInProduct = (jobProductId, jobProcId) => {
+    const removeJobProcessInProduct = (productId, procId) => {
+        console.log("Eliminando jobProcess con ID: ", procId, " del jobProduct con ID: ", productId);
         setIsUpdated(false)
         // Encuentra el producto y proceso específicos
-        const updatedProducts = jobData.products.map((product) => {
-            if (product.productId === productId) {
-                const targetProcess = product.processes.find(
-                    (process) => process.processId === processId
+        const updatedJobProducts = jobData.jobProducts.map((jobProduct) => {
+            if (jobProduct.jobProductId === productId) {
+                const targetProcess = jobProduct.processes.find(
+                    (jobProcess) => jobProcess.jobProcId === procId
                 );
+                console.log("Proceso objetivo encontrado: ", targetProcess);
                 // Verifica si esta en la DB y lo borra de la misma
                 if (targetProcess.savedToDb) {
-                    deleteJobProcessFromDb(targetProcess.processId);
+                    console.log("El proceso está en la DB, procediendo a eliminarlo: ", targetProcess);
+                    deleteJobProcessFromDb(targetProcess.jobProcId);
                 }
+                
                 // Adevuelve los procesos no eliminados para ajustar jobData
                 return {
-                    ...product,
-                    processes: product.processes.filter(
-                        (process) => process.processId !== processId
+                    ...jobProduct,
+                    processes: jobProduct.processes.filter(
+                        (jobProcess) => jobProcess.jobProcId !== procId
                     ),
                 };
             } else {
-                return product;
+                return jobProduct;
             }
         });
 
         // Actualiza el estado después de la operación asincrónica
         setJobData((prevData) => ({
             ...prevData,
-            products: updatedProducts,
+            jobProducts: updatedJobProducts,
         }));
     };
 
@@ -283,6 +495,7 @@ export const JobProvider = ({ children }) => {
                 jobData,
                 setJobData,
                 saveJobData,
+                calculateJobData,
                 clearJobData,
                 updateJobData,
                 addJobProduct,
@@ -291,7 +504,8 @@ export const JobProvider = ({ children }) => {
                 addJobProcessToProduct,
                 updateJobProcessInProduct,
                 removeJobProcessInProduct,
-                setIsUpdated
+                setIsUpdated,
+                setIsSaved
             }}
         >
             {children}

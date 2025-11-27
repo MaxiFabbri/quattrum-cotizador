@@ -102,7 +102,7 @@ const NewJob = () => {
             </td>
             <CurrencySelect value={jobData.currency} onChange={(e) => handleChange({ currency: e.target.value })} />
             <ExchangeRateInput value={jobData.exchangeRate} onChange={(e) => handleChange({ exchangeRate: +(e.target.value) })} />
-            <QuoteStatusSelect value={jobData.quoteStatus} onChange={(e) => handleChange({ ...jobData, quoteStatus: e.target.value })} />
+            <QuoteStatusSelect value={jobData.jobStatus} onChange={(e) => handleChange({ ...jobData, quoteStatus: e.target.value })} />
             <IsKitCheckbox checked={jobData.isKit} onChange={(e) => handleChange({ isKit: e.target.checked })} />
             <td>
                 <input

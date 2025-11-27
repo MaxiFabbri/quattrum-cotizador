@@ -3,8 +3,8 @@ import { JobContext } from "../../../context/JobContext";
 import { QuotationContext } from "../../../context/QuotationContext";
 import { ParametersContext } from "../../../context/ParametersContext";
 import IconButton from "../../Utils/IconButton";
-import ButtonAddProcess from "../../NewQuotation/QuotationUtils/ButtonAddProcess";
-import ButtonDuplicateProduct from "../../NewQuotation/QuotationUtils/ButtonDuplicateProduct";
+import ButtonAddJobProcess from "../JobsUtils/ButtonAddJobProcess";
+import ButtonDuplicateJobProduct from "../JobsUtils/ButtonDuplicateJobProduct";
 import NewJobProcess from "./JobProcess";
 import ProductCostDetails from "../../NewQuotation/QuotationElements/ProductCostDetails";
 
@@ -14,7 +14,7 @@ import { closestCenter, DndContext } from '@dnd-kit/core';
 
 const NewJobProduct = ({ productData }) => {
     const { quotationData, updateQuotationData, updateProduct, removeProduct, setIsSaved } = useContext(QuotationContext);
-    const { jobData, updateJobData, updateJobProduct, addJobProduct, addJobProcessToProduct } = useContext(JobContext);
+    const { jobData, updateJobData, updateJobProduct, removeJobProduct, addJobProduct, addJobProcessToProduct } = useContext(JobContext);
     const { tax } = useContext(ParametersContext);
     const [jobProdData, setJobProdData] = useState(productData);
 
@@ -26,10 +26,6 @@ const NewJobProduct = ({ productData }) => {
     const [pesosPrice, setPesosPrice] = useState(+(jobProdData.unitSellingPrice * jobData.exchangeRate).toFixed(0));
     const [newEnteredShipmentCost, setNewEnteredShipmentCost] = useState(jobProdData.enteredShipmentCost) || 0;
     const [newEnteredOtherCost, setNewEnteredOtherCost] = useState(jobProdData.enteredOtherCost) || 0;
-
-    // useEffect(() => {
-    //     console.log("jobProdData changed:", jobProdData);
-    // }, [jobProdData]);
 
     if (jobProdData.calculatedSellingPrice == null || Number.isNaN(jobProdData.calculatedSellingPrice)) {
         setJobProdData((prevData) => ({
@@ -45,7 +41,7 @@ const NewJobProduct = ({ productData }) => {
         transform,
         transition
     } = useSortable({
-        id: productData.productId
+        id: productData.jobProductId
     })
 
     const calculatePercentageUtilitie = () => {
@@ -79,15 +75,15 @@ const NewJobProduct = ({ productData }) => {
             setPesosPrice(+(jobProdData.calculatedSellingPrice * jobData.exchangeRate).toFixed(0) || 0);
         }
     }, [jobProdData.isManual]);
-
-    // Actualizar el estado local `jobProdData` cuando cambie `jobData`
+    
     useEffect(() => {
         setIsManualPrice(productData.isManual);
         setPesosPrice(+(productData.unitSellingPrice * jobData.exchangeRate).toFixed(0) || 0);
     }, [productData]);
 
+    // Actualizar el estado local `jobProdData` cuando cambie `jobData`
     useEffect(() => {
-        updateProdData();
+        updateJobProdData();
     }, [jobData]);
 
     // Actualizar el estado global al cambiar algun dato
@@ -98,10 +94,10 @@ const NewJobProduct = ({ productData }) => {
         }
     }, [isJobProdUpdate]);
 
-    const updateProdData = () => {
-        const newProductData = jobData.jobProducts.find((product) => product.jobProductId === jobProdData.jobProductId);
-        if (JSON.stringify(newProductData) !== JSON.stringify(jobProdData)) {
-            setJobProdData(newProductData);
+    const updateJobProdData = () => {
+        const newJobProductData = jobData.jobProducts.find((product) => product.jobProductId === jobProdData.jobProductId);
+        if (JSON.stringify(newJobProductData) !== JSON.stringify(jobProdData)) {
+            setJobProdData(newJobProductData);
         }
     }
 
@@ -134,8 +130,9 @@ const NewJobProduct = ({ productData }) => {
     };
 
     // Eliminar el producto del contexto
-    const handleDeleteProduct = () => {
-        removeProduct(jobProdData.productId); // Eliminamos el producto usando su ID único
+    const handleDeleteJobProduct = () => {
+        console.log("Eliminando producto: ", jobProdData.jobProductId);
+        removeJobProduct(jobProdData.jobProductId);
     };
     const handlePriceChange = (e) => {
         const newPrice = parseFloat(e.target.value);
@@ -153,6 +150,7 @@ const NewJobProduct = ({ productData }) => {
 
     const handleProcessDragEnd = (event) => {
         const { active, over } = event;
+        console.log("Before Process Drag End: ", jobData.jobProducts)
         if (!active || !over || active.id === over.id) return;
 
         const [activeJobProductId, activeJobProcessId] = active.id.split("#");
@@ -196,10 +194,10 @@ const NewJobProduct = ({ productData }) => {
                 ref={setNodeRef}
                 style={jobProdStyle}
                 {...attributes}
-                className="product-container"
+                className="job-product-container"
             >
-                <thead key={"product-header"}>
-                    <tr {...listeners} style={{ cursor: "grab" }} key={"product-header"}>
+                <thead key={"job-product-header"}>
+                    <tr {...listeners} style={{ cursor: "grab" }} key={"job-product-header"}>
                         <th >
                             {/* <img src="/drag-icon.png" style={{ width: "20px", height: "20px" }} alt="Mover" /> */}
                         </th>
@@ -216,17 +214,17 @@ const NewJobProduct = ({ productData }) => {
                 </thead>
                 <tbody key={"body-" + jobProdData.jobProductId} id={"body-" + jobProdData.jobProductId}>
                     <tr>
-                        <td className="product-action-buttons">
-                            <ButtonDuplicateProduct
+                        <td className="job-product-action-buttons">
+                            <ButtonDuplicateJobProduct
                                 jobProductId={jobProdData.jobProductId}
                             />
-                            <ButtonAddProcess
+                            <ButtonAddJobProcess
                                 jobProductId={jobProdData.jobProductId}
                             />
                         </td>
                         <td>
                             <input
-                                className="input-number"
+                                className="job-input-number"
                                 type="number"
                                 name="quantity"
                                 defaultValue={jobProdData.quantity}
@@ -240,7 +238,7 @@ const NewJobProduct = ({ productData }) => {
                         </td>
                         <td>
                             <input
-                                className="input-number-days"
+                                className="job-input-number-days"
                                 type="number"
                                 name="productionDays"
                                 value={jobProdData.productionDays}
@@ -250,7 +248,7 @@ const NewJobProduct = ({ productData }) => {
                         </td>
                         <td>
                             <input
-                                className="input-number"
+                                className="job-input-number"
                                 type="number"
                                 name="tempfinancingCost"
                                 value={(jobProdData.financingCost * jobData.exchangeRate).toFixed(0)}
@@ -259,7 +257,7 @@ const NewJobProduct = ({ productData }) => {
                         </td>
                         <td>
                             <input
-                                className="input-number"
+                                className="job-input-number"
                                 type="number"
                                 name="shipmentCost"
                                 value={newEnteredShipmentCost}
@@ -271,7 +269,7 @@ const NewJobProduct = ({ productData }) => {
                         </td>
                         <td>
                             <input
-                                className="input-number"
+                                className="job-input-number"
                                 type="number"
                                 name="tempotherCost"
                                 value={newEnteredOtherCost}
@@ -282,7 +280,7 @@ const NewJobProduct = ({ productData }) => {
                             />
                         </td>
                         <td>
-                            <span className="percentage-utility">
+                            <span className="job-percentage-utility">
                                 {isNaN(percentageUtilitie) ? '%' : `${percentageUtilitie} %`}
                             </span>
                         </td>
@@ -296,7 +294,7 @@ const NewJobProduct = ({ productData }) => {
                                 type="number"
                                 value={pesosPrice}
                                 onChange={handlePriceChange}
-                                className={`pesos-price ${isManualPrice ? 'manual' : 'auto'}`}
+                                className={`job-pesos-price ${isManualPrice ? 'manual' : 'auto'}`}
                                 style={{ width: '100px', textAlign: 'right' }}
                             />
                         </td>
@@ -314,7 +312,7 @@ const NewJobProduct = ({ productData }) => {
                             <IconButton
                                 icon="/delete.png"
                                 text="Eliminar Producto"
-                                onClick={handleDeleteProduct}
+                                onClick={handleDeleteJobProduct}
                             />
                         </td>
                     </tr>

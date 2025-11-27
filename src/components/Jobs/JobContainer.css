@@ -1,33 +1,33 @@
-.quotation-container {
+.job-container {
     width: 100%;
     background-color: #ddd;
     padding-top: 5px;
     padding-bottom: 20px;
 }
-.quotation-container ul{
+.job-container ul{
     font-size: 0.8em;
 }
-.quotation-table-quotation {
+.job-table-job {
     width: 100%;
     border-collapse: collapse;
     height: 60px;
 }
 
-.quotation-table-quotation tbody tr td {
+.job-table-job tbody tr td {
     text-align: center;
 }
 
-.complete-quotation-message {
+.complete-job-message {
     text-align: center;
     margin-top: 20px;
     font-size: 1.3em;
 }
 
-.quotation-table-products {
+.job-table-products {
     width: 100%;
     padding: 0px 2%;
 }
-.product-container {
+.job-product-container {
     width: 100%;
     border-collapse: collapse;
     background-color: #fff;
@@ -35,31 +35,31 @@
     margin-top: 5px;
     border-radius: 10px;
 }
-.product-container thead {
+.job-product-container thead {
     height: 22px;
     vertical-align: bottom;
 
 }
-.product-header-row{
+.job-product-header-row{
     vertical-align: top;
     border-bottom: 1px solid #999;
 }
-.product-container thead th{
+.job-product-container thead th{
     font-size: 0.9em;
     font-weight: 500;
 }
 
-.product-container tbody tr td {
+.job-product-container tbody tr td {
     padding: 0px 10px;
     font-size: 0.9em;
     text-align: center;
 }
-.product-action-buttons {
+.job-product-action-buttons {
     display: flex;
     justify-content: space-around;
 }
 
-.quotation-table-processes{
+.job-table-processes{
     border-radius: 5px;
     background-color: #fff;
     width: 96%;
@@ -67,25 +67,25 @@
     margin-bottom: 10px;
     margin-top: 5px;
 }
-.quotation-table-processes thead {
+.job-table-processes thead {
     background-color: #eee;
     height: 22px;
 }
-.quotation-table-processes th {
+.job-table-processes th {
     font-size: 1em;
     font-weight: normal;
 
 }
 
-.quotation-table-processes tbody tr {
+.job-table-processes tbody tr {
     height: 25px;
 }
 
-.pesos-price{
+.job-pesos-price{
     font-size: 1.6em;
     font-weight: bold;
 }
-.percentage-utility{
+.job-percentage-utility{
     font-size: 1.1em;
     font-weight: bold;
 }
@@ -102,11 +102,11 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 
-.input-number{
+.job-input-number{
     text-align: end;
     width: 85px
 }
-.input-number-days {
+.job-input-number-days {
     text-align: center;
     width: 55px;
 }
@@ -116,7 +116,7 @@ ul {
     
 }
 
-.quotation-buttons-container {
+.job-buttons-container {
     display: flex;
     justify-content: center;
     gap: 100px;

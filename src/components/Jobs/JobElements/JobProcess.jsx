@@ -12,7 +12,7 @@ import IconButton from "../../Utils/IconButton.jsx";
 
 const NewJobProcess = ({ initialProcessData }) => {
     const { updateProcessInProduct, removeProcessInProduct, quotationData, setIsSaved } = useContext(QuotationContext);
-    const { jobData, updateJobProcessInProduct } = useContext(JobContext);
+    const { jobData, updateJobProcessInProduct, removeJobProcessInProduct } = useContext(JobContext);
 
     const [jobProcessData, setJobProcessData] = useState(initialProcessData);
     const [newTempUnitCost, setNewTempUnitCost] = useState(jobProcessData.enteredUnitCost) || 0;
@@ -25,7 +25,7 @@ const NewJobProcess = ({ initialProcessData }) => {
         transform,
         transition
     } = useSortable({
-        id: `${initialProcessData.productId}#${initialProcessData.processId}`
+        id: `${initialProcessData.jobProductId}#${initialProcessData.jobProcId}`
     })
 
     useEffect(() => {
@@ -33,9 +33,7 @@ const NewJobProcess = ({ initialProcessData }) => {
     }, [jobData]);
 
     // Actualiza el objeto jobProcessData con la informacion que está en el Contexto,
-    // para actualizar los cambios en Quotation o en product.
     const updateJobProcessData = () => {
-        console.log("Updating jobProcessData: ", jobData)
         const jobProduct = jobData.jobProducts.find(
             (jobProduct) => jobProduct.jobProductId === jobProcessData.jobProductId
         );
@@ -55,12 +53,11 @@ const NewJobProcess = ({ initialProcessData }) => {
     const [debouncedProcessData, setDebouncedProcessData] = useState(jobProcessData);
     // Actualizar el estado global al cambiar `debouncedProdData`
     useEffect(() => {
-        updateProcessInProduct(debouncedProcessData, debouncedProcessData.processId);
+        updateJobProcessInProduct(debouncedProcessData, debouncedProcessData.jobProcId);
     }, [debouncedProcessData]);
 
     // Debounce: Actualizar `debouncedProdData` después de un retraso
     useEffect(() => {
-        console.log("Debounceing jobProcessData changes: ", jobProcessData)
         const handler = setTimeout(() => {
             setDebouncedProcessData(jobProcessData);
         }, 1000);
@@ -72,7 +69,7 @@ const NewJobProcess = ({ initialProcessData }) => {
     useEffect(() => {
         let exchange = 1;
         if (jobProcessData.currency === "Peso") {
-            exchange = quotationData.exchangeRate;
+            exchange = jobData.exchangeRate;
         }
         // console.log("recalculating costs for jobProcessData: ", quotationData.exchangeRate, " - ", exchange)
         setJobProcessData((prevData) => ({
@@ -124,7 +121,14 @@ const NewJobProcess = ({ initialProcessData }) => {
             ...prevData,
             jobProcessNote: value,
         }))
-        // setIsJobProdUpdated(false);
+    };
+    const handleStatusChange = (e) => {
+        setIsSaved(false)
+        const { value } = e.target;
+        setJobProcessData((prevData) => ({
+            ...prevData,
+            jobProcessStatus: value,
+        }))
     };
 
     const handleSupplierUpdate = async (supplier) => {
@@ -132,14 +136,13 @@ const NewJobProcess = ({ initialProcessData }) => {
         const paymentMethodData = await getPaymentMethodData(supplier.supplierPaymentMethodId);
         const updatedData = {
             ...jobProcessData,
-            productId: jobProcessData.productId,
-            processId: jobProcessData.processId,
+            jobProductId: jobProcessData.jobProductId,
+            jobProcId: jobProcessData.jobProcId,
             supplierId: supplier._id || "",
             supplierName: supplier.name || "",
             supplierPaymentMethodId: paymentMethodData._id || "",
             supplierPaymentMethodName: paymentMethodData.supplier_payment_description || "",
             supplierPaymentDetails: paymentMethodData.supplier_payment_details || [],
-            daysToPayment: paymentMethodData.days_to_payment || 0,
         }
         setJobProcessData(updatedData);
     }
@@ -157,8 +160,9 @@ const NewJobProcess = ({ initialProcessData }) => {
     }
 
     const handleDeleteProcess = async (e) => {
+        console.log("Deleting process: ", jobProcessData.jobProductId, " - ", jobProcessData.jobProcId)
         e.preventDefault();
-        removeProcessInProduct(jobProcessData.productId, jobProcessData.processId);
+        removeJobProcessInProduct(jobProcessData.jobProductId, jobProcessData.jobProcId);
     };
 
     const style = {
@@ -203,7 +207,7 @@ const NewJobProcess = ({ initialProcessData }) => {
             <td>
                 <span>Unit: </span>
                 <input
-                    className="input-number"
+                    className="job-input-number"
                     type="number"
                     name="newTempUnitCost"
                     placeholder="$ Unit."
@@ -217,7 +221,7 @@ const NewJobProcess = ({ initialProcessData }) => {
             </td>
             <td>
                 <input
-                    className="input-number"
+                    className="job-input-number"
                     type="number"
                     name="adjustPercentage"
                     placeholder="% Ajuste"
@@ -230,7 +234,7 @@ const NewJobProcess = ({ initialProcessData }) => {
             <td>
                 <span>Fijo: </span>
                 <input
-                    className="input-number"
+                    className="job-input-number"
                     type="number"
                     name="newTempFixedCost"
                     placeholder="Costo Fijo"
@@ -243,15 +247,29 @@ const NewJobProcess = ({ initialProcessData }) => {
                 />
             </td>
             <td>
-                            <input
-                                type="text"
-                                name="jobProcessNote"
-                                placeholder="Notas del Proceso"
-                                defaultValue={jobProcessData.jobProcessNote}
-                                onClick={(e) => e.target.select()}
-                                onInput={handleNoteChange}
-                            />
-                        </td>
+                <input
+                    type="text"
+                    name="jobProcessNote"
+                    placeholder="Notas del Proceso"
+                    defaultValue={jobProcessData.jobProcessNote}
+                    onClick={(e) => e.target.select()}
+                    onInput={handleNoteChange}
+                />
+            </td>
+            <td>
+                <select
+                    id="jobProcessStatus"
+                    name="jobProcessStatus"
+                    value={jobProcessData.jobProcessStatus}
+                    onChange={handleStatusChange}
+                    required
+                >
+                    <option value="Aprobado">Aprobado</option>
+                    <option value="En Produccion">En Produccion</option>
+                    <option value="Terminado">Terminado</option>
+                    <option value="Entregado">Entregado</option>
+                </select>
+            </td>
             <td>
                 <IconButton
                     icon="/delete.png"

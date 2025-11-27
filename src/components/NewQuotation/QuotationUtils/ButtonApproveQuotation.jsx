@@ -19,6 +19,7 @@ const ButtonApproveQuotation = () => {
 
         const jobToSave = {
             quotationId: quotationData.id,
+            calculateFinancing: quotationData.calculateFinancing,
             approvalDate: today,
             deliveryDate: today,
             customerId: quotationData.customerId,
@@ -27,6 +28,7 @@ const ButtonApproveQuotation = () => {
             monthlyRate: quotationData.monthlyRate,
             currency: quotationData.currency,
             exchangeRate: quotationData.exchangeRate,
+            approvedExchangeRate: quotationData.exchangeRate,
             jobStatus: "Aprobado",
             isKit: quotationData.isKit,
             jobNotes: ""
@@ -56,8 +58,6 @@ const ButtonApproveQuotation = () => {
             return;
         }
 
-
-
         await Promise.resolve();
         // Procesar todos los productos y procesos
         const jobProductPromises = quotationData.products.map(async (product) => {
@@ -74,6 +74,7 @@ const ButtonApproveQuotation = () => {
                 enteredOtherCost: product.enteredOtherCost,
                 unitSellingPrice: product.unitSellingPrice,
                 calculatedSellingPrice: product.calculatedSellingPrice,
+                approvedSellingPrice: +(product.calculatedSellingPrice * quotationData.exchangeRate),
                 isManual: product.isManual,
                 jobProductDescription: product.productDescription,
                 totalProductCost: product.totalProductCost,
@@ -97,6 +98,7 @@ const ButtonApproveQuotation = () => {
                     otherCost: product.otherCost,
                     unitSellingPrice: product.unitSellingPrice,
                     calculatedSellingPrice: product.calculatedSellingPrice,
+                    approvedSellingPrice: +(product.calculatedSellingPrice * quotationData.exchangeRate),
                     isManual: product.isManual,
                     jobProductDescription: product.productDescription,
                     totalProductCost: product.totalProductCost,
