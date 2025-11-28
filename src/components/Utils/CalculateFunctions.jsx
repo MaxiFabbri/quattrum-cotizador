@@ -1,4 +1,4 @@
-import { use, useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { ParametersContext } from "../../context/ParametersContext";
 
 const useCalculateFunctions = () => {

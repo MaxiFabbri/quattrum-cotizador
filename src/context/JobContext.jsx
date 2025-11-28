@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, useContext } from "react";
 import { apiClient } from "../config/axiosConfig.js";
 import { ParametersContext } from "./ParametersContext.jsx";
 import { toast } from "react-toastify";
-import validateJob from "../components/Jobs/JobsUtils/validateJob.jsx";
+import validateJob from "../components/Jobs/JobsUtils/ValidateJob.jsx";
 import useCalculateFunctions from "../components/Utils/CalculateFunctions.jsx";
 
 export const JobContext = createContext();
