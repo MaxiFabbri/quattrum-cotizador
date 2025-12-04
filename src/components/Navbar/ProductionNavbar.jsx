@@ -7,7 +7,7 @@ import { ParametersContext } from '../../context/ParametersContext.jsx'; // Aseg
 import TextButton from '../Utils/TextButton.jsx';
 
 
-const Navbar = () => {
+const ProductionNavbar = () => {
     const { logout, userRole, userName } = useContext(AuthContext);
     const { dolarPrice } = useContext(ParametersContext); // Aquí consumes el contexto
 
@@ -20,23 +20,14 @@ const Navbar = () => {
             <div className='navbar-content'>
                 <h4>Dolar hoy: {dolarPrice}</h4>
                 <div className='navbar-menu'>
-                    <Link to="/">
-                        <h4>Cotizaciones</h4>
-                    </Link>
                     <Link to="/production">
-                        <h4>Producción</h4>
+                        <h4>Trabajos</h4>
                     </Link>
                     <Link to="/customers">
                         <h4>Clientes</h4>
                     </Link>
-                    <Link to="/customers-payments"> 
-                        <h4>Formas de Cobro</h4>
-                    </Link>
                     <Link to="/suppliers">
                         <h4>Proveedores</h4>
-                    </Link>
-                    <Link to="/suppliers-payments">
-                        <h4>Formas de Pago</h4>
                     </Link>
                     {userRole === 'ADMIN' && (
                         <Link to="/users">
@@ -55,4 +46,4 @@ const Navbar = () => {
     );
 };
 
-export default Navbar;
+export default ProductionNavbar;

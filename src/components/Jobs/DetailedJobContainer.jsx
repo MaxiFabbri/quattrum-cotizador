@@ -14,6 +14,7 @@ import TextButton from "../Utils/TextButton.jsx";
 import ButtonSaveJob from "./JobsUtils/ButtonSaveJob.jsx";
 import ButtonAddJobProduct from "./JobsUtils/ButtonAddJobProduct.jsx";
 import ButtonCalculateJob from "./JobsUtils/ButtonCalculateJob.jsx";
+import ButtonCancelJob from "./JobsUtils/ButtonCancelJob.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 
 const DetailedJobContainer = () => {
@@ -190,12 +191,13 @@ const DetailedJobContainer = () => {
                         </SortableContext>
                     </div>
                     <div className="job-buttons-container">
+                        <ButtonCancelJob />
                         <ButtonSaveJob />
                         <ButtonAddJobProduct />
                         <ButtonCalculateJob />
                         <TextButton
                             text="Cancelar"
-                            onClick={() => navigate("/")}
+                            onClick={() => navigate("/production")}
                         />
                     </div>
                 </>

@@ -11,8 +11,8 @@ export const JobProvider = ({ children }) => {
     const [isUpdated, setIsUpdated] = useState(false);
     // const { calculateUnitSellingPrice, calculateKitUniteSellingPrice } = useContext(QuotationContext);
     const [isSaved, setIsSaved] = useState(true);
-    const [filter, setFilter] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
+    const [jobFilter, setJobFilter] = useState("");
+    const [jobStatusFilter, setJobStatusFilter] = useState("");
     const { utilitiesTable, tax } = useContext(ParametersContext);
     const { calculateUnitSellingPrice, calculateKitUniteSellingPrice, getSellingFinanceCost, getBuyingFinanceCost } = useCalculateFunctions();
 
@@ -59,6 +59,23 @@ export const JobProvider = ({ children }) => {
     const clearJobData = () => {
         setJobData(initialJobDataState);
     }
+    // Funcion para Cancelar un trabajo
+    const cancelJobData = async () => {
+        console.log("Cancelando Job en context: ", jobData);
+        // try {
+        //     const response = await apiClient.put(`/jobs/${jobId}/cancel`);
+        //     toast.success("Trabajo cancelado correctamente", {
+        //         position: "top-center",
+        //         autoClose: 4000
+        //     });
+        // } catch (error) {
+        //     console.error("Error al cancelar el trabajo: ", error);
+        //     toast.error("Error al cancelar el trabajo", {
+        //         position: "top-center",
+        //         autoClose: 6000
+        //     });
+    }
+
     const saveJobData = async () => {
         console.log("Guardando Job: ", jobData);
         // preparo la informacion de job para guardar en la DB
@@ -497,6 +514,7 @@ export const JobProvider = ({ children }) => {
                 saveJobData,
                 calculateJobData,
                 clearJobData,
+                cancelJobData,
                 updateJobData,
                 addJobProduct,
                 updateJobProduct,
@@ -504,6 +522,10 @@ export const JobProvider = ({ children }) => {
                 addJobProcessToProduct,
                 updateJobProcessInProduct,
                 removeJobProcessInProduct,
+                jobFilter,
+                setJobFilter,
+                jobStatusFilter,
+                setJobStatusFilter,
                 setIsUpdated,
                 setIsSaved
             }}
