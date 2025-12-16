@@ -73,7 +73,7 @@ const UsersList = () => {
                         <tr key={user._id} onClick={() => handleRowClick(user._id)} style={{ cursor: "pointer" }}>
                             <td>
                                 <IconButton
-                                    icon="/delete.png"
+                                    icon="/images/delete.png"
                                     text="Eliminar"
                                     onClick={ (e) => {
                                         e.stopPropagation(); // Evita que el evento de clic se propague al transición de la página                                        

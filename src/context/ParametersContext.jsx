@@ -14,6 +14,7 @@ export const ParametersProvider = ({ children }) => {
     const [dolarPrice, setDolarPrice] = useState(1080);
     const [isParamsLoaded, setIsParamsLoaded] = useState(false); // Nuevo estado
     const { isAuthenticated } = useContext(AuthContext);
+    const [ usersList, setUsersList ] = useState([]);
 
     const getGeneralParameters = async () => {
         try {
@@ -29,6 +30,14 @@ export const ParametersProvider = ({ children }) => {
         } catch (error) {
             console.error('Hubo un error al recuperar los datos Generales:', error);
             alert('Error al conectar con el servidor');
+        }
+    };
+    const getUsersList = async () => {
+        try {
+            const response = await apiClient.get('users');
+            setUsersList(response.data.response);
+        } catch (error) {
+            console.error('Error al recuperar la lista de usuarios:', error);
         }
     };
 
@@ -87,7 +96,11 @@ export const ParametersProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        getGeneralParameters();
+        if (isAuthenticated) {
+            getGeneralParameters();
+            getUsersList();
+        }
+        return
     }, [isAuthenticated]);
 
     useEffect(() => {
@@ -102,7 +115,8 @@ export const ParametersProvider = ({ children }) => {
                 utilitiesTable,
                 updateGeneralParameters,
                 dolarPrice,
-                getDolarPrice
+                getDolarPrice,
+                usersList
             }}
         >
             {children}

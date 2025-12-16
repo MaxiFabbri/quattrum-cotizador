@@ -70,7 +70,7 @@ const SupplierPaymentList = () => {
                             <tr key={payment._id} className="payment-element" >
                                 <td>
                                     <IconButton
-                                        icon="/delete.png"
+                                        icon="/images/delete.png"
                                         title="Eliminar Item"
                                         onClick={() => handleDeletePayment(payment._id)}
                                     />

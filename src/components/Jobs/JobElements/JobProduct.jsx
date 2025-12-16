@@ -286,7 +286,7 @@ const NewJobProduct = ({ productData }) => {
                         </td>
                         <td>
                             <IconButton
-                                icon={editPrice ? "/collapse.png" : "/expand.png"}
+                                icon={editPrice ? "/images/collapse.png" : "/images/expand.png"}
                                 text="Editar Producto"
                                 onClick={() => setEditPrice(prev => !prev)}
                             />
@@ -310,7 +310,7 @@ const NewJobProduct = ({ productData }) => {
                         </td>
                         <td>
                             <IconButton
-                                icon="/delete.png"
+                                icon="/images/delete.png"
                                 text="Eliminar Producto"
                                 onClick={handleDeleteJobProduct}
                             />

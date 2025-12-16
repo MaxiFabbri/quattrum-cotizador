@@ -46,7 +46,7 @@ const ButtonAddJobProcess = ( {jobProductId} ) => {
 
     return (
         <IconButton
-            icon="/create.png"
+            icon="/images/create.png"
             tooltip="Agregar Proceso"
             onClick={handleAddJobProcess}
         />

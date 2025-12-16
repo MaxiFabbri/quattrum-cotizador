@@ -118,7 +118,7 @@ const NewJob = () => {
             </td>
             <td>
                 {quotationData.id === '' ? (
-                    <IconButton icon="/create.png" text="Crear Cotización" onClick={handleSubmit} />
+                    <IconButton icon="/images/create.png" text="Crear Cotización" onClick={handleSubmit} />
                 ) : null}
             </td>
         </tr>

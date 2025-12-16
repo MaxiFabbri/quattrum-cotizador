@@ -37,7 +37,7 @@ const ButtonDuplicateProduct = ({ productId }) => {
 
     return (
         <IconButton
-        icon="/duplicate.png"
+        icon="/images/duplicate.png"
         text="Duplicar Producto"
         onClick={handleDuplicateProduct}
         />

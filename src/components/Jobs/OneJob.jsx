@@ -25,7 +25,7 @@ const OneJob = ({ job, onDelete }) => {
         <tr id={job._id} onClick={handleRowClick} style={{ cursor: "pointer" }}>
             <td>
                 <IconButton
-                    icon="/delete.png"
+                    icon="/images/delete.png"
                     text="Eliminar"
                     onClick={(e) => {
                         e.stopPropagation();

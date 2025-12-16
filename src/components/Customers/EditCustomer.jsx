@@ -266,7 +266,7 @@ const EditCustomer = () => {
                                         <th className="contacts-table-th" style={{ width: "150px" }}>Telefono</th>
                                         <th className="contacts-table-th" style={{ width: "50px" }}>
                                             <IconButton
-                                                icon="/create.png"
+                                                icon="/images/create.png"
                                                 title="Agregar Item"
                                                 onClick={() => handleAddItem()}
                                             />

@@ -6,7 +6,7 @@ const UtilitieTableItem = ({ item, handleDelete, handleChange }) => {
         <tr id={item.id} key={item.id}>
             <td>
                 <IconButton
-                    icon="/delete.png"
+                    icon="/images/delete.png"
                     title="Eliminar Item"
                     onClick={() => handleDelete(item.id)}
                 />

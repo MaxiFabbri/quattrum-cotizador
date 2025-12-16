@@ -28,7 +28,7 @@ const Quotation = ({ quote, onDelete }) => {
         <tr id={quote._id} onClick={handleRowClick} style={{ cursor: "pointer" }}>
             <td>
                 <IconButton
-                    icon="/delete.png"
+                    icon="/images/delete.png"
                     text="Eliminar"
                     onClick={(e) => {
                         e.stopPropagation();

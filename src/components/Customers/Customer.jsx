@@ -16,7 +16,7 @@ const Customer = ({ customer, onDelete }) => {
         <tr id={customer._id} onClick={handleRowClick} style={{ cursor: "pointer" }}>
             <td>
                 <IconButton
-                    icon="/delete.png"
+                    icon="/images/delete.png"
                     text="Eliminar"
                     onClick={(e) => {
                         e.stopPropagation();

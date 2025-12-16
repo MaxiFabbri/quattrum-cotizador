@@ -88,7 +88,7 @@ const JobsContainer = () => {
                     onInput={handleFilterChange}
                 />
                 <IconButton
-                    icon="/search.png"
+                    icon="/images/search.png"
                     onClick={() => {
                         setSearch(!search);
                     }}

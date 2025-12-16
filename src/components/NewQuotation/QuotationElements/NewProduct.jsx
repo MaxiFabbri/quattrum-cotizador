@@ -187,7 +187,7 @@ const NewProduct = ({ productData }) => {
                 <thead key={"product-header"}>
                     <tr {...listeners} style={{ cursor: "grab" }} key={"product-header"}>
                         <th >
-                            {/* <img src="/drag-icon.png" style={{ width: "20px", height: "20px" }} alt="Mover" /> */}
+                            {/* <img src="/images/drag-icon.png" style={{ width: "20px", height: "20px" }} alt="Mover" /> */}
                         </th>
                         <th>Cantidad</th>
                         <th>Descripción</th>
@@ -274,7 +274,7 @@ const NewProduct = ({ productData }) => {
                         </td>
                         <td>
                             <IconButton
-                                icon={editPrice ? "/collapse.png" : "/expand.png"}
+                                icon={editPrice ? "/images/collapse.png" : "/images/expand.png"}
                                 text="Editar Producto"
                                 onClick={() => setEditPrice(prev => !prev)}
                             />
@@ -289,7 +289,7 @@ const NewProduct = ({ productData }) => {
                         </td>
                         <td>
                             <IconButton
-                                icon="/delete.png"
+                                icon="/images/delete.png"
                                 text="Eliminar Producto"
                                 onClick={handleDeleteProduct}
                             />

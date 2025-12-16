@@ -178,7 +178,7 @@ const NewJobProcess = ({ initialProcessData }) => {
         >
             <td>
                 <div {...listeners} style={{ cursor: "grab" }} >
-                    <img src="/drag-icon.png" style={{ width: "20px", height: "20px" }} alt="Mover" />
+                    <img src="/images/drag-icon.png" style={{ width: "20px", height: "20px" }} alt="Mover" />
                 </div>
             </td>
             <td>
@@ -272,7 +272,7 @@ const NewJobProcess = ({ initialProcessData }) => {
             </td>
             <td>
                 <IconButton
-                    icon="/delete.png"
+                    icon="/images/delete.png"
                     text="Eliminar Producto"
                     onClick={handleDeleteProcess}
                 />

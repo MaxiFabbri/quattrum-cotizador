@@ -15,7 +15,7 @@ const Navbar = () => {
     return (
         <nav className="navbar-container sticky">
             <Link to="/" className="navbar-logo-link">
-                <img src="logo-quattrum-370x53.png" alt="Isologo de Quattrum" className="navbar-isologo" />
+                <img src="/images/logo-quattrum-370x53.png" alt="Isologo de Quattrum" className="navbar-isologo" />
             </Link>
             <div className='navbar-content'>
                 <h4>Dolar hoy: {dolarPrice}</h4>
