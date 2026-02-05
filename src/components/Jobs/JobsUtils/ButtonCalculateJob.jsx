@@ -11,7 +11,7 @@ const ButtonCalculateJob = () => {
 
     return (
         <TextButton
-            text={"Calcular Trabajo y Guardar"}
+            text={"Recalcular Pedido y Guardar"}
             onClick={calculateJobHandler}
         />
     );

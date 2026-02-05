@@ -11,7 +11,7 @@ const ButtonCancelJob = () => {
 
     return (
         <TextButton
-            text={"ANULAR Trabajo"}
+            text={"ANULAR Pedido"}
             onClick={handleCancelJob}
         />
     );

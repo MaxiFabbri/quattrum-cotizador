@@ -52,7 +52,7 @@ const ButtonApproveQuotation = () => {
                 isKit: quotationData.isKit,
                 jobNotes: ""
             });
-            changeQuotationStatus({ quoteStatus: "Aprobado" }, quotationData.id)
+            changeQuotationStatus( "Aprobado" , quotationData.id)
         } catch (error) {
             console.error("Error al guardar la cotización: ", error);
             return;

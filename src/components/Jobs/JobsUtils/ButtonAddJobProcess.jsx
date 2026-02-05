@@ -5,7 +5,7 @@ import { JobContext } from "../../../context/JobContext.jsx";
 import IconButton from "../../Utils/IconButton.jsx";
 import TextButton from "../../Utils/TextButton.jsx";
 
-const ButtonAddJobProcess = ( {jobProductId} ) => {
+const ButtonAddJobProcess = ({ jobProductId }) => {
     const { jobData, addJobProcessToProduct } = useContext(JobContext);
     const [tempId, setTempId] = useState(uuidv4());
 
@@ -18,6 +18,14 @@ const ButtonAddJobProcess = ( {jobProductId} ) => {
         supplierPaymentMethodId: "",
         supplierPaymentMethodName: "",
         supplierPaymentDetails: [],
+        invoices: [
+            {
+                invoiceNumber: "",
+                invoiceType: "Mensual",
+                invoiceNote: "",
+                payments: [],
+            }
+        ],
         currency: jobData.currency || "Peso",
         unitCost: 0,
         enteredUnitCost: 0,

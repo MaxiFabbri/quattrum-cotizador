@@ -15,6 +15,7 @@ import ButtonSaveJob from "./JobsUtils/ButtonSaveJob.jsx";
 import ButtonAddJobProduct from "./JobsUtils/ButtonAddJobProduct.jsx";
 import ButtonCalculateJob from "./JobsUtils/ButtonCalculateJob.jsx";
 import ButtonCancelJob from "./JobsUtils/ButtonCancelJob.jsx";
+import ButtonConfirmJob from "./JobsUtils/ButtonConfirmJob.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 
 const DetailedJobContainer = () => {
@@ -48,6 +49,7 @@ const DetailedJobContainer = () => {
                 supplierId: process.supplierId._id,
                 supplierPaymentMethodId: process.supplierPaymentMethodId._id,
                 supplierPaymentDetails: process.supplierPaymentDetails,
+                invoices: process.invoices,
                 currency: process.currency,
                 unitCost: +(process.unitCost),
                 enteredUnitCost: +(process.enteredUnitCost).toFixed(2),
@@ -195,6 +197,8 @@ const DetailedJobContainer = () => {
                         <ButtonSaveJob />
                         <ButtonAddJobProduct />
                         <ButtonCalculateJob />
+
+                        <ButtonConfirmJob />
                         <TextButton
                             text="Cancelar"
                             onClick={() => navigate("/production")}

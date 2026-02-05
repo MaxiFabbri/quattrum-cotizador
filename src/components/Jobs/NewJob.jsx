@@ -27,46 +27,9 @@ const NewJob = () => {
     const { quotationData } = useContext(QuotationContext);
     const { jobData, setJobData, updateJobData, setIsUpdated } = useContext(JobContext);
     const [quotationId, setQuotationId] = useState(null);
+    const [showInvoices, setShowInvoices] = useState(true);
 
-    // useAddProductWithQuotation(quotationId);
-    // getDolarPrice();
 
-    // const getPaymentMethodData = async (paymentId) => {
-    //     try {
-    //         const response = await apiClient.get(`/customer-payment-methods/${paymentId}`);
-    //         const paymentMethod = response.data.response;
-    //         return paymentMethod;
-    //     } catch (error) {
-    //         console.error("Error fetching customer payment method:", error);
-    //         const paymentMethod = { customer_payment_description: "Elija forma de pago" };
-    //         return paymentMethod;
-    //     }
-    // };
-
-    // const handleCustomerUpdate = async (customer) => {
-    //     setIsSaved(false);
-    //     console.log("Customer selected:", customer);
-    //     const paymentMethodData = await getPaymentMethodData(customer.customerPaymentMethodId);
-    //     console.log("Fetched payment method data:", paymentMethodData);
-    //     updateQuotationData({
-    //         customerId: customer._id || "",
-    //         customerName: customer.name || "",
-    //         paymentMethodId: customer.customerPaymentMethodId || "",
-    //         paymentMethodName: paymentMethodData.customer_payment_description || "",
-    //         customerPaymentDetails: paymentMethodData.customer_payment_details || [],
-    //         // paymentDaysToCollect: paymentMethodData.days_to_collect || 0,
-    //     })
-    // };
-
-    // const handleCustomerPaymentMethodUpdate = (newCustomerPaymentMethod) => {
-    //     setIsSaved(false);
-    //     updateQuotationData({
-    //         paymentMethodId: newCustomerPaymentMethod._id || "",
-    //         paymentMethodName: newCustomerPaymentMethod.customer_payment_description || "",
-    //         customerPaymentDetails: newCustomerPaymentMethod.customer_payment_details || [],
-    //         // paymentDaysToCollect: newCustomerPaymentMethod.days_to_collect || 0,
-    //     });
-    // };
 
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {
@@ -89,39 +52,218 @@ const NewJob = () => {
         // setIsUpdated(true);
     };
 
+    const handleAddInvoice = (index) => {
+        console.log("Adding new invoice for job: ", jobData);
+        const newInvoice = {
+            invoiceNumber: "",
+            invoiceType: "Total",
+            invoiceNote: "",
+            collections: [
+                {
+                    collectionDate: "",
+                    collectionType: "Total",
+                    collectionNote: "",
+                }
+            ],
+        };
+        const updatedInvoices = [...jobData.invoices, newInvoice];
+        setJobData({ ...jobData, invoices: updatedInvoices });
+    }
+    const handleDeleteInvoice = (invoiceToDelete) => {
+        console.log("Deleting invoice: ", invoiceToDelete, " from job: ", jobData.invoices);
+        const updatedInvoices = jobData.invoices.filter((_, index) => index !== invoiceToDelete);
+        setJobData({ ...jobData, invoices: updatedInvoices });
+    }
+
+    const handleAddCollect = (invoiceIndex, collectionIndex) => {
+        console.log("Adding new collection to invoice ", invoiceIndex, " last collect: ", collectionIndex, " JobData: ", jobData.invoices);
+        const newCollect = {
+            collectionDate: "",
+            collectionType: "Total",
+            collectionNote: "",
+        };
+        const updatedInvoices = [...jobData.invoices];
+        updatedInvoices[invoiceIndex].collections.push(newCollect);
+        setJobData({ ...jobData, invoices: updatedInvoices });
+    }
+    const handleDeleteCollect = (invoiceIndex, collectionIndex) => {
+        console.log("Deleting collection ", collectionIndex, " from invoice ", invoiceIndex, " JobData: ", jobData.invoices);
+        const updatedInvoices = [...jobData.invoices];
+        updatedInvoices[invoiceIndex].collections = updatedInvoices[invoiceIndex].collections.filter((_, index) => index !== collectionIndex);
+        setJobData({ ...jobData, invoices: updatedInvoices });
+    }
+
+    const handleInvoiceChange = (index, updates) => {
+        console.log("Updating invoice at index ", index, " with updates: ", updates);
+        const updatedInvoices = jobData.invoices.map((invoice, i) =>
+            i === index ? { ...invoice, ...updates } : invoice
+        );
+        updateJobData({ invoices: updatedInvoices });
+    }
+
+    const handleCollectionChange = (invoiceIndex, collectionIndex, updatedCollection) => {
+        console.log("Updating collection at index ", collectionIndex, " of invoice ", invoiceIndex, " with updates: ", updatedCollection);
+        const updatedInvoices = [...jobData.invoices];
+        const updatedCollections = [...updatedInvoices[invoiceIndex].collections];
+
+        updatedCollections[collectionIndex] = {
+            ...updatedCollections[collectionIndex],
+            ...updatedCollection,
+        };
+
+        updatedInvoices[invoiceIndex].collections = updatedCollections;
+        setJobData({ ...jobData, invoices: updatedInvoices });
+    };
+
     return (
-        <tr key={jobData.jobId}>
-            <DateField value={jobData.approvalDate} onChange={(e) => handleChange({ approvalDate: e.target.value })} />
-            <DateField value={jobData.deliveryDate} onChange={(e) => handleChange({ deliveryDate: e.target.value })} />
-            <td>
-                <input
-                    type="text"
-                    placeholder="Cliente"
-                    defaultValue={jobData.customerName}
-                />
-            </td>
-            <CurrencySelect value={jobData.currency} onChange={(e) => handleChange({ currency: e.target.value })} />
-            <ExchangeRateInput value={jobData.exchangeRate} onChange={(e) => handleChange({ exchangeRate: +(e.target.value) })} />
-            <QuoteStatusSelect value={jobData.jobStatus} onChange={(e) => handleChange({ ...jobData, quoteStatus: e.target.value })} />
-            <IsKitCheckbox checked={jobData.isKit} onChange={(e) => handleChange({ isKit: e.target.checked })} />
-            <td>
-                <input
-                    type="text"
-                    name="jobNotes"
-                    placeholder="Notas del trabajo"
-                    defaultValue={jobData.jobNotes}
-                    onClick={(e) => e.target.select()}
-                    onInput={handleInputChange}
-                    // value={jobData.jobNotes}
-                    // onChange={(e) => handleChange({ jobNotes: e.target.value })}
-                />
-            </td>
-            <td>
-                {quotationData.id === '' ? (
-                    <IconButton icon="/images/create.png" text="Crear Cotización" onClick={handleSubmit} />
-                ) : null}
-            </td>
-        </tr>
+        <>
+            <tr key={jobData.jobId}>
+                <DateField value={jobData.approvalDate} onChange={(e) => handleChange({ approvalDate: e.target.value })} />
+                <DateField value={jobData.deliveryDate} onChange={(e) => handleChange({ deliveryDate: e.target.value })} />
+                <td>
+                    <input
+                        type="text"
+                        placeholder="Cliente"
+                        defaultValue={jobData.customerName}
+                    />
+                </td>
+                <CurrencySelect value={jobData.currency} onChange={(e) => handleChange({ currency: e.target.value })} />
+                <ExchangeRateInput value={jobData.exchangeRate} onChange={(e) => handleChange({ exchangeRate: +(e.target.value) })} />
+                <QuoteStatusSelect value={jobData.jobStatus} onChange={(e) => handleChange({ ...jobData, jobStatus: e.target.value })} />
+                <IsKitCheckbox checked={jobData.isKit} onChange={(e) => handleChange({ isKit: e.target.checked })} />
+                <td>
+                    <input
+                        type="text"
+                        name="jobNotes"
+                        placeholder="Notas del trabajo"
+                        defaultValue={jobData.jobNotes}
+                        onClick={(e) => e.target.select()}
+                        onInput={handleInputChange}
+                    />
+                </td>
+                <td>
+                    <IconButton
+                        icon={showInvoices ? "/images/collapse.png" : "/images/expand.png"}
+                        text={showInvoices ? "Colapsar Facturas" : "Expandir Facturas"}
+                        onClick={() => setShowInvoices(!showInvoices)}
+                    />
+                </td>
+            </tr>
+
+            {showInvoices && (
+                <tr>
+                    <td colSpan={9} className="invoices-container">
+                        <table className="invoices-subtable">
+                            <tbody>
+                                <tr className="invoice-head">
+                                    <th>Facturas</th>
+                                    
+                                    <th>Cobranzas</th>
+                                </tr>
+                                {jobData.invoices.map((invoice, index) => (
+                                    <tr key={index} className="invoice-row">
+                                        <td>
+                                            {index !== 0 && (
+                                                <IconButton
+                                                    icon="/images/delete.png"
+                                                    text="Eliminar Factura"
+                                                    onClick={() => handleDeleteInvoice(index)}
+                                                />
+                                            )}
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                placeholder="Numero de Factura"
+                                                defaultValue={invoice.invoiceNumber}
+                                                onChange={(e) => handleInvoiceChange(index, { invoiceNumber: e.target.value })}
+                                            />
+                                        </td>
+                                        <td>
+                                            <select
+                                                value={invoice.invoiceType}
+                                                onChange={(e) => handleInvoiceChange(index, { invoiceType: e.target.value })}
+                                            >
+                                                <option value="Anticipo">Anticipo</option>
+                                                <option value="Total">Total</option>
+                                                <option value="Otro">Otro</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                placeholder="Notas"
+                                                defaultValue={invoice.invoiceNote}
+                                                onChange={(e) => handleInvoiceChange(index, { invoiceNote: e.target.value })}
+                                            />
+                                        </td>
+                                        <td>
+                                            <IconButton
+                                                icon="/images/create.png"
+                                                text="Agregar Factura"
+                                                onClick={() => handleAddInvoice(invoice)}
+                                            />
+                                        </td>
+                                        <td>
+                                            <table className="collections-subtable">
+                                                <tbody>
+                                                    {invoice.collections.map((collection, cIndex) => (
+                                                        <tr key={cIndex} className="collection-row">
+                                                            <td>
+                                                                {cIndex !== 0 && (
+                                                                    <IconButton
+                                                                        icon="/images/delete.png"
+                                                                        text="Eliminar Cobranza"
+                                                                        onClick={() => handleDeleteCollect(index, cIndex)}
+                                                                    />
+                                                                )}
+                                                            </td>
+                                                            <td>
+                                                                <input
+                                                                    type="date"
+                                                                    value={collection.collectionDate}
+                                                                    onChange={(e) => handleCollectionChange(index, cIndex, { collectionDate: e.target.value })}
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                <select
+                                                                    value={collection.collectionType}
+                                                                    onChange={(e) => handleCollectionChange(index, cIndex, { collectionType: e.target.value })}
+                                                                >
+                                                                    <option value="Anticipo">Anticipo</option>
+                                                                    <option value="Total">Total</option>
+                                                                    <option value="Otro">Otro</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Notas"
+                                                                    defaultValue={collection.collectionNote}
+                                                                    onChange={(e) => handleCollectionChange(index, cIndex, { collectionNote: e.target.value })}
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                <IconButton
+                                                                    icon="/images/create.png"
+                                                                    text="Agregar Cobranza"
+                                                                    onClick={() => handleAddCollect(index, cIndex)}
+                                                                />
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            )}
+
+        </>
     );
 };
 

@@ -11,8 +11,10 @@ const JobStatusFilterSelect = ({ value, onChange }) => {
                 <option value="">Todos</option>
                 <option value="Aprobado">Aprobado</option>
                 <option value="En Producción">En Producción</option>
+                <option value="Para Entregar">Para Entregar</option>
                 <option value="Entregado">Entregado</option>
-                <option value="Cancelado">Cancelado</option>
+                <option value="Cerrado">Cerrado</option>
+                <option value="Anulado">Anulado</option>
             </select>
         
     );

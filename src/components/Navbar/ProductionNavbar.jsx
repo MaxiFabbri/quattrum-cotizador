@@ -21,7 +21,7 @@ const ProductionNavbar = () => {
                 <h4>Dolar hoy: {dolarPrice}</h4>
                 <div className='navbar-menu'>
                     <Link to="/production">
-                        <h4>Trabajos</h4>
+                        <h4>Pedidos</h4>
                     </Link>
                     <Link to="/customers">
                         <h4>Clientes</h4>

@@ -7,6 +7,7 @@ import { apiClient } from "../../../config/axiosConfig.js";
 import CurrencySelect from "../../NewQuotation/InputComponents/CurrencySelect.jsx";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import "./jobProcess.css";
 
 import IconButton from "../../Utils/IconButton.jsx";
 
@@ -17,6 +18,7 @@ const NewJobProcess = ({ initialProcessData }) => {
     const [jobProcessData, setJobProcessData] = useState(initialProcessData);
     const [newTempUnitCost, setNewTempUnitCost] = useState(jobProcessData.enteredUnitCost) || 0;
     const [newTempFixedCost, setNewTempFixedCost] = useState(jobProcessData.enteredFixedCost) || 0;
+    const [showInvoices, setShowInvoices] = useState(true);
 
     const {
         attributes,
@@ -165,119 +167,288 @@ const NewJobProcess = ({ initialProcessData }) => {
         removeJobProcessInProduct(jobProcessData.jobProductId, jobProcessData.jobProcId);
     };
 
+    const handleInvoiceChange = (index, updatedFields) => {
+        setIsSaved(false)
+        console.log("updating invoice at index ", index, " with fields: ", updatedFields)
+
+        const updatedInvoices = jobProcessData.invoices.map((invoice, i) =>
+            i === index ? { ...invoice, ...updatedFields } : invoice
+        );
+        console.log("updated invoices: ", updatedInvoices)
+
+        setJobProcessData((prevData) => ({
+            ...prevData,
+            invoices: updatedInvoices,
+        }));
+    };
+
+    const handleAddInvoice = () => {
+        setIsSaved(false)
+        const newInvoice = {
+            invoiceNumber: "",
+            invoiceType: "Anticipo",
+            invoiceNote: "",
+            collections: [],
+        };
+        setJobProcessData((prevData) => ({
+            ...prevData,
+            invoices: [...prevData.invoices, newInvoice],
+        }));
+    };
+
+    const handleDeleteInvoice = (index) => {
+        setIsSaved(false)
+        const updatedInvoices = [...jobProcessData.invoices]; 
+        updatedInvoices.splice(index, 1);
+        console.log("updated invoices after deletion: ", updatedInvoices)
+
+        setJobProcessData((prevData) => ({
+            ...prevData,
+            invoices: updatedInvoices,
+        }));
+    };
+
+
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
     };
 
     return (
-        <tr
+        <tbody
             ref={setNodeRef}
             style={style}
             {...attributes}
         >
-            <td>
-                <div {...listeners} style={{ cursor: "grab" }} >
-                    <img src="/images/drag-icon.png" style={{ width: "20px", height: "20px" }} alt="Mover" />
-                </div>
-            </td>
-            <td>
-                <input
-                    type="text"
-                    name="description"
-                    placeholder="Descripción"
-                    defaultValue={jobProcessData.description}
-                    onClick={(e) => e.target.select()}
-                    onChange={handleInputChange}
-                />
-            </td>
-            <td>
-                <SelectSupplier
-                    defaultSupplier={jobProcessData.supplierName || ""}
-                    onSelectSupplier={handleSupplierUpdate}
-                />
-            </td>
-            <td>
-                <SelectSupplierPayMethod
-                    defaultSupplierPay={jobProcessData.supplierPaymentMethodName || ""}
-                    onSelectSupplierPayMethod={handleSupplierPaymentMethodUpdate}
-                />
-            </td>
-            <CurrencySelect value={jobProcessData.currency} onChange={handleCurrencyChange} />
-            <td>
-                <span>Unit: </span>
-                <input
-                    className="job-input-number"
-                    type="number"
-                    name="newTempUnitCost"
-                    placeholder="$ Unit."
-                    value={newTempUnitCost}
-                    onClick={(e) => e.target.select()}
-                    onInput={e => {
-                        setIsSaved(false)
-                        setNewTempUnitCost(Number(e.target.value))
-                    }}
-                />
-            </td>
-            <td>
-                <input
-                    className="job-input-number"
-                    type="number"
-                    name="adjustPercentage"
-                    placeholder="% Ajuste"
-                    defaultValue={jobProcessData.adjustPercentage}
-                    onClick={(e) => e.target.select()}
-                    onInput={handleInputChange}
-                />
-                <span> %</span>
-            </td>
-            <td>
-                <span>Fijo: </span>
-                <input
-                    className="job-input-number"
-                    type="number"
-                    name="newTempFixedCost"
-                    placeholder="Costo Fijo"
-                    value={newTempFixedCost}
-                    onClick={(e) => e.target.select()}
-                    onInput={e => {
-                        setIsSaved(false)
-                        setNewTempFixedCost(Number(e.target.value))
-                    }}
-                />
-            </td>
-            <td>
-                <input
-                    type="text"
-                    name="jobProcessNote"
-                    placeholder="Notas del Proceso"
-                    defaultValue={jobProcessData.jobProcessNote}
-                    onClick={(e) => e.target.select()}
-                    onInput={handleNoteChange}
-                />
-            </td>
-            <td>
-                <select
-                    id="jobProcessStatus"
-                    name="jobProcessStatus"
-                    value={jobProcessData.jobProcessStatus}
-                    onChange={handleStatusChange}
-                    required
-                >
-                    <option value="Aprobado">Aprobado</option>
-                    <option value="En Produccion">En Produccion</option>
-                    <option value="Terminado">Terminado</option>
-                    <option value="Entregado">Entregado</option>
-                </select>
-            </td>
-            <td>
-                <IconButton
-                    icon="/images/delete.png"
-                    text="Eliminar Producto"
-                    onClick={handleDeleteProcess}
-                />
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    <div {...listeners} style={{ cursor: "grab" }} >
+                        <img src="/images/drag-icon.png" style={{ width: "20px", height: "20px" }} alt="Mover" />
+                    </div>
+                </td>
+                <td>
+                    <input
+                        type="text"
+                        name="description"
+                        placeholder="Descripción"
+                        defaultValue={jobProcessData.description}
+                        onClick={(e) => e.target.select()}
+                        onChange={handleInputChange}
+                    />
+                </td>
+                <td>
+                    <SelectSupplier
+                        defaultSupplier={jobProcessData.supplierName || ""}
+                        onSelectSupplier={handleSupplierUpdate}
+                    />
+                </td>
+                <td>
+                    <SelectSupplierPayMethod
+                        defaultSupplierPay={jobProcessData.supplierPaymentMethodName || ""}
+                        onSelectSupplierPayMethod={handleSupplierPaymentMethodUpdate}
+                    />
+                </td>
+                <CurrencySelect value={jobProcessData.currency} onChange={handleCurrencyChange} />
+                <td>
+                    <span>Unit: </span>
+                    <input
+                        className="job-input-number"
+                        type="number"
+                        name="newTempUnitCost"
+                        placeholder="$ Unit."
+                        value={newTempUnitCost}
+                        onClick={(e) => e.target.select()}
+                        onInput={e => {
+                            setIsSaved(false)
+                            setNewTempUnitCost(Number(e.target.value))
+                        }}
+                    />
+                </td>
+                <td>
+                    <input
+                        className="job-input-number"
+                        type="number"
+                        name="adjustPercentage"
+                        placeholder="% Ajuste"
+                        defaultValue={jobProcessData.adjustPercentage}
+                        onClick={(e) => e.target.select()}
+                        onInput={handleInputChange}
+                    />
+                    <span> %</span>
+                </td>
+                <td>
+                    <span>Fijo: </span>
+                    <input
+                        className="job-input-number"
+                        type="number"
+                        name="newTempFixedCost"
+                        placeholder="Costo Fijo"
+                        value={newTempFixedCost}
+                        onClick={(e) => e.target.select()}
+                        onInput={e => {
+                            setIsSaved(false)
+                            setNewTempFixedCost(Number(e.target.value))
+                        }}
+                    />
+                </td>
+                <td>
+                    <input
+                        type="text"
+                        name="jobProcessNote"
+                        placeholder="Notas del Proceso"
+                        defaultValue={jobProcessData.jobProcessNote}
+                        onClick={(e) => e.target.select()}
+                        onInput={handleNoteChange}
+                    />
+                </td>
+                <td>
+                    <select
+                        id="jobProcessStatus"
+                        name="jobProcessStatus"
+                        value={jobProcessData.jobProcessStatus}
+                        onChange={handleStatusChange}
+                        required
+                    >
+                        <option value="Aprobado">Aprobado</option>
+                        <option value="En Produccion">En Produccion</option>
+                        <option value="Terminado">Terminado</option>
+                        <option value="Entregado">Entregado</option>
+                    </select>
+                </td>
+                <td>
+                    <IconButton
+                        icon="/images/delete.png"
+                        text="Eliminar Producto"
+                        onClick={handleDeleteProcess}
+                    />
+                </td>
+                <td>
+                    <IconButton
+                        icon={showInvoices ? "/images/collapse.png" : "/images/expand.png"}
+                        text={showInvoices ? "Colapsar Facturas" : "Expandir Facturas"}
+                        onClick={() => setShowInvoices(!showInvoices)}
+                    />
+                </td>
+            </tr>
+            <tr>
+
+                {showInvoices && (
+                    <td colSpan={12} className="invoices-container">
+                        <table className="process-invoices-subtable">
+                            <tbody key={jobProcessData.invoices.length}>
+                                {jobProcessData.invoices.map((invoice, index) => (
+                                    
+                                    <tr key={index} className="process-invoice-row">
+                                        <td>
+                                            {jobProcessData.invoices.length > 1 && (
+                                                <IconButton
+                                                    icon="/images/delete.png"
+                                                    text="Eliminar Factura"
+                                                    onClick={() => handleDeleteInvoice(index)}
+                                                />
+                                            )}
+                                        </td>
+                                        <td>
+                                            <h4>Factura:</h4>
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                placeholder="Numero de Factura"
+                                                defaultValue={invoice.invoiceNumber}
+                                                onChange={(e) => handleInvoiceChange(index, { invoiceNumber: e.target.value })}
+                                            />
+                                        </td>
+                                        <td>
+                                            <select
+                                                value={invoice.invoiceType}
+                                                onChange={(e) => handleInvoiceChange(index, { invoiceType: e.target.value })}
+                                            >
+                                                <option value="Anticipo">Anticipo</option>
+                                                <option value="Total">Total</option>
+                                                <option value="Mensual">Mensual</option>
+                                                <option value="Otro">Otro</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                placeholder="Notas"
+                                                defaultValue={invoice.invoiceNote}
+                                                onChange={(e) => handleInvoiceChange(index, { invoiceNote: e.target.value })}
+                                            />
+                                        </td>
+                                        <td>
+                                            <IconButton
+                                                icon="/images/create.png"
+                                                text="Agregar Factura"
+                                                onClick={() => handleAddInvoice()}
+                                            />
+                                        </td>
+                                        <td>
+                                            <>
+                                                {console.log("invoice paymentss: ", invoice.payments)}
+                                                <table className="collections-subtable">
+                                                    <tbody>
+                                                        {invoice.payments.map((payment, pIndex) => (
+                                                            <tr key={pIndex} className="collection-row">
+                                                                <td>
+                                                                    {invoice.payments.length > 1 && (
+                                                                        <IconButton
+                                                                            icon="/images/delete.png"
+                                                                            text="Eliminar Cobranza"
+                                                                            onClick={() => handleDeletePayment(index, pIndex)}
+                                                                        />
+                                                                    )}
+                                                                </td>
+                                                                <td>
+                                                                    <input
+                                                                        type="date"
+                                                                        value={payment.paymentDate}
+                                                                        onChange={(e) => handlePaymentChange(index, pIndex, { paymentDate: e.target.value })}
+                                                                    />
+                                                                </td>
+                                                                <td>
+                                                                    <select
+                                                                        value={payment.paymentType}
+                                                                        onChange={(e) => handlePaymentChange(index, cIndex, { paymentType: e.target.value })}
+                                                                    >
+                                                                        <option value="Anticipo">Anticipo</option>
+                                                                        <option value="Total">Total</option>
+                                                                        <option value="Otro">Otro</option>
+                                                                    </select>
+                                                                </td>
+                                                                <td>
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Notas"
+                                                                        defaultValue={payment.paymentNote}
+                                                                        onChange={(e) => handlePaymentChange(index, pIndex, { paymentNote: e.target.value })}
+                                                                    />
+                                                                </td>
+                                                                <td>
+                                                                    <IconButton
+                                                                        icon="/images/create.png"
+                                                                        text="Agregar Cobranza"
+                                                                        onClick={() => handleAddPayment(index, pIndex)}
+                                                                    />
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+
+                                            </>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </td>
+                )}
+
+            </tr>
+        </tbody>
     )
 };
 

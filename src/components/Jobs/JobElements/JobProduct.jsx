@@ -13,7 +13,7 @@ import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } 
 import { closestCenter, DndContext } from '@dnd-kit/core';
 
 const NewJobProduct = ({ productData }) => {
-    const { quotationData, updateQuotationData, updateProduct, removeProduct, setIsSaved } = useContext(QuotationContext);
+    const { setIsSaved } = useContext(QuotationContext);
     const { jobData, updateJobData, updateJobProduct, removeJobProduct, addJobProduct, addJobProcessToProduct } = useContext(JobContext);
     const { tax } = useContext(ParametersContext);
     const [jobProdData, setJobProdData] = useState(productData);
@@ -75,7 +75,7 @@ const NewJobProduct = ({ productData }) => {
             setPesosPrice(+(jobProdData.calculatedSellingPrice * jobData.exchangeRate).toFixed(0) || 0);
         }
     }, [jobProdData.isManual]);
-    
+
     useEffect(() => {
         setIsManualPrice(productData.isManual);
         setPesosPrice(+(productData.unitSellingPrice * jobData.exchangeRate).toFixed(0) || 0);
@@ -161,9 +161,10 @@ const NewJobProduct = ({ productData }) => {
         const jobProductIndex = jobData.jobProducts.findIndex(p => p.jobProductId === activeJobProductId);
         if (jobProductIndex === -1) return;
 
-        const jobProcesses = jobData.jobProducts[jobProductIndex].jobProcesses;
-        const oldIndex = jobProcesses.findIndex(p => p.jobProcessId === activeJobProcessId);
-        const newIndex = jobProcesses.findIndex(p => p.jobProcessId === overJobProcessId);
+        const jobProcesses = jobData.jobProducts[jobProductIndex].processes;
+        const oldIndex = jobProcesses.findIndex(p => p.jobProcId === activeJobProcessId);
+        const newIndex = jobProcesses.findIndex(p => p.jobProcId === overJobProcessId);
+
 
         if (oldIndex === -1 || newIndex === -1) return;
 
@@ -172,7 +173,7 @@ const NewJobProduct = ({ productData }) => {
         const updatedJobProducts = [...jobData.jobProducts];
         updatedJobProducts[jobProductIndex] = {
             ...updatedJobProducts[jobProductIndex],
-            jobProcesses: newJobProcesses
+            processes: newJobProcesses
         };
 
         updateJobData({
@@ -327,16 +328,14 @@ const NewJobProduct = ({ productData }) => {
                                         onDragEnd={handleProcessDragEnd}
                                     >
                                         <table className="quotation-table-processes">
-                                            <tbody>
-                                                <SortableContext
-                                                    items={jobProdData.processes.map(p => `${p.jobProductId}#${p.jobProcId}`)}
-                                                    strategy={verticalListSortingStrategy}
-                                                >
-                                                    {jobProdData.processes.map((process) => (
-                                                        <NewJobProcess key={process.jobProcId} initialProcessData={process} />
-                                                    ))}
-                                                </SortableContext>
-                                            </tbody>
+                                            <SortableContext
+                                                items={jobProdData.processes.map(p => `${p.jobProductId}#${p.jobProcId}`)}
+                                                strategy={verticalListSortingStrategy}
+                                            >
+                                                {jobProdData.processes.map((process) => (
+                                                    <NewJobProcess key={process.jobProcId} initialProcessData={process} />
+                                                ))}
+                                            </SortableContext>
                                         </table>
                                     </DndContext>
                                 </div>

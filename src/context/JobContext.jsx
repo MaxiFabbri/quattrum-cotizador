@@ -1,6 +1,8 @@
 import { createContext, useState, useEffect, useContext } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { apiClient } from "../config/axiosConfig.js";
 import { ParametersContext } from "./ParametersContext.jsx";
+import { QuotationContext } from "./QuotationContext.jsx";
 import { toast } from "react-toastify";
 import validateJob from "../components/Jobs/JobsUtils/ValidateJob.jsx";
 import useCalculateFunctions from "../components/Utils/CalculateFunctions.jsx";
@@ -9,12 +11,13 @@ export const JobContext = createContext();
 
 export const JobProvider = ({ children }) => {
     const [isUpdated, setIsUpdated] = useState(false);
-    // const { calculateUnitSellingPrice, calculateKitUniteSellingPrice } = useContext(QuotationContext);
+    const { updateQuotationData, changeQuotationStatus } = useContext(QuotationContext);
     const [isSaved, setIsSaved] = useState(true);
     const [jobFilter, setJobFilter] = useState("");
     const [jobStatusFilter, setJobStatusFilter] = useState("");
     const { utilitiesTable, tax } = useContext(ParametersContext);
     const { calculateUnitSellingPrice, calculateKitUniteSellingPrice, getSellingFinanceCost, getBuyingFinanceCost } = useCalculateFunctions();
+    const navigate = useNavigate();
 
     const initialJobDataState = {
         jobId: "",
@@ -24,6 +27,20 @@ export const JobProvider = ({ children }) => {
         customerId: "",
         paymentMethodId: "",
         customerPaymentDetails: [],
+        invoices: [
+            {
+                invoiceNumber: "",
+                invoiceType: "Total",
+                invoiceNote: "",
+                collections: [
+                    {
+                        collectionDate: "",
+                        collectionType: "Total",
+                        collectionNote: "",
+                    }
+                ],
+            }
+        ],
         monthlyRate: 0,
         currency: "Peso",
         exchangeRate: 0,
@@ -55,6 +72,32 @@ export const JobProvider = ({ children }) => {
         setIsUpdated(false)
     };
 
+    const changeJobStatus = async (newStatus, jobId) => {
+        const newData = {
+            ...jobData,
+            jobStatus: newStatus,
+        };
+        setJobData(newData);
+        setIsUpdated(true)
+
+        try {
+            const responseQuote = await toast.promise(
+                // apiClient.put(`/jobs/${jobId}`, {jobStatus: newStatus}),
+                apiClient.put(`/jobs/${jobId}`, newData),
+                {
+                    pending: "Actualizando pedido...",
+                    success: "Pedido actualizado correctamente",
+                    error: "Error al actualizar el pedido",
+                },
+                {
+                    autoClose: 800,
+                }
+            )
+        } catch (error) {
+            console.error("Error al actualizar el pedido: ", error);
+        }
+    };
+
     // Funcion para vaciar el objeto jobData
     const clearJobData = () => {
         setJobData(initialJobDataState);
@@ -62,19 +105,36 @@ export const JobProvider = ({ children }) => {
     // Funcion para Cancelar un trabajo
     const cancelJobData = async () => {
         console.log("Cancelando Job en context: ", jobData);
-        // try {
-        //     const response = await apiClient.put(`/jobs/${jobId}/cancel`);
-        //     toast.success("Trabajo cancelado correctamente", {
-        //         position: "top-center",
-        //         autoClose: 4000
-        //     });
-        // } catch (error) {
-        //     console.error("Error al cancelar el trabajo: ", error);
-        //     toast.error("Error al cancelar el trabajo", {
-        //         position: "top-center",
-        //         autoClose: 6000
-        //     });
-    }
+
+        changeQuotationStatus("Cotizado", jobData.quotationId);
+
+        if (window.confirm("¿Estás seguro de que deseas ANULAR este pedido?")) {
+            const jobId = jobData.jobId;
+            const jobToSave = {
+                ...jobData,
+                jobStatus: "Anulado",
+            }
+            console.log("Eliminando job con ID: ", jobId);
+            try {
+                const responseJob = await toast.promise(
+                    apiClient.put(`/jobs/${jobId}`, jobToSave),
+                    {
+                        pending: "Guardando el pedido...",
+                        success: "Pedido guardado correctamente",
+                        error: "Error al guardar el pedido",
+                    },
+                    {
+                        autoClose: 800,
+                    }
+                )
+                console.log("Job anulado correctamente: ", responseJob);
+            } catch (error) {
+                console.error("Error al guardar el pedido: ", error);
+            }
+        }
+
+        navigate("/production");
+    };
 
     const saveJobData = async () => {
         console.log("Guardando Job: ", jobData);
@@ -88,6 +148,7 @@ export const JobProvider = ({ children }) => {
             customerId: jobData.customerId,
             paymentMethodId: jobData.paymentMethodId,
             customerPaymentDetails: jobData.customerPaymentDetails,
+            invoices: jobData.invoices,
             currency: jobData.currency,
             exchangeRate: jobData.exchangeRate,
             jobStatus: jobData.jobStatus,
@@ -99,9 +160,9 @@ export const JobProvider = ({ children }) => {
             const responseJob = await toast.promise(
                 apiClient.put(`/jobs/${jobId}`, jobToSave),
                 {
-                    pending: "Guardando el trabajo...",
-                    success: "Trabajo guardado correctamente",
-                    error: "Error al guardar el trabajo",
+                    pending: "Guardando el pedido...",
+                    success: "Pedido guardado correctamente",
+                    error: "Error al guardar el pedido",
                 },
                 {
                     autoClose: 800,
@@ -109,7 +170,7 @@ export const JobProvider = ({ children }) => {
             )
             setIsUpdated(false);
         } catch (error) {
-            console.error("Error al guardar el trabajo: ", error);
+            console.error("Error al guardar el pedido: ", error);
         }
 
         // Paso por todos los productos
@@ -161,6 +222,7 @@ export const JobProvider = ({ children }) => {
                     supplierId: process.supplierId,
                     supplierPaymentMethodId: process.supplierPaymentMethodId,
                     supplierPaymentDetails: process.supplierPaymentDetails,
+                    invoices: process.invoices,
                     currency: process.currency,
                     unitCost: process.unitCost,
                     enteredUnitCost: process.enteredUnitCost,
@@ -305,7 +367,6 @@ export const JobProvider = ({ children }) => {
         }
         setIsUpdated(true);
     };
-
     const handleCalculateSetJob = async (recalculateAll) => {
         const quotationTotalCost = getQuotationTotalCost();
         // Calculo las utilidades deseadas de los parametros generales
@@ -516,6 +577,7 @@ export const JobProvider = ({ children }) => {
                 clearJobData,
                 cancelJobData,
                 updateJobData,
+                changeJobStatus,
                 addJobProduct,
                 updateJobProduct,
                 removeJobProduct,

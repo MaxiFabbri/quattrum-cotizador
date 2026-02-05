@@ -28,6 +28,7 @@ const JobsContainer = () => {
 
     // Función para realizar la solicitud GET
     const fetchJobs = async () => {
+        console.log("Fetching jobs with filters - Status:", jobStatusFilter);
         try {
             const response = await apiClient.get(`/jobs/paginated?page=${jobPage}&name=${jobFilter}&status=${jobStatusFilter}&limit=20`);
             setJobs(response.data.response);
@@ -84,7 +85,7 @@ const JobsContainer = () => {
                     type="text"
                     name="filter"
                     value={jobFilter}
-                    placeholder="Buscar cotización por cliente"
+                    placeholder="Buscar pedido por cliente"
                     onInput={handleFilterChange}
                 />
                 <IconButton
@@ -93,7 +94,7 @@ const JobsContainer = () => {
                         setSearch(!search);
                     }}
                 />
-                <h3>Lista de Trabajos</h3>
+                <h3>Lista de Pedidos</h3>
                 <JobStatusFilterSelect value={jobStatusFilter} onChange={handleStatusFilterChange} />
             </div>
             <table className="quotations-table">

@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useEffect, useRef, useContext, use } from 'react';
 import './websocket-test.css';
 import { AuthContext } from '../../context/AuthContext';
 import { ParametersContext } from '../../context/ParametersContext';
-import SocketMessage from './socketMessage';
+// import SocketMessage from './socketMessage';
+import NewSocketMessage from './NewSocketMessage';
 
 function WebSocketTestPage() {
   const { usersList } = useContext(ParametersContext);
@@ -15,11 +16,27 @@ function WebSocketTestPage() {
   const [activeUsersList, setActiveUsersList] = useState([]);
   const [serverUsers, setServerUsers] = useState({});
 
+  // Esta función recibe los datos del hijo
+  const handleSendMessage = (target, messageContent) => {
+    console.log('En Test Page Enviando mensaje desde:', socket.current.auth.userName, ' hacia: ', target, ' con contenido: ', messageContent);
+    try {
+      // Enviar un mensaje a un usuario específico
+      socket.current.emit("privateMessage", {
+        toUserId: target,   // destinatario
+        from: socket.current.auth.userId, // emisor
+        message: messageContent
+      });
+      const response = (`Mensaje enviado: ${messageContent} a: ${target}`, 'sent');
+      console.log(response);
+    } catch (error) {
+      // addLog(`Error al enviar mensaje: ${error.messageContent}`, 'error');
+      console.log("Error al enviar mensaje: ", error);
+    }
+  };
+
   useEffect(() => {
     updateActiveUsersList(serverUsers);
   }, [usersList]);
-
-
 
   const updateActiveUsersList = (usersMapObj) => {
     const newUsersList = usersList.map(user => {
@@ -34,10 +51,9 @@ function WebSocketTestPage() {
     setActiveUsersList(newUsersList);
   };
 
-
   useEffect(() => {
-    console.log('Lista de usuarios en WebSocketTestPage: ', activeUsersList);
-  }, [activeUsersList]);
+    scrollToBottom();
+  }, [logs]);
 
   useEffect(() => {
     if (socket.current) {
@@ -47,7 +63,6 @@ function WebSocketTestPage() {
         console.log("Conectado al servidor de WebSocket con ID:", socket.current.id);
         setIsConnected(true);
         addLog(`Conectado con ID: ${socket.current.id}`, 'success');
-
       });
 
       // 👇 escuchar mensajes del servidor
@@ -67,10 +82,18 @@ function WebSocketTestPage() {
         updateActiveUsersList(usersMap)
       });
 
+      socket.current.on("privateMessage", ({msg}) => {
+        console.log("Mensaje privado recibido: ", msg);
+        // const { from, message } = msg;
+        // console.log("Mensaje privado recibido : ", from, " - ", message);
+        addLog(`Nuevo mensaje PRIVADO recibido de:  ${msg.from} con contenido: ${msg.message}`, 'received');
+      })
+
       // cleanup: remover listeners al desmontar
       return () => {
         socket.current.off("connect");
         socket.current.off("message");
+        socket.current.off("privateMessage");
         socket.current.off("newMessage");
         socket.current.off("usersUpdate");
       };
@@ -95,10 +118,6 @@ function WebSocketTestPage() {
     }
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [logs]);
-
   const disconnect = () => {
     if (socket.current) {
       addLog('Cerrando conexión...', 'info');
@@ -119,9 +138,7 @@ function WebSocketTestPage() {
     }
 
     try {
-      // socket.current.send(message);
       socket.current.emit("message", message);
-
       addLog(`Mensaje enviado: ${message}`, 'sent');
       setMessage('');
     } catch (error) {
@@ -169,24 +186,13 @@ function WebSocketTestPage() {
         </div>
 
         <div className="message-panel">
-          <div className="send-message">
-            <label htmlFor="message-input">Mensaje a enviar:</label>
-            <textarea
-              id="message-input"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Escribe tu mensaje aquí..."
-              rows="3"
+          {socket.current?.id && (
+            <NewSocketMessage
+              activeUsersList={activeUsersList}
+              emiterUserId={socket.current.id}
+              onSend={handleSendMessage}
             />
-            <button
-              onClick={sendMessage}
-              disabled={!isConnected}
-              className="send-btn"
-            >
-              Enviar Mensaje
-            </button>
-          </div>
+          )}
         </div>
 
         <div className="logs-panel">

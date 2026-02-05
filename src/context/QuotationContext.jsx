@@ -343,18 +343,18 @@ export const QuotationProvider = ({ children }) => {
     const changeQuotationStatus = async (newStatus, quotationId) => {
         try {
             const responseQuote = await toast.promise(
-                apiClient.put(`/quotations/${quotationId}`, newStatus),
+                apiClient.put(`/quotations/${quotationId}`, {quoteStatus: newStatus}),
                 {
-                    pending: "Guardando cotización...",
-                    success: "Cotización guardada correctamente",
-                    error: "Error al guardar la cotización",
+                    pending: "Actualizando cotización...",
+                    success: "Cotización actualizada correctamente",
+                    error: "Error al actualizar la cotización",
                 },
                 {
                     autoClose: 800,
                 }
             )
         } catch (error) {
-            console.error("Error al guardar la cotización: ", error);
+            console.error("Error al actualizar la cotización: ", error);
         }
         
     };
