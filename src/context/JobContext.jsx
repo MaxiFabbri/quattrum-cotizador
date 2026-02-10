@@ -30,12 +30,12 @@ export const JobProvider = ({ children }) => {
         invoices: [
             {
                 invoiceNumber: "",
-                invoiceType: "Total",
+                invoiceType: "Otro",
                 invoiceNote: "",
                 collections: [
                     {
                         collectionDate: "",
-                        collectionType: "Total",
+                        collectionType: "Otro",
                         collectionNote: "",
                     }
                 ],

@@ -59,27 +59,7 @@
     justify-content: space-around;
 }
 
-.job-table-processes{
-    border-radius: 5px;
-    background-color: #fff;
-    width: 96%;
-    border-collapse: collapse;
-    margin-bottom: 10px;
-    margin-top: 5px;
-}
-.job-table-processes thead {
-    background-color: #eee;
-    height: 22px;
-}
-.job-table-processes th {
-    font-size: 1em;
-    font-weight: normal;
 
-}
-
-.job-table-processes tbody tr {
-    height: 25px;
-}
 
 .job-pesos-price{
     font-size: 1.6em;
@@ -143,7 +123,7 @@ ul {
     grid-template-columns: 4% 16% 10% 16% 4% 50%;
     padding: 5px;
     background-color: #fff;
-    /* border: 1px solid #000; */
+    align-items: center;
     border-radius: 10px;
     margin-bottom: 5px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
@@ -157,5 +137,6 @@ ul {
 
 .collection-row {
     display: grid;
+    margin: 3px 0px;
     grid-template-columns: 8% 32% 20% 32% 8%;
 }

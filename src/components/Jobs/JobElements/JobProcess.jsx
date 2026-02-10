@@ -7,7 +7,7 @@ import { apiClient } from "../../../config/axiosConfig.js";
 import CurrencySelect from "../../NewQuotation/InputComponents/CurrencySelect.jsx";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import "./jobProcess.css";
+import "./JobProcess.css";
 
 import IconButton from "../../Utils/IconButton.jsx";
 
@@ -181,21 +181,23 @@ const NewJobProcess = ({ initialProcessData }) => {
             invoices: updatedInvoices,
         }));
     };
-
     const handleAddInvoice = () => {
         setIsSaved(false)
         const newInvoice = {
             invoiceNumber: "",
-            invoiceType: "Anticipo",
+            invoiceType: "Total",
             invoiceNote: "",
-            collections: [],
+            payments: [{
+                paymentDate: "",
+                paymentType: "Anticipo",
+                paymentNote: "",
+            }],
         };
         setJobProcessData((prevData) => ({
             ...prevData,
             invoices: [...prevData.invoices, newInvoice],
         }));
     };
-
     const handleDeleteInvoice = (index) => {
         setIsSaved(false)
         const updatedInvoices = [...jobProcessData.invoices]; 
@@ -207,6 +209,49 @@ const NewJobProcess = ({ initialProcessData }) => {
             invoices: updatedInvoices,
         }));
     };
+
+    const handlePaymentChange = (invoiceIndex, paymentIndex, updatedFields) => {
+        setIsSaved(false)
+        const updatedInvoices = [...jobProcessData.invoices]
+        const updatedPayment = [...updatedInvoices[invoiceIndex].payments]
+        
+        updatedPayment[paymentIndex] = { ...updatedPayment[paymentIndex], ...updatedFields }
+        updatedInvoices[invoiceIndex].payments = updatedPayment
+        setJobProcessData((prevData) => ({
+            ...prevData,
+            invoices: updatedInvoices,
+        }));
+    }
+    const handleAddPayment = (invoiceIndex) => {
+        setIsSaved(false)
+        console.log("adding payment to invoice index: ", invoiceIndex)
+        const newPayment = {
+            paymentDate: "",
+            paymentType: "Anticipo",
+            paymentNote: "",
+        };
+        const updatedInvoices = [...jobProcessData.invoices]
+        updatedInvoices[invoiceIndex].payments.push(newPayment)
+        setJobProcessData((prevData) => ({
+            ...prevData,
+            invoices: updatedInvoices,
+        }));
+
+    }
+    const handleDeletePayment = (invoiceIndex, paymentIndex) => {
+        setIsSaved(false)
+        console.log("deleting payment at index ", paymentIndex, " from invoice index: ", invoiceIndex)
+
+        const updatedInvoices = [...jobProcessData.invoices]
+        const updatedPayments = [...updatedInvoices[invoiceIndex].payments]
+        updatedPayments.splice(paymentIndex, 1)
+        updatedInvoices[invoiceIndex].payments = updatedPayments
+        setJobProcessData((prevData) => ({
+            ...prevData,
+            invoices: updatedInvoices,
+        }));
+
+    }
 
 
     const style = {
@@ -332,8 +377,8 @@ const NewJobProcess = ({ initialProcessData }) => {
             </tr>
             <tr>
 
-                {showInvoices && (
-                    <td colSpan={12} className="invoices-container">
+                {showInvoices && jobProcessData.invoices.length > 0 && (
+                    <td colSpan={12} className="process-invoices-container">
                         <table className="process-invoices-subtable">
                             <tbody key={jobProcessData.invoices.length}>
                                 {jobProcessData.invoices.map((invoice, index) => (
@@ -361,11 +406,11 @@ const NewJobProcess = ({ initialProcessData }) => {
                                         </td>
                                         <td>
                                             <select
-                                                value={invoice.invoiceType}
+                                                defaultValue={invoice.invoiceType}
                                                 onChange={(e) => handleInvoiceChange(index, { invoiceType: e.target.value })}
                                             >
-                                                <option value="Anticipo">Anticipo</option>
-                                                <option value="Total">Total</option>
+                                                <option value="Anticipado">Anticipado</option>
+                                                <option value="Contra Entrega">Contra Entrega</option>
                                                 <option value="Mensual">Mensual</option>
                                                 <option value="Otro">Otro</option>
                                             </select>
@@ -386,12 +431,13 @@ const NewJobProcess = ({ initialProcessData }) => {
                                             />
                                         </td>
                                         <td>
+                                            {invoice.payments && invoice.invoiceType !== "Mensual" && (
                                             <>
-                                                {console.log("invoice paymentss: ", invoice.payments)}
-                                                <table className="collections-subtable">
+                                                {/* {console.log("invoice payments: ", invoice.payments)} */}
+                                                <table className="payments-subtable">
                                                     <tbody>
                                                         {invoice.payments.map((payment, pIndex) => (
-                                                            <tr key={pIndex} className="collection-row">
+                                                            <tr key={pIndex} className="payments-row">
                                                                 <td>
                                                                     {invoice.payments.length > 1 && (
                                                                         <IconButton
@@ -404,14 +450,14 @@ const NewJobProcess = ({ initialProcessData }) => {
                                                                 <td>
                                                                     <input
                                                                         type="date"
-                                                                        value={payment.paymentDate}
+                                                                        defaultValue={payment.paymentDate}
                                                                         onChange={(e) => handlePaymentChange(index, pIndex, { paymentDate: e.target.value })}
                                                                     />
                                                                 </td>
                                                                 <td>
                                                                     <select
-                                                                        value={payment.paymentType}
-                                                                        onChange={(e) => handlePaymentChange(index, cIndex, { paymentType: e.target.value })}
+                                                                        defaultValue={payment.paymentType}
+                                                                        onChange={(e) => handlePaymentChange(index, pIndex, { paymentType: e.target.value })}
                                                                     >
                                                                         <option value="Anticipo">Anticipo</option>
                                                                         <option value="Total">Total</option>
@@ -439,6 +485,7 @@ const NewJobProcess = ({ initialProcessData }) => {
                                                 </table>
 
                                             </>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}

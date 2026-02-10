@@ -121,6 +121,7 @@ const DetailedJobContainer = () => {
             paymentMethodId: recievedData.paymentMethodId._id,
             paymentMethodName: recievedData.paymentMethodId.customer_payment_description,
             customerPaymentDetails: recievedData.paymentMethodId.customer_payment_details,
+            invoices: recievedData.invoices,
             monthlyRate: recievedData.monthlyRate,
             currency: recievedData.currency,
             exchangeRate: recievedData.exchangeRate,

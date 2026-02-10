@@ -42,21 +42,32 @@ const NewJob = () => {
         // setIsUpdated(true);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        console.log("Handling submit for Job:", jobData);
-    };
-
     const handleChange = (updates) => {
         updateJobData(updates);
         // setIsUpdated(true);
+    };
+    const handleCustomerPaymentMethodUpdate = (newCustomerPaymentMethod) => {
+        setJobData((prevData) => ({
+            ...prevData,
+            paymentMethodId: newCustomerPaymentMethod._id || "",
+            paymentMethodName: newCustomerPaymentMethod.customer_payment_description || "",
+            customerPaymentDetails: newCustomerPaymentMethod.customer_payment_details || [],
+        }));
+
+        // setIsSaved(false);
+        // updateQuotationData({
+        //     paymentMethodId: newCustomerPaymentMethod._id || "",
+        //     paymentMethodName: newCustomerPaymentMethod.customer_payment_description || "",
+        //     customerPaymentDetails: newCustomerPaymentMethod.customer_payment_details || [],
+        //     // paymentDaysToCollect: newCustomerPaymentMethod.days_to_collect || 0,
+        // });
     };
 
     const handleAddInvoice = (index) => {
         console.log("Adding new invoice for job: ", jobData);
         const newInvoice = {
             invoiceNumber: "",
-            invoiceType: "Total",
+            invoiceType: "Contra Entrega",
             invoiceNote: "",
             collections: [
                 {
@@ -115,6 +126,8 @@ const NewJob = () => {
         setJobData({ ...jobData, invoices: updatedInvoices });
     };
 
+
+
     return (
         <>
             <tr key={jobData.jobId}>
@@ -127,9 +140,23 @@ const NewJob = () => {
                         defaultValue={jobData.customerName}
                     />
                 </td>
+                <td>
+                    <SelectCustomerPayMethod
+                        defaultPayment={jobData.paymentMethodName || ""}
+                        onSelectCustomerPayMethod={handleCustomerPaymentMethodUpdate}
+                    />
+                </td>
                 <CurrencySelect value={jobData.currency} onChange={(e) => handleChange({ currency: e.target.value })} />
                 <ExchangeRateInput value={jobData.exchangeRate} onChange={(e) => handleChange({ exchangeRate: +(e.target.value) })} />
-                <QuoteStatusSelect value={jobData.jobStatus} onChange={(e) => handleChange({ ...jobData, jobStatus: e.target.value })} />
+                <td>
+                    <input 
+                        type="text"
+                        placeholder="Status del trabajo"
+                        defaultValue={jobData.jobStatus}
+                        
+                    />
+                </td>
+                {/* <QuoteStatusSelect value={jobData.jobStatus} onChange={(e) => handleChange({ ...jobData, jobStatus: e.target.value })} /> */}
                 <IsKitCheckbox checked={jobData.isKit} onChange={(e) => handleChange({ isKit: e.target.checked })} />
                 <td>
                     <input
@@ -157,13 +184,12 @@ const NewJob = () => {
                             <tbody>
                                 <tr className="invoice-head">
                                     <th>Facturas</th>
-                                    
                                     <th>Cobranzas</th>
                                 </tr>
                                 {jobData.invoices.map((invoice, index) => (
                                     <tr key={index} className="invoice-row">
                                         <td>
-                                            {index !== 0 && (
+                                            {jobData.invoices.length > 1 && (
                                                 <IconButton
                                                     icon="/images/delete.png"
                                                     text="Eliminar Factura"
@@ -184,8 +210,8 @@ const NewJob = () => {
                                                 value={invoice.invoiceType}
                                                 onChange={(e) => handleInvoiceChange(index, { invoiceType: e.target.value })}
                                             >
-                                                <option value="Anticipo">Anticipo</option>
-                                                <option value="Total">Total</option>
+                                                <option value="Anticipado">Anticipado</option>
+                                                <option value="Contra Entrega">Contra Entrega</option>
                                                 <option value="Otro">Otro</option>
                                             </select>
                                         </td>
@@ -210,7 +236,7 @@ const NewJob = () => {
                                                     {invoice.collections.map((collection, cIndex) => (
                                                         <tr key={cIndex} className="collection-row">
                                                             <td>
-                                                                {cIndex !== 0 && (
+                                                                {invoice.collections.length > 1 && (
                                                                     <IconButton
                                                                         icon="/images/delete.png"
                                                                         text="Eliminar Cobranza"
@@ -221,7 +247,7 @@ const NewJob = () => {
                                                             <td>
                                                                 <input
                                                                     type="date"
-                                                                    value={collection.collectionDate}
+                                                                    defaultValue={collection.collectionDate}
                                                                     onChange={(e) => handleCollectionChange(index, cIndex, { collectionDate: e.target.value })}
                                                                 />
                                                             </td>

@@ -1,3 +1,15 @@
+
+
+.process-invoices-container {
+    height: auto;
+
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
 .process-invoices-subtable {
     width: 100%;
     border-collapse: collapse;
@@ -7,22 +19,42 @@
 
 .process-invoice-row {
     display: grid;
-    grid-template-columns: 4% 5% 15% 10% 15% 5% 50%;
+    grid-template-columns: 4% 4% 14% 10% 14% 4% 50%;
     padding: 5px;
     background-color: #fff;
-    /* border: 1px solid #000; */
+    align-items: center;
     border-radius: 10px;
     margin-bottom: 5px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+
+    height: auto;
+
 }
 
-/* .collections-subtable{
+.job-table-processes{
+    border-radius: 5px;
+    background-color: #fff;
+    width: 96%;
+    border-collapse: collapse;
+
+}
+.job-table-processes thead {
+    background-color: #eee;
+    height: 22px;
+}
+.job-table-processes th {
+    font-size: 1em;
+    font-weight: normal;
+}
+
+.payments-subtable{
     width: 100%;
     border-collapse: collapse;
     margin: auto;
 }
 
-.collection-row {
+.payments-row {
     display: grid;
-    grid-template-columns: 8% 32% 20% 32% 8%;
-} */
+    margin: 3px 0px;
+    grid-template-columns: 5% 32% 20% 32% 10%;
+}

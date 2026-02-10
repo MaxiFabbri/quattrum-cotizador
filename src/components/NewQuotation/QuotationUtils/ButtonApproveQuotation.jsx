@@ -17,6 +17,88 @@ const ButtonApproveQuotation = () => {
     const saveNewJob = async () => {
         let newJobId = "";
 
+        const defineSellingInvoices = (paymentDetails) => {
+            console.log("defineSellingInvoices: ", paymentDetails);
+
+            const invoices = [];
+
+            // Verificar si hay algún elemento con downPayment en true
+            if (paymentDetails.some((payment) => payment.downpayment === true)) {
+                console.log("Se encontró un pago con downPayment en true");
+                invoices.push({
+                    invoiceNumber: "",
+                    invoiceType: "Anticipado",
+                    invoiceNote: "",
+                    collections: [
+                        {
+                            collectionDate: "",
+                            collectionType: "Total",
+                            collectionNote: "",
+                        },
+                    ],
+                });
+            }
+
+            // Verificar si hay algún elemento con downPayment en false
+            if (paymentDetails.some((payment) => payment.downpayment === false)) {
+                console.log("Se encontró un pago con downPayment en false");
+                invoices.push({
+                    invoiceNumber: "",
+                    invoiceType: "Contra Entrega",
+                    invoiceNote: "",
+                    collections: [
+                        {
+                            collectionDate: "",
+                            collectionType: "Total",
+                            collectionNote: "",
+                        },
+                    ],
+                });
+            }
+            console.log("Invoices definidas: ", invoices);
+            return invoices
+        }
+
+        const defineBuyingInvoices = (paymentDetails) => {
+            console.log("defineSellingInvoices: ", paymentDetails);
+
+            const invoices = [];
+
+            // Verificar si hay algún elemento con downPayment en true
+            if (paymentDetails.some((payment) => payment.downpayment === true)) {
+                invoices.push({
+                    invoiceNumber: "",
+                    invoiceType: "Anticipado",
+                    invoiceNote: "",
+                    payments: [
+                        {
+                            paymentDate: "",
+                            paymentType: "Total",
+                            paymentNote: "",
+                        },
+                    ],
+                });
+            }
+
+            // Verificar si hay algún elemento con downPayment en false
+            if (paymentDetails.some((payment) => payment.downpayment === false)) {
+                invoices.push({
+                    invoiceNumber: "",
+                    invoiceType: "Contra Entrega",
+                    invoiceNote: "",
+                    payments: [
+                        {
+                            paymentDate: "",
+                            paymentType: "Total",
+                            paymentNote: "",
+                        },
+                    ],
+                });
+            }
+            console.log("Invoices del proceso definidas: ", invoices);
+            return invoices
+        }
+
         const jobToSave = {
             quotationId: quotationData.id,
             calculateFinancing: quotationData.calculateFinancing,
@@ -25,6 +107,7 @@ const ButtonApproveQuotation = () => {
             customerId: quotationData.customerId,
             paymentMethodId: quotationData.paymentMethodId,
             customerPaymentDetails: quotationData.customerPaymentDetails,
+            invoices: defineSellingInvoices(quotationData.customerPaymentDetails),
             monthlyRate: quotationData.monthlyRate,
             currency: quotationData.currency,
             exchangeRate: quotationData.exchangeRate,
@@ -52,7 +135,7 @@ const ButtonApproveQuotation = () => {
                 isKit: quotationData.isKit,
                 jobNotes: ""
             });
-            changeQuotationStatus( "Aprobado" , quotationData.id)
+            changeQuotationStatus("Aprobado", quotationData.id)
         } catch (error) {
             console.error("Error al guardar la cotización: ", error);
             return;
@@ -118,6 +201,7 @@ const ButtonApproveQuotation = () => {
                     supplierId: process.supplierId,
                     supplierPaymentMethodId: process.supplierPaymentMethodId,
                     supplierPaymentDetails: process.supplierPaymentDetails,
+                    invoices: defineBuyingInvoices(process.supplierPaymentDetails),
                     currency: process.currency,
                     unitCost: process.unitCost,
                     enteredUnitCost: process.enteredUnitCost,
@@ -133,12 +217,12 @@ const ButtonApproveQuotation = () => {
                 try {
                     const responseJobProcess = await apiClient.post('/job-processes/', jobProcessToSave);
                     console.log("responseJobProcess", responseJobProcess);
-                    
+
                     addJobProcessToProduct({
                         jobProcId: responseJobProcess.data.response._id,
                         ...jobProcessToSave
                     });
-                
+
                 } catch (error) {
                     console.error("Error al guardar el proceso: ", error);
                 }

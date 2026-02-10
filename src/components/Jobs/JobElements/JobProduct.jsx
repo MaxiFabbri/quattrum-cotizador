@@ -11,6 +11,7 @@ import ProductCostDetails from "../../NewQuotation/QuotationElements/ProductCost
 import { CSS } from "@dnd-kit/utilities";
 import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { closestCenter, DndContext } from '@dnd-kit/core';
+import "./JobProduct.css";
 
 const NewJobProduct = ({ productData }) => {
     const { setIsSaved } = useContext(QuotationContext);
@@ -327,7 +328,7 @@ const NewJobProduct = ({ productData }) => {
                                         onDragStart={(event) => setActiveId(event.active.id)}
                                         onDragEnd={handleProcessDragEnd}
                                     >
-                                        <table className="quotation-table-processes">
+                                        <table className="job-table-processes">
                                             <SortableContext
                                                 items={jobProdData.processes.map(p => `${p.jobProductId}#${p.jobProcId}`)}
                                                 strategy={verticalListSortingStrategy}

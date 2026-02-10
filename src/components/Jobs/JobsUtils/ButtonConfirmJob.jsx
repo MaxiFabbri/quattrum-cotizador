@@ -23,7 +23,7 @@ const ButtonConfirmJob = () => {
 
     return (
         <TextButton
-            text={"Pasar a Producción"}
+            text={"Pasar a Preparación"}
             onClick={confirmJobHandler}
         />
     );
