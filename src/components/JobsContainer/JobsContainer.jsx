@@ -1,12 +1,11 @@
 import { useState, useEffect, useContext } from "react";
-import "../QuotationsContainer/QuotationsContainer.css";
+import "./JobsContainer.css";
 import { JobContext } from "../../context/JobContext.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
-import { Link } from "react-router-dom";
 import TextButton from "../Utils/TextButton.jsx";
 import IconButton from "../Utils/IconButton.jsx";
 import OneJob from "../Jobs/OneJob.jsx";
-import StatusFilterSelect from "../NewQuotation/InputComponents/StatusFilterSelect.jsx";
+import JobAdminFilterMenu from "./JobAdminFilterMenu.jsx";
 import JobStatusFilterSelect from "./JobStatusFilterSelect.jsx";
 
 const JobsContainer = () => {
@@ -15,7 +14,8 @@ const JobsContainer = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [search, setSearch] = useState(false);
-    const { jobStatusFilter, setJobStatusFilter, jobFilter, setJobFilter } = useContext(JobContext);
+    const { jobStatusFilter, setJobStatusFilter, jobFilter, setJobFilter, jobAdminFilter } = useContext(JobContext);
+    const [jobAdminFilterLocal, setJobAdminFilterLocal] = useState([]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -26,12 +26,37 @@ const JobsContainer = () => {
         loadData();
     }, [jobPage, search]);
 
+    useEffect(() => {
+        console.log("Jobs fetched: ", jobs.docs);
+    }, [jobs]);
+
+    const onCompleteAdminFilterChange = (selectedOptions) => {
+        setJobAdminFilterLocal(selectedOptions);
+        setSearch(!search);
+    }
+
     // Función para realizar la solicitud GET
     const fetchJobs = async () => {
-        console.log("Fetching jobs with filters - Status:", jobStatusFilter);
+        console.log("Fetching jobs with filters - Status:", jobStatusFilter, "jobAdminFilter: ", jobAdminFilterLocal);
         try {
-            const response = await apiClient.get(`/jobs/paginated?page=${jobPage}&name=${jobFilter}&status=${jobStatusFilter}&limit=20`);
+            const filterParams = jobAdminFilterLocal.reduce((acc, key) => {
+                acc[key] = true;
+                return acc;
+            }, {});
+
+            // const response = await apiClient.get(`/jobs/paginated?page=${jobPage}&name=${jobFilter}&status=${jobStatusFilter}&limit=20`);
+            // setJobs(response.data.response);
+            const response = await apiClient.get("/jobs/paginated", {
+                params: {
+                    page: jobPage,
+                    name: jobFilter,
+                    status: jobStatusFilter,
+                    limit: 20,
+                    ...filterParams,
+                },
+            });
             setJobs(response.data.response);
+
         } catch (error) {
             setError("Error al cargar las cotizaciones");
             console.error(error);
@@ -79,9 +104,9 @@ const JobsContainer = () => {
 
     return (
         <>
-            <div className="quotations-header">
+            <div className="jobs-header">
                 <input
-                    className="quotations-search"
+                    className="jobs-search"
                     type="text"
                     name="filter"
                     value={jobFilter}
@@ -95,23 +120,22 @@ const JobsContainer = () => {
                     }}
                 />
                 <h3>Lista de Pedidos</h3>
+                <JobAdminFilterMenu onComplete={onCompleteAdminFilterChange} />
                 <JobStatusFilterSelect value={jobStatusFilter} onChange={handleStatusFilterChange} />
             </div>
-            <table className="quotations-table">
+            <table className="jobs-table">
                 <thead>
                     <tr>
-                        <th></th>
-                        <th>Fecha</th>
-                        <th>Cliente</th>
-                        <th>Moneda</th>
-                        <th>Kit/Set</th>
-                        <th>Cantidad</th>
-                        <th>Producto</th>
-                        <th>Precio Unitario</th>
-                        <th>Estado</th>
+                        <th className="col-fecha">Fecha</th>
+                        <th className="col-cliente">Cliente</th>
+                        <th className="col-estado">Estado</th>
+                        <th className="col-facturas">Facturas de Ventas</th>
+                        <th className="col-producto">Productos</th>
+                        <th className="col-procesos">Compras</th>
+                        {/* <th>Estado</th> */}
                     </tr>
                 </thead>
-                <tbody className="quotations-container-body">
+                <tbody className="jobs-container-body">
                     {loading ? (
                         <tr>
                             <td colSpan="9">Cargando trabajos...</td>

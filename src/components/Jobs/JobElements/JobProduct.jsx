@@ -11,6 +11,7 @@ import ProductCostDetails from "../../NewQuotation/QuotationElements/ProductCost
 import { CSS } from "@dnd-kit/utilities";
 import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { closestCenter, DndContext } from '@dnd-kit/core';
+import { calculateProcessInvoicesStatus } from "../../../utils/AdminJobStatusManager";
 import "./JobProduct.css";
 
 const NewJobProduct = ({ productData }) => {
@@ -129,6 +130,23 @@ const NewJobProduct = ({ productData }) => {
         }))
         setIsJobProdUpdated(false); // Cambiamos el estado a `false` para indicar que se ha actualizado
     };
+    const handleStatusChange = (e) => {
+        setIsSaved(false)
+        const { value } = e.target;
+        const updatedProcesses = jobProdData.processes.map(process => {
+            const updatedInvoices = calculateProcessInvoicesStatus(process.invoices, value);
+            return {
+                ...process,
+                invoices: updatedInvoices
+            };
+        })
+        setJobProdData((prevData) => ({
+            ...prevData,
+            jobProductStatus: value,
+            processes: updatedProcesses
+        }))
+        setIsJobProdUpdated(false);
+    };
 
     // Eliminar el producto del contexto
     const handleDeleteJobProduct = () => {
@@ -211,6 +229,8 @@ const NewJobProduct = ({ productData }) => {
                         <th>Otros</th>
                         <th>Utilidad</th>
                         <th>Precio Unitario</th>
+                        <th>Estado</th>
+                        <th>Notas</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -301,6 +321,23 @@ const NewJobProduct = ({ productData }) => {
                             />
                         </td>
                         <td>
+                            <select
+                                id="jobProductStatus"
+                                name="jobProductStatus"
+                                value={jobProdData.jobProductStatus}
+                                onChange={handleStatusChange}
+                                required
+                            >
+                                <option value="En Preparación">En Preparación</option>
+                                <option value="En Producción">En Producción</option>
+                                <option value="Listo">Listo</option>
+                                <option value="Entregado">Entregado</option>
+                            </select>
+                        </td>
+                        {/* <td>
+                            <span>{jobProdData.jobProductStatus}</span>
+                        </td> */}
+                        <td>
                             <input
                                 type="text"
                                 name="jobProductNote"
@@ -334,7 +371,7 @@ const NewJobProduct = ({ productData }) => {
                                                 strategy={verticalListSortingStrategy}
                                             >
                                                 {jobProdData.processes.map((process) => (
-                                                    <NewJobProcess key={process.jobProcId} initialProcessData={process} />
+                                                    <NewJobProcess key={process.jobProcId} initialProcessData={process} productStatus={jobProdData.jobProductStatus} />
                                                 ))}
                                             </SortableContext>
                                         </table>

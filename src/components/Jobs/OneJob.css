@@ -1,0 +1,62 @@
+.onejob-row {
+    width: 100%;
+    border-bottom: 1px solid #888;
+}
+.onejob-invoices-table {
+    width: 100%;
+    display: flex;
+    border-collapse: collapse;
+}
+
+.onejob-invoices-table tbody {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    border-collapse: collapse;
+}
+
+.onejob-invoices-table tr {
+    height: 100%;
+    display: grid;
+    align-content: center;
+    grid-template-columns: 27% 35% 38%;
+    justify-items: center;
+}
+
+.onejob-products-table {
+    border-collapse: collapse;
+    flex: 1;
+    width: 100%;
+    margin-top: 2px;
+    font-size: 12px;
+}
+.onejob-products-table-row {
+    display: grid;
+    grid-template-columns: 7% 22% 12% 59%;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding: 0px 5px;
+}
+
+.onejob-process-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.process-supplier-name {
+    width: 210px;
+}
+.onejob-process-table-supplier {
+    
+}
+.onejob-process-invoice-table {
+    width: 95%;
+}
+
+.onejob-process-invoice-table tr {
+    display: grid;
+    grid-template-columns: 27% 35% 38%;
+    justify-items: center;
+    padding: 0px 5px;
+}

@@ -1,0 +1,70 @@
+.jobs-header {
+    display: grid;
+    grid-template-columns: 16% 3% 56% 12% 8% 4%;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    justify-items: center;
+
+    height: 40px;
+}
+.jobs-header h3 {
+    text-align: center;
+    margin: 0;
+    padding: 10px;  
+}
+.jobs-search {
+    margin: 7px 0px 7px 30px;
+    font-size: 1em;
+}
+
+.jobs-table thead {
+    height: 40px;
+}
+
+.jobs-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 2px;
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.jobs-table .col-fecha { width: 6%; }
+.jobs-table .col-cliente { width: 10%; } 
+.jobs-table .col-estado { width: 4%; }
+.jobs-table .col-facturas { width: 20%; }
+.jobs-table .col-producto { width: 25%; }
+.jobs-table .col-procesos { width: 35%; }
+
+.jobs-table th {
+    text-align: center;
+    font-size: 16px;
+    margin-left: 10px;
+    background-color: #ccc;
+    color: black;
+    font-weight: bold;
+}
+
+.jobs-table tr:hover {
+    background-color: #d1e7fd;
+    cursor: pointer;
+}
+
+.footer {
+    display: grid;
+    grid-template-columns: 10% 80% 10% ;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #eee;
+    text-align: center;
+    padding: 7px 3%;
+    font-size: 14px;
+}
+
+.row-valid { background-color: #d4edda; }
+.row-pending { background-color: #f8d7da; }
+.row-wip { background-color: #fff3cd; }
+.row-default { background-color: #ffffff; }

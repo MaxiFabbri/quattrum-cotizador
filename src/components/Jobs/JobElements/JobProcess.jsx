@@ -1,5 +1,4 @@
-import { useState, useEffect, useContext, use } from "react";
-import { QuotationContext } from "../../../context/QuotationContext.jsx";
+import { useState, useEffect, useContext } from "react";
 import { JobContext } from "../../../context/JobContext.jsx";
 import SelectSupplier from "../../Utils/Selectors/SelectSupplier.jsx";
 import SelectSupplierPayMethod from "../../Utils/Selectors/SelectSupplierPaymentMethod.jsx";
@@ -8,12 +7,12 @@ import CurrencySelect from "../../NewQuotation/InputComponents/CurrencySelect.js
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import "./JobProcess.css";
-
+import { getProcessRowClass } from "../JobsUtils/JobClassValidations.js";	
+import { calculateProcessInvoicesStatus } from "../../../utils/AdminJobStatusManager.js";
 import IconButton from "../../Utils/IconButton.jsx";
 
-const NewJobProcess = ({ initialProcessData }) => {
-    const { updateProcessInProduct, removeProcessInProduct, quotationData, setIsSaved } = useContext(QuotationContext);
-    const { jobData, updateJobProcessInProduct, removeJobProcessInProduct } = useContext(JobContext);
+const NewJobProcess = ({ initialProcessData, productStatus }) => {
+    const { jobData, updateJobProcessInProduct, removeJobProcessInProduct, setIsSaved } = useContext(JobContext);
 
     const [jobProcessData, setJobProcessData] = useState(initialProcessData);
     const [newTempUnitCost, setNewTempUnitCost] = useState(jobProcessData.enteredUnitCost) || 0;
@@ -95,7 +94,7 @@ const NewJobProcess = ({ initialProcessData }) => {
         }
     };
     const handleCurrencyChange = (e) => {
-        setIsSaved(false)
+        (false)
         setNewTempFixedCost(0)
         setNewTempUnitCost(0)
         setJobProcessData((prevData) => ({
@@ -174,11 +173,10 @@ const NewJobProcess = ({ initialProcessData }) => {
         const updatedInvoices = jobProcessData.invoices.map((invoice, i) =>
             i === index ? { ...invoice, ...updatedFields } : invoice
         );
-        console.log("updated invoices: ", updatedInvoices)
-
+        const newUpdatedInvoices = calculateProcessInvoicesStatus(updatedInvoices, productStatus)
         setJobProcessData((prevData) => ({
             ...prevData,
-            invoices: updatedInvoices,
+            invoices: newUpdatedInvoices,
         }));
     };
     const handleAddInvoice = () => {
@@ -187,6 +185,8 @@ const NewJobProcess = ({ initialProcessData }) => {
             invoiceNumber: "",
             invoiceType: "Total",
             invoiceNote: "",
+            isInvoicePendingReception: true,
+            hasPaymentsPending: true,
             payments: [{
                 paymentDate: "",
                 paymentType: "Anticipo",
@@ -203,10 +203,10 @@ const NewJobProcess = ({ initialProcessData }) => {
         const updatedInvoices = [...jobProcessData.invoices]; 
         updatedInvoices.splice(index, 1);
         console.log("updated invoices after deletion: ", updatedInvoices)
-
+        const newUpdatedInvoices = calculateProcessInvoicesStatus(updatedInvoices, productStatus)
         setJobProcessData((prevData) => ({
             ...prevData,
-            invoices: updatedInvoices,
+            invoices: newUpdatedInvoices,
         }));
     };
 
@@ -217,9 +217,10 @@ const NewJobProcess = ({ initialProcessData }) => {
         
         updatedPayment[paymentIndex] = { ...updatedPayment[paymentIndex], ...updatedFields }
         updatedInvoices[invoiceIndex].payments = updatedPayment
+        const newUpdatedInvoices = calculateProcessInvoicesStatus(updatedInvoices, productStatus)
         setJobProcessData((prevData) => ({
             ...prevData,
-            invoices: updatedInvoices,
+            invoices: newUpdatedInvoices,
         }));
     }
     const handleAddPayment = (invoiceIndex) => {
@@ -232,9 +233,10 @@ const NewJobProcess = ({ initialProcessData }) => {
         };
         const updatedInvoices = [...jobProcessData.invoices]
         updatedInvoices[invoiceIndex].payments.push(newPayment)
+        const newUpdatedInvoices = calculateProcessInvoicesStatus(updatedInvoices, productStatus)
         setJobProcessData((prevData) => ({
             ...prevData,
-            invoices: updatedInvoices,
+            invoices: newUpdatedInvoices,
         }));
 
     }
@@ -246,12 +248,21 @@ const NewJobProcess = ({ initialProcessData }) => {
         const updatedPayments = [...updatedInvoices[invoiceIndex].payments]
         updatedPayments.splice(paymentIndex, 1)
         updatedInvoices[invoiceIndex].payments = updatedPayments
+        const newUpdatedInvoices = calculateProcessInvoicesStatus(updatedInvoices, productStatus)
         setJobProcessData((prevData) => ({
             ...prevData,
-            invoices: updatedInvoices,
+            invoices: newUpdatedInvoices,
         }));
 
     }
+
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return ""; // Si no hay fecha, retorna string vacío para evitar errores
+        const newDate = new Date(dateString).toISOString().split("T")[0];
+        return newDate; 
+    };
+
+    
 
 
     const style = {
@@ -336,7 +347,7 @@ const NewJobProcess = ({ initialProcessData }) => {
                         }}
                     />
                 </td>
-                <td>
+                {/* <td>
                     <input
                         type="text"
                         name="jobProcessNote"
@@ -345,8 +356,8 @@ const NewJobProcess = ({ initialProcessData }) => {
                         onClick={(e) => e.target.select()}
                         onInput={handleNoteChange}
                     />
-                </td>
-                <td>
+                </td> */}
+                {/* <td>
                     <select
                         id="jobProcessStatus"
                         name="jobProcessStatus"
@@ -359,7 +370,7 @@ const NewJobProcess = ({ initialProcessData }) => {
                         <option value="Terminado">Terminado</option>
                         <option value="Entregado">Entregado</option>
                     </select>
-                </td>
+                </td> */}
                 <td>
                     <IconButton
                         icon="/images/delete.png"
@@ -383,7 +394,7 @@ const NewJobProcess = ({ initialProcessData }) => {
                             <tbody key={jobProcessData.invoices.length}>
                                 {jobProcessData.invoices.map((invoice, index) => (
                                     
-                                    <tr key={index} className="process-invoice-row">
+                                    <tr key={index} className={`process-invoice-row ${getProcessRowClass(invoice)}`}>
                                         <td>
                                             {jobProcessData.invoices.length > 1 && (
                                                 <IconButton
@@ -450,7 +461,7 @@ const NewJobProcess = ({ initialProcessData }) => {
                                                                 <td>
                                                                     <input
                                                                         type="date"
-                                                                        defaultValue={payment.paymentDate}
+                                                                        defaultValue={formatDateForInput(payment.paymentDate)}
                                                                         onChange={(e) => handlePaymentChange(index, pIndex, { paymentDate: e.target.value })}
                                                                     />
                                                                 </td>

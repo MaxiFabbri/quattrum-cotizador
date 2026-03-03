@@ -5,6 +5,7 @@ const JobHeader = () => {
                 <th>Aprobado</th>
                 <th>Entrega</th>
                 <th>Cliente</th>
+                <th>Forma de pago</th>
                 <th>Moneda</th>
                 <th>Cambio</th>
                 <th>Estado</th>
@@ -15,24 +16,6 @@ const JobHeader = () => {
             </tr>
         </thead>
     );
-}
-
-const JobProductHeader = () => {
-    return (
-        <thead key={"product-header"}>
-            <tr key={"product-header"}>
-                <th></th>
-                <th>Cantidad</th>
-                <th>Descripción</th>
-                <th>Días</th>
-                <th>Financiero</th>
-                <th>Fletes</th>
-                <th>Otros</th>
-                <th>Precio Unitario</th>
-                <th></th>
-            </tr>
-        </thead>
-    )
 }
 
 const JobProcessHeader = () => {
@@ -53,4 +36,4 @@ const JobProcessHeader = () => {
     )
 }
 
-export { JobHeader, JobProductHeader, JobProcessHeader };
+export { JobHeader, JobProcessHeader };

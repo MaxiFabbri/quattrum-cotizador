@@ -6,6 +6,7 @@ import { QuotationContext } from "./QuotationContext.jsx";
 import { toast } from "react-toastify";
 import validateJob from "../components/Jobs/JobsUtils/ValidateJob.jsx";
 import useCalculateFunctions from "../components/Utils/CalculateFunctions.jsx";
+import { calculateJobStatus, calculateInvoicesStatus, calculateProcessInvoicesStatus } from "../utils/AdminJobStatusManager.js";
 
 export const JobContext = createContext();
 
@@ -44,11 +45,16 @@ export const JobProvider = ({ children }) => {
         monthlyRate: 0,
         currency: "Peso",
         exchangeRate: 0,
-        jobStatus: "Aprobado",
+        jobStatus: "Nuevo",
+        hasInvoicesPendingIssuance: true,
+        hasCollectionsPending: true,
+        hasPurchaseInvocesToRecieve: true,
+        hasPaymentsToMake: true,
         isKit: false,
         jobNotes: "",
         jobProducts: [],
     };
+
 
     const [jobData, setJobData] = useState(initialJobDataState);
     // Se ejecuta cuando isUpdated cambia a `true`
@@ -62,6 +68,7 @@ export const JobProvider = ({ children }) => {
     useEffect(() => {
         console.log("jobData actualizado: ", jobData);
     }, [jobData]);
+
 
     // Función para actualizar la cotización completa
     const updateJobData = (updatedData) => {
@@ -138,6 +145,9 @@ export const JobProvider = ({ children }) => {
 
     const saveJobData = async () => {
         console.log("Guardando Job: ", jobData);
+        const updatedStatusData = calculateJobStatus(jobData)
+        updateJobData(updatedStatusData);
+
         // preparo la informacion de job para guardar en la DB
         const jobId = jobData.jobId;
         const jobToSave = {
@@ -152,6 +162,10 @@ export const JobProvider = ({ children }) => {
             currency: jobData.currency,
             exchangeRate: jobData.exchangeRate,
             jobStatus: jobData.jobStatus,
+            hasInvoicesPendingIssuance: updatedStatusData.hasInvoicesPendingIssuance,
+            hasCollectionsPending: updatedStatusData.hasCollectionsPending,
+            hasPurchaseInvocesToRecieve: updatedStatusData.hasPurchaseInvocesToRecieve,
+            hasPaymentsToMake: updatedStatusData.hasPaymentsToMake,
             isKit: jobData.isKit,
             jobNotes: jobData.jobNotes,
         }
@@ -215,6 +229,7 @@ export const JobProvider = ({ children }) => {
                 console.error("Error al guardar el producto: ", error);
             }
             product.processes.map(async (process, index) => {
+
                 // preparo la informacion de Process para guardar en la DB con el ID del producto
                 const processToSave = {
                     jobProductId: newJobProductId,
@@ -250,7 +265,7 @@ export const JobProvider = ({ children }) => {
                         }, process.jobProcId);
                     }
                 } catch (error) {
-                        console.error("Error al guardar el proceso: ", error);
+                    console.error("Error al guardar el proceso: ", error);
                 }
             });
         });
@@ -280,7 +295,7 @@ export const JobProvider = ({ children }) => {
     }
 
     const handleCalculateJob = async (recalculateAll) => {
-        console.log("handleCalculateJob... ",jobData);
+        console.log("handleCalculateJob... ", jobData);
         for (const jobProduct of jobData.jobProducts) {
             let totalProductCost = 0;
             let newProductDescription = "";
@@ -335,7 +350,7 @@ export const JobProvider = ({ children }) => {
             jobProduct.otherCost = +jobProduct.enteredOtherCost / jobData.exchangeRate;
 
             const finalCost = totalProductCost + jobProduct.shipmentCost + jobProduct.otherCost;
-            const calculatedSellingPrice = parseFloat(calculateUnitSellingPrice(finalCost, newFinancingCost, jobProduct.quantity ));
+            const calculatedSellingPrice = parseFloat(calculateUnitSellingPrice(finalCost, newFinancingCost, jobProduct.quantity));
             const pesosPrice = parseFloat((calculatedSellingPrice * jobData.exchangeRate).toFixed(0));
 
             if (!recalculateAll && jobProduct.isManual) {
@@ -547,7 +562,7 @@ export const JobProvider = ({ children }) => {
                     console.log("El proceso está en la DB, procediendo a eliminarlo: ", targetProcess);
                     deleteJobProcessFromDb(targetProcess.jobProcId);
                 }
-                
+
                 // Adevuelve los procesos no eliminados para ajustar jobData
                 return {
                     ...jobProduct,

@@ -10,6 +10,7 @@ const ButtonAddJobProcess = ({ jobProductId }) => {
     const [tempId, setTempId] = useState(uuidv4());
 
     const [jobProcessData, setJobProcessData] = useState({
+        jobId: jobData.jobId,
         jobProcId: tempId,
         jobProductId: jobProductId,
         description: "",

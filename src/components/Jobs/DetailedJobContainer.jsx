@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { closestCenter, DndContext } from '@dnd-kit/core';
 import { CSS } from "@dnd-kit/utilities";
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import "./JobContainer.css"
+import "./DetailedJobContainer.css"
 
 import { JobHeader } from "./JobElements/JobHeader.jsx";
 import NewJob from "./NewJob.jsx";
@@ -17,10 +17,12 @@ import ButtonCalculateJob from "./JobsUtils/ButtonCalculateJob.jsx";
 import ButtonCancelJob from "./JobsUtils/ButtonCancelJob.jsx";
 import ButtonConfirmJob from "./JobsUtils/ButtonConfirmJob.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
+import { calculateJobStatus } from "../../utils/AdminJobStatusManager.js";
 
 const DetailedJobContainer = () => {
-    const { jobData, updateJobData, clearJobData, setIsSaved } = useContext(JobContext);
+    const { jobData, updateJobData, clearJobData, setIsSaved, setIsUpdated } = useContext(JobContext);
     const [activeId, setActiveId] = useState(null)
+    const [loading, setLoading] = useState(true);
     const { id } = useParams()
     const navigate = useNavigate();
 
@@ -78,7 +80,7 @@ const DetailedJobContainer = () => {
         return adjustedJobProcessesData
     }
 
-    const adjustJobProductData = async (jobProducts, exchangeRate) => {	
+    const adjustJobProductData = async (jobProducts, exchangeRate) => {
         const newJobProductsData = await Promise.all(jobProducts.map(async (jobProduct) => {
             const newJobProcesses = await getJobProcessData(jobProduct._id, exchangeRate);
             return {
@@ -93,6 +95,7 @@ const DetailedJobContainer = () => {
                 enteredOtherCost: +(jobProduct.enteredOtherCost),
                 unitSellingPrice: +(jobProduct.unitSellingPrice),
                 calculatedSellingPrice: +(jobProduct.calculatedSellingPrice),
+                jobProductStatus: jobProduct.jobProductStatus,
                 approvedSellingPrice: +(jobProduct.approvedSellingPrice),
                 isManual: jobProduct.isManual,
                 jobProductDescription: jobProduct.jobProductDescription,
@@ -127,9 +130,13 @@ const DetailedJobContainer = () => {
             exchangeRate: recievedData.exchangeRate,
             approvedExchangeRate: recievedData.approvedExchangeRate,
             jobStatus: recievedData.jobStatus,
+            hasInvoicesPendingIssuance: recievedData.hasInvoicesPendingIssuance,
+            hasCollectionsPending: recievedData.hasCollectionsPending,
+            hasPurchaseInvocesToRecieve: recievedData.hasPurchaseInvocesToRecieve,
+            hasPaymentsToMake: recievedData.hasPaymentsToMake,
             isKit: recievedData.isKit || false,
             jobNotes: recievedData.jobNotes || "",
-        }	
+        }
         // agrego los Productos
         const responseJobProducts = await apiClient.get(`/job-products/job/${id}`)
         const exchangeRate = responseJobProducts.data.response.exchangeRate
@@ -138,7 +145,22 @@ const DetailedJobContainer = () => {
         updateJobData(
             newData
         );
-        return newData
+        setLoading(false);
+        console.log("Job data recibida con job Status: ", newData.jobStatus)
+        if (newData.jobStatus === "Aprobado") {
+            console.log("Job confirmado: ", newData)
+            const adminStatus = calculateJobStatus(newData)
+            const finalData = { ...newData, ...adminStatus, jobStatus: "Nuevo" }
+            console.log("Job con status calculado: ", finalData)
+            updateJobData(
+                finalData
+            );
+            setIsUpdated(true);
+        } else {
+            updateJobData(
+                newData
+            );
+        }
     }
 
     const handleJobProductsDragEnd = (event) => {
@@ -166,47 +188,52 @@ const DetailedJobContainer = () => {
 
     return (
         <div>
-            <DndContext
-                collisionDetection={closestCenter}
-                // onDragStart={(event) => setActiveId(event.active.id)}
-                onDragStart={dragStart}
-                onDragEnd={handleJobProductsDragEnd}
-            >
-                <div className="job-container">
-                    <table className="job-table-job">
-                        <JobHeader />
-                        <tbody>
-                            <NewJob />
-                        </tbody>
-                    </table>
-                </div>
-                <>
-                    <div className="job-table-products">
-                        <SortableContext
-                            items={jobData.jobProducts.map(p => p.jobProductId)}
-                            strategy={verticalListSortingStrategy}
-                        >
-                            {jobData.jobProducts.map((jobProduct) => (
-                                <JobProduct
-                                    key={jobProduct.jobProductId}
-                                    productData={jobProduct} />
-                            ))}
-                        </SortableContext>
-                    </div>
-                    <div className="job-buttons-container">
-                        <ButtonCancelJob />
-                        <ButtonSaveJob />
-                        <ButtonAddJobProduct />
-                        <ButtonCalculateJob />
+            {loading ?
+                (<p>Cargando...</p>)
+                : (
+                    <DndContext
+                        collisionDetection={closestCenter}
+                        // onDragStart={(event) => setActiveId(event.active.id)}
+                        onDragStart={dragStart}
+                        onDragEnd={handleJobProductsDragEnd}
+                    >
+                        <div className="job-container">
+                            <table className="job-table-job">
+                                <JobHeader />
+                                <tbody>
+                                    <NewJob />
+                                </tbody>
+                            </table>
+                        </div>
+                        <>
+                            <div className="job-table-products">
+                                <SortableContext
+                                    items={jobData.jobProducts.map(p => p.jobProductId)}
+                                    strategy={verticalListSortingStrategy}
+                                >
+                                    {jobData.jobProducts.map((jobProduct) => (
+                                        <JobProduct
+                                            key={jobProduct.jobProductId}
+                                            productData={jobProduct} />
+                                    ))}
+                                </SortableContext>
+                            </div>
+                            <div className="job-buttons-container">
+                                <ButtonCancelJob />
+                                <ButtonSaveJob />
+                                <ButtonAddJobProduct />
+                                <ButtonCalculateJob />
 
-                        <ButtonConfirmJob />
-                        <TextButton
-                            text="Cancelar"
-                            onClick={() => navigate("/production")}
-                        />
-                    </div>
-                </>
-            </DndContext>
+                                <ButtonConfirmJob />
+                                <TextButton
+                                    text="Cancelar"
+                                    onClick={() => navigate("/production")}
+                                />
+                            </div>
+                        </>
+                    </DndContext>
+                )
+            }
         </div >
     );
 }

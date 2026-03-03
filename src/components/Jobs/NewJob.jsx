@@ -1,6 +1,5 @@
 import { use, useContext, useEffect, useState } from "react";
-import { apiClient } from "../../config/axiosConfig.js";
-import "./JobContainer.css"
+import "./DetailedJobContainer.css"
 
 import { QuotationContext } from "../../context/QuotationContext.jsx";
 import { ParametersContext } from "../../context/ParametersContext.jsx";
@@ -9,17 +8,15 @@ import { JobContext } from "../../context/JobContext.jsx";
 import DateField from "../NewQuotation/InputComponents/DateField.jsx";
 import CurrencySelect from "../NewQuotation/InputComponents/CurrencySelect.jsx";
 import ExchangeRateInput from "../NewQuotation/InputComponents/ExchangeRateInput.jsx";
-import QuoteStatusSelect from "../NewQuotation/InputComponents/QuoteStatusSelect.jsx";
 import IsKitCheckbox from "../NewQuotation/InputComponents/IsKitCheckbox.jsx";
-import MonthlyRateInput from "../NewQuotation/InputComponents/MonthlyRateInput.jsx";
-import CalculateFinancingCheckbox from "../NewQuotation/InputComponents/CalculateFinancingCheckBox.jsx";
 
 import SelectCustomer from "../Utils/Selectors/SelectCustomer.jsx";
 import SelectCustomerPayMethod from "../Utils/Selectors/SelectCustomerPaymentMethod.jsx";
-import { useAddProductWithQuotation } from "../NewQuotation/QuotationUtils/useAddProductWithQuotation.jsx";
 import { validateNewQuotation } from "../NewQuotation/QuotationUtils/validateQuotation.jsx";
 import IconButton from "../Utils/IconButton.jsx";
 import { toast } from "react-toastify";
+import { getInvoiceRowClass } from "./JobsUtils/JobClassValidations.js";
+import { calculateInvoicesStatus } from "../../utils/AdminJobStatusManager.js"
 
 
 const NewJob = () => {
@@ -69,6 +66,8 @@ const NewJob = () => {
             invoiceNumber: "",
             invoiceType: "Contra Entrega",
             invoiceNote: "",
+            isPendingIssuance: true,
+            hasCollectionsPending: true,
             collections: [
                 {
                     collectionDate: "",
@@ -83,7 +82,8 @@ const NewJob = () => {
     const handleDeleteInvoice = (invoiceToDelete) => {
         console.log("Deleting invoice: ", invoiceToDelete, " from job: ", jobData.invoices);
         const updatedInvoices = jobData.invoices.filter((_, index) => index !== invoiceToDelete);
-        setJobData({ ...jobData, invoices: updatedInvoices });
+        const newUpdatedInvoices = calculateInvoicesStatus(updatedInvoices, jobData.jobStatus)
+        setJobData({ ...jobData, invoices: newUpdatedInvoices });
     }
 
     const handleAddCollect = (invoiceIndex, collectionIndex) => {
@@ -95,23 +95,24 @@ const NewJob = () => {
         };
         const updatedInvoices = [...jobData.invoices];
         updatedInvoices[invoiceIndex].collections.push(newCollect);
-        setJobData({ ...jobData, invoices: updatedInvoices });
+        const newUpdatedInvoices = calculateInvoicesStatus(updatedInvoices, jobData.jobStatus)
+        setJobData({ ...jobData, invoices: newUpdatedInvoices });
     }
     const handleDeleteCollect = (invoiceIndex, collectionIndex) => {
         console.log("Deleting collection ", collectionIndex, " from invoice ", invoiceIndex, " JobData: ", jobData.invoices);
         const updatedInvoices = [...jobData.invoices];
         updatedInvoices[invoiceIndex].collections = updatedInvoices[invoiceIndex].collections.filter((_, index) => index !== collectionIndex);
-        setJobData({ ...jobData, invoices: updatedInvoices });
+        const newUpdatedInvoices = calculateInvoicesStatus(updatedInvoices, jobData.jobStatus)
+        setJobData({ ...jobData, invoices: newUpdatedInvoices });
     }
 
     const handleInvoiceChange = (index, updates) => {
-        console.log("Updating invoice at index ", index, " with updates: ", updates);
         const updatedInvoices = jobData.invoices.map((invoice, i) =>
             i === index ? { ...invoice, ...updates } : invoice
         );
-        updateJobData({ invoices: updatedInvoices });
+        const newUpdatedInvoices = calculateInvoicesStatus(updatedInvoices, jobData.jobStatus)
+        updateJobData({ invoices: newUpdatedInvoices });
     }
-
     const handleCollectionChange = (invoiceIndex, collectionIndex, updatedCollection) => {
         console.log("Updating collection at index ", collectionIndex, " of invoice ", invoiceIndex, " with updates: ", updatedCollection);
         const updatedInvoices = [...jobData.invoices];
@@ -123,10 +124,16 @@ const NewJob = () => {
         };
 
         updatedInvoices[invoiceIndex].collections = updatedCollections;
-        setJobData({ ...jobData, invoices: updatedInvoices });
+        const newUpdatedInvoices = calculateInvoicesStatus(updatedInvoices, jobData.jobStatus)
+        updateJobData({ invoices: newUpdatedInvoices });
     };
 
 
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return ""; // Si no hay fecha, retorna string vacío para evitar errores
+        const newDate = new Date(dateString).toISOString().split("T")[0];
+        return newDate; 
+    };
 
     return (
         <>
@@ -153,7 +160,6 @@ const NewJob = () => {
                         type="text"
                         placeholder="Status del trabajo"
                         defaultValue={jobData.jobStatus}
-                        
                     />
                 </td>
                 {/* <QuoteStatusSelect value={jobData.jobStatus} onChange={(e) => handleChange({ ...jobData, jobStatus: e.target.value })} /> */}
@@ -187,7 +193,7 @@ const NewJob = () => {
                                     <th>Cobranzas</th>
                                 </tr>
                                 {jobData.invoices.map((invoice, index) => (
-                                    <tr key={index} className="invoice-row">
+                                    <tr key={index} className={`invoice-row ${getInvoiceRowClass(invoice)}`}>
                                         <td>
                                             {jobData.invoices.length > 1 && (
                                                 <IconButton
@@ -247,7 +253,7 @@ const NewJob = () => {
                                                             <td>
                                                                 <input
                                                                     type="date"
-                                                                    defaultValue={collection.collectionDate}
+                                                                    defaultValue={formatDateForInput(collection.collectionDate)}
                                                                     onChange={(e) => handleCollectionChange(index, cIndex, { collectionDate: e.target.value })}
                                                                 />
                                                             </td>
