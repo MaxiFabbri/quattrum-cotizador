@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext, useState, useEffect, useContext, use } from "react";
 import { apiClient } from "../config/axiosConfig.js";
 import { ParametersContext } from "./ParametersContext.jsx";
 import { toast } from "react-toastify";
@@ -43,6 +43,10 @@ export const QuotationProvider = ({ children }) => {
             setIsUpdated(false); // Resetear el estado para futuras ejecuciones
         }
     }, [isUpdated]);
+
+    useEffect(() => {
+        console.log("Quotation Data actualizado: ", quotationData);
+    }, [quotationData]);
 
     const getQuotationTotalCost = () => {
         let totalQuotationCost = 0;
@@ -153,7 +157,6 @@ export const QuotationProvider = ({ children }) => {
                 totalProductCost += newSubtotalProcessCost;
 
                 newProductDescription += newProductDescription ? `, ${process.description}` : process.description;
-
                 // Calculo costo financiero de cada proceso
                 const sellCost = await getSellingFinanceCost(newSubtotalProcessCost, product.productionDays);
                 sellingFinanceCost += sellCost;
@@ -397,6 +400,7 @@ export const QuotationProvider = ({ children }) => {
         // Paso por todos los productos
         quotationData.products.map(async (product, index) => {
             let newProductId = product.productId;
+            console.log("Guardando producto: ", product);
             // preparo la informacion de Product para guardar en la DB
             const productToSave = {
                 quotationId: quotationId,

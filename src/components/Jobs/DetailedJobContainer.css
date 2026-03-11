@@ -2,19 +2,17 @@
     width: 100%;
     background-color: #ddd;
     padding-top: 5px;
-    padding-bottom: 20px;
+    padding-bottom: 5px;
 }
-.job-container ul{
+
+.job-container ul {
     font-size: 0.8em;
 }
+
 .job-table-job {
     width: 100%;
     border-collapse: collapse;
-    height: 60px;;
-}
-
-.job-table-job tbody tr td {
-    text-align: center;
+    height: 60px;
 }
 
 .complete-job-message {
@@ -27,6 +25,7 @@
     width: 100%;
     padding: 0px 2%;
 }
+
 .job-product-container {
     width: 100%;
     border-collapse: collapse;
@@ -35,16 +34,19 @@
     margin-top: 5px;
     border-radius: 10px;
 }
+
 .job-product-container thead {
     height: 22px;
     vertical-align: bottom;
 
 }
-.job-product-header-row{
+
+.job-product-header-row {
     vertical-align: top;
     border-bottom: 1px solid #999;
 }
-.job-product-container thead th{
+
+.job-product-container thead th {
     font-size: 0.9em;
     font-weight: 500;
 }
@@ -52,18 +54,19 @@
 .job-product-container tbody tr td {
     padding: 0px 10px;
     font-size: 0.9em;
-    text-align: center;
 }
+
 .job-product-action-buttons {
     display: flex;
     justify-content: space-around;
 }
 
-.job-pesos-price{
+.job-pesos-price {
     font-size: 1.6em;
     font-weight: bold;
 }
-.job-percentage-utility{
+
+.job-percentage-utility {
     font-size: 1.1em;
     font-weight: bold;
 }
@@ -73,6 +76,7 @@ input {
     border: 1px solid #ddd;
     color: black;
 }
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -80,18 +84,20 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 
-.job-input-number{
+.job-input-number {
     text-align: end;
     width: 85px
 }
+
 .job-input-number-days {
     text-align: center;
     width: 55px;
 }
+
 ul {
     margin: 0px;
     list-style: none;
-    
+
 }
 
 .job-buttons-container {
@@ -102,7 +108,7 @@ ul {
     padding: 0px 20px;
     margin: 20px auto;
     padding-top: 20px;
-    border-top:  #000 2px solid
+    border-top: #000 2px solid
 }
 
 .invoices-subtable {
@@ -120,14 +126,13 @@ ul {
     display: grid;
     grid-template-columns: 4% 16% 10% 16% 4% 50%;
     padding: 5px;
-    /* background-color: #fff; */
     align-items: center;
     border-radius: 10px;
     margin-bottom: 5px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.collections-subtable{
+.collections-subtable {
     width: 100%;
     border-collapse: collapse;
     margin: auto;
@@ -137,4 +142,42 @@ ul {
     display: grid;
     margin: 3px 0px;
     grid-template-columns: 8% 32% 20% 32% 8%;
+}
+
+.overlay-style {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-style {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    min-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.show-events-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+}
+.show-events-button {
+    margin:auto;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
 }

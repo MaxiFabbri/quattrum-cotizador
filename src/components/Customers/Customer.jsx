@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import IconButton from "../Utils/IconButton.jsx";
 import { useNavigate } from "react-router-dom";
-import "./Customer.css";
 
 const Customer = ({ customer, onDelete }) => {
     const navigate = useNavigate(); // Hook para la navegación

@@ -1,0 +1,60 @@
+/* Contenedor principal del formulario */
+.job-event-form {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Título */
+.job-event-form h4 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    color: #333;
+    text-align: center;
+}
+
+/* Grupo de campos */
+.job-event-form .event-note {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Etiquetas */
+.job-event-form label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+/* Inputs y textarea */
+.job-event-form input,
+.job-event-form textarea {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease;
+}
+
+.job-event-form input:focus,
+.job-event-form textarea:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Botón */
+.job-event-form button {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.job-event-form button:hover {
+    background-color: #0056b3;
+}

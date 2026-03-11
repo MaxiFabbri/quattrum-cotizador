@@ -5,7 +5,7 @@ const DateField = ({ value, onChange }) => {
                 type="date"
                 id="date"
                 name="date"
-                value={value}
+                defaultValue={value}
                 onChange={onChange}
                 required
             />

@@ -46,7 +46,6 @@ const ButtonDuplicateQuotation = () => {
         // Procesar todos los productos y procesos
         const productPromises = quotationData.products.map(async (product) => {
             let newProductId = product.productId;
-
             const productToSave = {
                 quotationId: newQuotationId,
                 quantity: product.quantity,

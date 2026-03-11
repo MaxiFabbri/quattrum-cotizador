@@ -10,7 +10,7 @@
     width: 500px;
 }
 
-label {
+.login-form label {
     display: grid;
     grid-template-columns: 1fr 2fr;
     line-height: 2;

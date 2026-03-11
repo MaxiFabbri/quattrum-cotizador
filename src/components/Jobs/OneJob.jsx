@@ -24,9 +24,16 @@ const OneJob = ({ job, onDelete }) => {
         return `${day}-${month}-${year}`;
     };
 
+    // Determinar la clase para la fecha
+    const getDateClass = () => {;
+        if (job.isDateCritical) return "row-pending";
+        if (!job.deliveryDate) return "row-wip";
+        return "row-default";
+    }
+    const dateClass = getDateClass();
 
     return (<tr id={job._id} onClick={handleRowClick} className="onejob-row" style={{ cursor: "pointer" }}>
-        <td>{formatDate(job.approvalDate)}</td>
+        <td className={dateClass}>{formatDate(job.deliveryDate)}</td>
         <td>{job.customer.name}</td>
         <td>{job.jobStatus}</td>
         <td>

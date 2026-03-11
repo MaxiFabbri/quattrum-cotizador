@@ -12,6 +12,7 @@ export const JobContext = createContext();
 
 export const JobProvider = ({ children }) => {
     const [isUpdated, setIsUpdated] = useState(false);
+    const [statusChange, setStatusChange] = useState(false);
     const { updateQuotationData, changeQuotationStatus } = useContext(QuotationContext);
     const [isSaved, setIsSaved] = useState(true);
     const [jobFilter, setJobFilter] = useState("");
@@ -25,6 +26,7 @@ export const JobProvider = ({ children }) => {
         quotationId: "",
         approvalDate: "",
         deliveryDate: "",
+        isDateCritical: false,
         customerId: "",
         paymentMethodId: "",
         customerPaymentDetails: [],
@@ -54,10 +56,9 @@ export const JobProvider = ({ children }) => {
         jobNotes: "",
         jobProducts: [],
     };
-
-
     const [jobData, setJobData] = useState(initialJobDataState);
-    // Se ejecuta cuando isUpdated cambia a `true`
+
+    // Se ejecuta y GUARDA en la persistencia cuando isUpdated cambia a `true`
     useEffect(() => {
         if (isUpdated) {
             saveJobData();
@@ -67,6 +68,10 @@ export const JobProvider = ({ children }) => {
 
     useEffect(() => {
         console.log("jobData actualizado: ", jobData);
+        if (statusChange) {
+            setStatusChange(false);
+            setIsUpdated(true);
+        }
     }, [jobData]);
 
 
@@ -79,6 +84,15 @@ export const JobProvider = ({ children }) => {
         setIsUpdated(false)
     };
 
+    const updateJobDataAndSave = async (updatedData) => {
+        console.log("Actualizando jobData y guardando... ", updatedData);
+        setJobData((prevData) => ({
+            ...prevData,
+            ...updatedData,
+        }));
+        setIsUpdated(true);
+    }
+
     const changeJobStatus = async (newStatus, jobId) => {
         const newData = {
             ...jobData,
@@ -86,23 +100,6 @@ export const JobProvider = ({ children }) => {
         };
         setJobData(newData);
         setIsUpdated(true)
-
-        try {
-            const responseQuote = await toast.promise(
-                // apiClient.put(`/jobs/${jobId}`, {jobStatus: newStatus}),
-                apiClient.put(`/jobs/${jobId}`, newData),
-                {
-                    pending: "Actualizando pedido...",
-                    success: "Pedido actualizado correctamente",
-                    error: "Error al actualizar el pedido",
-                },
-                {
-                    autoClose: 800,
-                }
-            )
-        } catch (error) {
-            console.error("Error al actualizar el pedido: ", error);
-        }
     };
 
     // Funcion para vaciar el objeto jobData
@@ -155,6 +152,7 @@ export const JobProvider = ({ children }) => {
             quotationId: jobData.quotationId,
             approvalDate: jobData.approvalDate,
             deliveryDate: jobData.deliveryDate,
+            isDateCritical: jobData.isDateCritical,
             customerId: jobData.customerId,
             paymentMethodId: jobData.paymentMethodId,
             customerPaymentDetails: jobData.customerPaymentDetails,
@@ -168,6 +166,7 @@ export const JobProvider = ({ children }) => {
             hasPaymentsToMake: updatedStatusData.hasPaymentsToMake,
             isKit: jobData.isKit,
             jobNotes: jobData.jobNotes,
+            jobEvents: jobData.jobEvents,
         }
         // Actualizo en la DB la información de job en la BD
         try {
@@ -592,6 +591,7 @@ export const JobProvider = ({ children }) => {
                 clearJobData,
                 cancelJobData,
                 updateJobData,
+                updateJobDataAndSave,
                 changeJobStatus,
                 addJobProduct,
                 updateJobProduct,
@@ -604,7 +604,9 @@ export const JobProvider = ({ children }) => {
                 jobStatusFilter,
                 setJobStatusFilter,
                 setIsUpdated,
-                setIsSaved
+                setIsSaved,
+                statusChange,
+                setStatusChange,
             }}
         >
             {children}

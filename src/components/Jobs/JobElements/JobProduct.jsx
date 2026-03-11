@@ -1,12 +1,15 @@
-import { useState, useContext, useEffect, use } from "react";
+import { useState, useContext, useEffect } from "react";
 import { JobContext } from "../../../context/JobContext";
-import { QuotationContext } from "../../../context/QuotationContext";
+import { AuthContext } from "../../../context/AuthContext";
 import { ParametersContext } from "../../../context/ParametersContext";
 import IconButton from "../../Utils/IconButton";
+import TextButton from "../../Utils/TextButton";
 import ButtonAddJobProcess from "../JobsUtils/ButtonAddJobProcess";
 import ButtonDuplicateJobProduct from "../JobsUtils/ButtonDuplicateJobProduct";
 import NewJobProcess from "./JobProcess";
 import ProductCostDetails from "../../NewQuotation/QuotationElements/ProductCostDetails";
+import JobEventForm from "../JobsUtils/JobEventForm";
+import JobEventsTable from "../JobsUtils/JobEventsTable";
 
 import { CSS } from "@dnd-kit/utilities";
 import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
@@ -15,9 +18,10 @@ import { calculateProcessInvoicesStatus } from "../../../utils/AdminJobStatusMan
 import "./JobProduct.css";
 
 const NewJobProduct = ({ productData }) => {
-    const { setIsSaved } = useContext(QuotationContext);
-    const { jobData, updateJobData, updateJobProduct, removeJobProduct, addJobProduct, addJobProcessToProduct } = useContext(JobContext);
+    const { userId, userName } = useContext(AuthContext);
+    const { jobData, setIsSaved, updateJobData, updateJobProduct, removeJobProduct, updateJobDataAndSave, setStatusChange } = useContext(JobContext);
     const { tax } = useContext(ParametersContext);
+
     const [jobProdData, setJobProdData] = useState(productData);
 
     const [isJobProdUpdate, setIsJobProdUpdated] = useState(true);
@@ -28,6 +32,8 @@ const NewJobProduct = ({ productData }) => {
     const [pesosPrice, setPesosPrice] = useState(+(jobProdData.unitSellingPrice * jobData.exchangeRate).toFixed(0));
     const [newEnteredShipmentCost, setNewEnteredShipmentCost] = useState(jobProdData.enteredShipmentCost) || 0;
     const [newEnteredOtherCost, setNewEnteredOtherCost] = useState(jobProdData.enteredOtherCost) || 0;
+    const [showEventsForm, setShowEventsForm] = useState(false);
+    const [showProdEvents, setShowProdEvents] = useState(false);
 
     if (jobProdData.calculatedSellingPrice == null || Number.isNaN(jobProdData.calculatedSellingPrice)) {
         setJobProdData((prevData) => ({
@@ -130,9 +136,12 @@ const NewJobProduct = ({ productData }) => {
         }))
         setIsJobProdUpdated(false); // Cambiamos el estado a `false` para indicar que se ha actualizado
     };
+
+
     const handleStatusChange = (e) => {
-        setIsSaved(false)
         const { value } = e.target;
+        setIsSaved(false)
+
         const updatedProcesses = jobProdData.processes.map(process => {
             const updatedInvoices = calculateProcessInvoicesStatus(process.invoices, value);
             return {
@@ -145,7 +154,20 @@ const NewJobProduct = ({ productData }) => {
             jobProductStatus: value,
             processes: updatedProcesses
         }))
+        const newEvent = {
+            eventDate: new Date(),
+            eventUserId: userId,
+            eventUserName: userName,
+            eventProductId: jobProdData.jobProductId,
+            eventNote: `Cambio de estado de Producto a: ${e.target.value}`
+        }
+        const updatedEvents = [...jobData.jobEvents, newEvent];
+        const updatedJobData = {
+            jobEvents: updatedEvents
+        };
+        updateJobData(updatedJobData);
         setIsJobProdUpdated(false);
+        setStatusChange(true);
     };
 
     // Eliminar el producto del contexto
@@ -165,6 +187,22 @@ const NewJobProduct = ({ productData }) => {
             isManual: true,
         }))
         setIsJobProdUpdated(false);
+    };
+
+    const handleAddEvent = (event) => {
+        console.log("Nuevo evento para el producto ", jobProdData.jobProductId, ": ", event);
+
+        setShowEventsForm(false);
+        const newEvent = {
+            eventDate: new Date(),
+            eventUserId: userId,
+            eventUserName: userName,
+            eventProductId: event.eventProductId || null,
+            eventNote: event.eventNote || ''
+        }
+        const updatedEvents = [...jobData.jobEvents, newEvent];
+
+        updateJobDataAndSave({ jobEvents: updatedEvents });
     };
 
     const handleProcessDragEnd = (event) => {
@@ -202,7 +240,6 @@ const NewJobProduct = ({ productData }) => {
         setIsSaved(false);
         setActiveId(null);
     };
-
     const jobProdStyle = {
         transform: CSS.Transform.toString(transform),
         transition,
@@ -230,7 +267,7 @@ const NewJobProduct = ({ productData }) => {
                         <th>Utilidad</th>
                         <th>Precio Unitario</th>
                         <th>Estado</th>
-                        <th>Notas</th>
+                        <th></th>
                         <th></th>
                     </tr>
                 </thead>
@@ -334,18 +371,24 @@ const NewJobProduct = ({ productData }) => {
                                 <option value="Entregado">Entregado</option>
                             </select>
                         </td>
-                        {/* <td>
-                            <span>{jobProdData.jobProductStatus}</span>
-                        </td> */}
                         <td>
-                            <input
-                                type="text"
-                                name="jobProductNote"
-                                placeholder="Notas del Producto"
-                                defaultValue={jobProdData.jobProductNote}
-                                onClick={(e) => e.target.select()}
-                                onInput={handleNoteChange}
+                            <TextButton
+                                text="Agregar evento"
+                                onClick={() => setShowEventsForm(true)}
                             />
+                            {showEventsForm && (
+                                <div className="overlay-style">
+                                    <div className="modal-style">
+                                        <button
+                                            style={{ float: 'right' }}
+                                            onClick={() => setShowEventsForm(false)}
+                                        >
+                                            ✖
+                                        </button>
+                                        <JobEventForm onAddEvent={handleAddEvent} productId={jobProdData.jobProductId} />
+                                    </div>
+                                </div>
+                            )}
                         </td>
                         <td>
                             <IconButton
@@ -356,6 +399,24 @@ const NewJobProduct = ({ productData }) => {
                         </td>
                     </tr>
                     {editPrice && <ProductCostDetails productData={jobProdData} exchangeRate={jobData.exchangeRate} />}
+                    <tr>
+                        {!showProdEvents && (
+                            <td colSpan={10} >
+                                <div className="show-events-button-container">
+                                    <TextButton text="Mostrar Eventos" onClick={() => setShowProdEvents(true)} />
+                                </div>
+                            </td>
+                        )}
+                        {showProdEvents && (
+                            <JobEventsTable
+                                events={jobData.jobEvents
+                                    .filter((event) => event.eventProductId === jobProdData.jobProductId)
+                                    .reverse()
+                                }
+                                onClose={() => setShowProdEvents(false)}
+                            />
+                        )}
+                    </tr>
                     <tr key={"processes-" + jobProdData.jobProductId} id={"processes-" + jobProdData.jobProductId}>
                         <td colSpan="11">
                             {jobProdData.processes && jobProdData.processes.length > 0 ? (

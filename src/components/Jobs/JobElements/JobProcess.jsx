@@ -17,7 +17,7 @@ const NewJobProcess = ({ initialProcessData, productStatus }) => {
     const [jobProcessData, setJobProcessData] = useState(initialProcessData);
     const [newTempUnitCost, setNewTempUnitCost] = useState(jobProcessData.enteredUnitCost) || 0;
     const [newTempFixedCost, setNewTempFixedCost] = useState(jobProcessData.enteredFixedCost) || 0;
-    const [showInvoices, setShowInvoices] = useState(true);
+    const [showInvoices, setShowInvoices] = useState(false);
 
     const {
         attributes,

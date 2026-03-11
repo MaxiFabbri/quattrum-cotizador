@@ -19,6 +19,7 @@ import ButtonConfirmJob from "./JobsUtils/ButtonConfirmJob.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 import { calculateJobStatus } from "../../utils/AdminJobStatusManager.js";
 
+
 const DetailedJobContainer = () => {
     const { jobData, updateJobData, clearJobData, setIsSaved, setIsUpdated } = useContext(JobContext);
     const [activeId, setActiveId] = useState(null)
@@ -33,7 +34,7 @@ const DetailedJobContainer = () => {
 
     // Formatear la fecha
     const formatDate = (utcDate) => {
-        ;
+        if (!utcDate) return null; // Maneja el caso de fecha nula o indefinida
         const date = new Date(utcDate);
         const year = date.getFullYear();
         const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Asegura 2 dígitos
@@ -118,7 +119,8 @@ const DetailedJobContainer = () => {
             calculateFinancing: recievedData.calculateFinancing,
             quotationId: recievedData.quotationId,
             approvalDate: formatDate(recievedData.approvalDate),
-            deliveryDate: formatDate(recievedData.deliveryDate) || "",
+            deliveryDate: formatDate(recievedData.deliveryDate) || null,
+            isDateCritical: recievedData.isDateCritical,
             customerId: recievedData.customerId._id,
             customerName: recievedData.customerId.name,
             paymentMethodId: recievedData.paymentMethodId._id,
@@ -136,6 +138,7 @@ const DetailedJobContainer = () => {
             hasPaymentsToMake: recievedData.hasPaymentsToMake,
             isKit: recievedData.isKit || false,
             jobNotes: recievedData.jobNotes || "",
+            jobEvents: recievedData.jobEvents || [],
         }
         // agrego los Productos
         const responseJobProducts = await apiClient.get(`/job-products/job/${id}`)
@@ -193,7 +196,6 @@ const DetailedJobContainer = () => {
                 : (
                     <DndContext
                         collisionDetection={closestCenter}
-                        // onDragStart={(event) => setActiveId(event.active.id)}
                         onDragStart={dragStart}
                         onDragEnd={handleJobProductsDragEnd}
                     >
@@ -224,7 +226,7 @@ const DetailedJobContainer = () => {
                                 <ButtonAddJobProduct />
                                 <ButtonCalculateJob />
 
-                                <ButtonConfirmJob />
+                                {/* <ButtonConfirmJob /> */}
                                 <TextButton
                                     text="Cancelar"
                                     onClick={() => navigate("/production")}

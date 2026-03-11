@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 const ButtonApproveQuotation = () => {
     const { quotationData, changeQuotationStatus } = useContext(QuotationContext);
     const { JobData, updateJobData, addJobProduct, addJobProcessToProduct } = useContext(JobContext);
-    const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
     const [shouldCalculate, setShouldCalculate] = useState(false);
     const today = new Date().toISOString().split("T")[0];
     const navigate = useNavigate();
@@ -111,7 +110,8 @@ const ButtonApproveQuotation = () => {
             quotationId: quotationData.id,
             calculateFinancing: quotationData.calculateFinancing,
             approvalDate: today,
-            deliveryDate: today,
+            deliveryDate: null, // Se definirá posteriormente
+            isDateCritical: false,
             customerId: quotationData.customerId,
             paymentMethodId: quotationData.paymentMethodId,
             customerPaymentDetails: quotationData.customerPaymentDetails,
@@ -132,12 +132,13 @@ const ButtonApproveQuotation = () => {
         try {
             console.log("jobToSave en approve Quotation: ", jobToSave);
             const responseQuote = await apiClient.post("/jobs", jobToSave);
+            console.log("responseQuote en approve Quotation: ", responseQuote);
             newJobId = responseQuote.data.response._id;
             updateJobData({
                 jobId: newJobId,
                 quotationId: quotationData.id,
                 approvalDate: today,
-                // deliveryDate: to be defined,
+                deliveryDate: null, //to be defined,
                 customerId: quotationData.customerId,
                 paymentMethodId: quotationData.paymentMethodId,
                 customerPaymentDetails: quotationData.customerPaymentDetails,
@@ -156,6 +157,7 @@ const ButtonApproveQuotation = () => {
         await Promise.resolve();
         // Procesar todos los productos y procesos
         const jobProductPromises = quotationData.products.map(async (product) => {
+            console.log("Producto a procesar en approve quotation: ", product);
             let newJobProductId = product.productId;
 
             const jobProductToSave = {

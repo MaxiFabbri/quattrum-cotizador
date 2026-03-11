@@ -1,8 +1,8 @@
 import { use, useContext, useEffect, useState } from "react";
 import "./DetailedJobContainer.css"
 
-import { QuotationContext } from "../../context/QuotationContext.jsx";
 import { ParametersContext } from "../../context/ParametersContext.jsx";
+import { AuthContext } from "../../context/AuthContext.jsx";
 import { JobContext } from "../../context/JobContext.jsx";
 
 import DateField from "../NewQuotation/InputComponents/DateField.jsx";
@@ -12,21 +12,23 @@ import IsKitCheckbox from "../NewQuotation/InputComponents/IsKitCheckbox.jsx";
 
 import SelectCustomer from "../Utils/Selectors/SelectCustomer.jsx";
 import SelectCustomerPayMethod from "../Utils/Selectors/SelectCustomerPaymentMethod.jsx";
-import { validateNewQuotation } from "../NewQuotation/QuotationUtils/validateQuotation.jsx";
 import IconButton from "../Utils/IconButton.jsx";
+import TextButton from "../Utils/TextButton.jsx";
 import { toast } from "react-toastify";
 import { getInvoiceRowClass } from "./JobsUtils/JobClassValidations.js";
 import { calculateInvoicesStatus } from "../../utils/AdminJobStatusManager.js"
+import JobStatusSelect from "./JobsUtils/JobStatusSelect.jsx";
+import JobEventForm from "./JobsUtils/JobEventForm.jsx";
+import JobEventsTable from "./JobsUtils/JobEventsTable.jsx";
 
 
 const NewJob = () => {
     const { getDolarPrice } = useContext(ParametersContext);
-    const { quotationData } = useContext(QuotationContext);
-    const { jobData, setJobData, updateJobData, setIsUpdated } = useContext(JobContext);
-    const [quotationId, setQuotationId] = useState(null);
-    const [showInvoices, setShowInvoices] = useState(true);
-
-
+    const { userId, userName } = useContext(AuthContext);
+    const { jobData, setJobData, updateJobData, updateJobDataAndSave } = useContext(JobContext);
+    const [showInvoices, setShowInvoices] = useState(false);
+    const [showEventsForm, setShowEventsForm] = useState(false);
+    const [showEvents, setShowEvents] = useState(false);
 
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {
@@ -41,8 +43,8 @@ const NewJob = () => {
 
     const handleChange = (updates) => {
         updateJobData(updates);
-        // setIsUpdated(true);
     };
+
     const handleCustomerPaymentMethodUpdate = (newCustomerPaymentMethod) => {
         setJobData((prevData) => ({
             ...prevData,
@@ -128,18 +130,77 @@ const NewJob = () => {
         updateJobData({ invoices: newUpdatedInvoices });
     };
 
+    const handleStatusChange = (e) => {
+        console.log("Handle Status Change: ", e.target.value);
+        const newInvoices = calculateInvoicesStatus(jobData.invoices, e.target.value);
+        const newEvent = {
+            eventDate: new Date(),
+            eventUserId: userId,
+            eventUserName: userName,
+            eventProductId: null,
+            eventNote: `Cambio de estado a: ${e.target.value}`
+        }
+        const updatedEvents = [...jobData.jobEvents, newEvent];
+
+        const updatedJobData = {
+            invoices: newInvoices,
+            jobStatus: e.target.value,
+            jobEvents: updatedEvents
+        };
+        updateJobDataAndSave(updatedJobData);
+    }
+
+    const handleAddEvent = (event) => {
+        console.log("Nuevo evento: ", event);
+        setShowEventsForm(false);
+        const newEvent = {
+            eventDate: new Date(),
+            eventUserId: userId,
+            eventUserName: userName,
+            eventProductId: event.eventProductId || null,
+            eventNote: event.eventNote || ''
+        }
+        const updatedEvents = [...jobData.jobEvents, newEvent];
+
+        updateJobDataAndSave({ jobEvents: updatedEvents });
+    };
 
     const formatDateForInput = (dateString) => {
         if (!dateString) return ""; // Si no hay fecha, retorna string vacío para evitar errores
         const newDate = new Date(dateString).toISOString().split("T")[0];
-        return newDate; 
+        return newDate;
     };
+
+    const getDateClass = () => {
+        if (jobData.isDateCritical) return "row-pending";
+        if (!jobData.deliveryDate) return "row-wip";
+        return "row-default";
+    }
+    const dateClass = getDateClass();
 
     return (
         <>
             <tr key={jobData.jobId}>
                 <DateField value={jobData.approvalDate} onChange={(e) => handleChange({ approvalDate: e.target.value })} />
-                <DateField value={jobData.deliveryDate} onChange={(e) => handleChange({ deliveryDate: e.target.value })} />
+                <td>
+                    <input
+                        className={dateClass}
+                        type="date"
+                        id="deliveryDate"
+                        name="deliveryDate"
+                        defaultValue={jobData.deliveryDate}
+                        onChange={(e) => handleChange({ deliveryDate: e.target.value })}
+                    />
+                </td>
+                <td>
+                    <input
+                        type="checkbox"
+                        id="isDateCritical"
+                        name="isDateCritical"
+                        checked={jobData.isDateCritical}
+                        onChange={(e) => handleChange({ isDateCritical: e.target.checked })}
+                    />
+                </td>
                 <td>
                     <input
                         type="text"
@@ -155,24 +216,27 @@ const NewJob = () => {
                 </td>
                 <CurrencySelect value={jobData.currency} onChange={(e) => handleChange({ currency: e.target.value })} />
                 <ExchangeRateInput value={jobData.exchangeRate} onChange={(e) => handleChange({ exchangeRate: +(e.target.value) })} />
-                <td>
-                    <input 
-                        type="text"
-                        placeholder="Status del trabajo"
-                        defaultValue={jobData.jobStatus}
-                    />
-                </td>
-                {/* <QuoteStatusSelect value={jobData.jobStatus} onChange={(e) => handleChange({ ...jobData, jobStatus: e.target.value })} /> */}
+                <JobStatusSelect value={jobData.jobStatus} onChange={handleStatusChange} />
                 <IsKitCheckbox checked={jobData.isKit} onChange={(e) => handleChange({ isKit: e.target.checked })} />
                 <td>
-                    <input
-                        type="text"
-                        name="jobNotes"
-                        placeholder="Notas del trabajo"
-                        defaultValue={jobData.jobNotes}
-                        onClick={(e) => e.target.select()}
-                        onInput={handleInputChange}
+                    <TextButton
+                        text="Agregar evento"
+                        onClick={() => setShowEventsForm(true)}
                     />
+                    {/* <button onClick={() => setShowEventsForm(true)}>Agregar evento</button> */}
+                    {showEventsForm && (
+                        <div className="overlay-style">
+                            <div className="modal-style">
+                                <button
+                                    style={{ float: 'right' }}
+                                    onClick={() => setShowEventsForm(false)}
+                                >
+                                    ✖
+                                </button>
+                                <JobEventForm onAddEvent={handleAddEvent} productId={null} />
+                            </div>
+                        </div>
+                    )}
                 </td>
                 <td>
                     <IconButton
@@ -294,7 +358,24 @@ const NewJob = () => {
                     </td>
                 </tr>
             )}
-
+            <tr>
+                {!showEvents && (
+                    <td colSpan={10} >
+                        <div className="show-events-button-container">
+                            <TextButton text="Mostrar Eventos" onClick={() => setShowEvents(true)} />
+                        </div>
+                    </td>
+                )}
+                {showEvents && (
+                    <JobEventsTable
+                        events={jobData.jobEvents
+                            .filter((event) => event.eventProductId === null)
+                            .reverse()
+                        }
+                        onClose={() => setShowEvents(false)}
+                    />
+                )}
+            </tr>
         </>
     );
 };
