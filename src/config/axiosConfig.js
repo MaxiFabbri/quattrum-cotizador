@@ -11,4 +11,4 @@ const apiDolar = axios.create({
     baseURL: 'https://dolarapi.com/v1/dolares/oficial',
 });
 
-export { apiClient, apiDolar };
+export { apiUrl, apiClient, apiDolar };
