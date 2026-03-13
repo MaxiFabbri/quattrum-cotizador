@@ -27,7 +27,10 @@ const JobsContainer = () => {
     }, [jobPage, search]);
 
     useEffect(() => {
-        console.log("Jobs fetched: ", jobs.docs);
+        if(jobs.docs){
+            console.log("Jobs fetched: ", jobs.docs);
+        }
+        return
     }, [jobs]);
 
     const onCompleteAdminFilterChange = (selectedOptions) => {
@@ -37,8 +40,6 @@ const JobsContainer = () => {
 
     // Función para realizar la solicitud GET
     const fetchJobs = async () => {
-        console.log("Fetching jobs with filters - Status:", jobStatusFilter, "jobAdminFilter: ", jobAdminFilterLocal);
-        console.log("Current jobFilter: ", jobFilter);
         try {
             const filterParams = jobAdminFilterLocal.reduce((acc, key) => {
                 acc[key] = true;

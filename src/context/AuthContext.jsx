@@ -16,7 +16,6 @@ export const AuthProvider = ({ children }) => {
     const socketRef = useRef(null);
 
     useEffect(() => {
-        console.log('is Authenticated: ', isAuthenticated);
         if (isAuthenticated) {
             console.log('Conectando al servidor de WebSocket...');
             socketRef.current = io("http://localhost:8000", {
@@ -33,10 +32,9 @@ export const AuthProvider = ({ children }) => {
         try {
             setAuthenticating(true);
             const response = await apiClient.post("sessions/login", { email, password }, { withCredentials: true });
-            console.log('Login response: ', response);
             if (response.status === 200) {
                 setIsAuthenticated(true);
-                console.log('Login exitoso: ', response.data.response);
+                console.log('Login exitoso!!!');
                 setUserRole(response.data.response.role);
                 setUserName(response.data.response.first_name);
                 setUserId(response.data.response.user_id);
@@ -71,7 +69,6 @@ export const AuthProvider = ({ children }) => {
     };
 
     const checkAuth = async () => {
-        console.log('Verificando autenticación... ', authenticating);
         try {
             setAuthenticating(true);
             const response = await apiClient.post(
@@ -79,9 +76,7 @@ export const AuthProvider = ({ children }) => {
                 {},
                 { withCredentials: true }
             );
-            console.log('CheckAuth response: ', response);
             if (response.status === 200) {
-                console.log('Usuario autenticado: ', response.data);
                 setUserName(response.data.first_name);
                 setUserRole(response.data.role);
                 setUserId(response.data.user_id);

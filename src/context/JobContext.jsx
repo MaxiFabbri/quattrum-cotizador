@@ -204,6 +204,7 @@ export const JobProvider = ({ children }) => {
                 unitSellingPrice: product.unitSellingPrice,
                 isManual: product.isManual,
                 totalProductCost: product.totalProductCost,
+                jobProductDescription: product.jobProductDescription,
                 jobProductNote: product.jobProductNote,
                 jobProductStatus: product.jobProductStatus,
                 order: index,

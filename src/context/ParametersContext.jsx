@@ -104,7 +104,10 @@ export const ParametersProvider = ({ children }) => {
     }, [isAuthenticated]);
 
     useEffect(() => {
-        getDolarPrice();
+        if(isParamsLoaded){
+            getDolarPrice();
+        }
+        return
     }, [isParamsLoaded]); // Se ejecutará solo cuando isParamsLoaded sea `true`
 
     return (

@@ -109,12 +109,12 @@ const NewJobProduct = ({ productData }) => {
         }
     }
 
-    const handleNoteChange = (e) => {
+    const handleDescriptionChange = (e) => {
         setIsSaved(false)
         const { value } = e.target;
         setJobProdData((prevData) => ({
             ...prevData,
-            jobProductNote: value,
+            jobProductDescription: value,
         }))
         setIsJobProdUpdated(false);
     };
@@ -293,7 +293,14 @@ const NewJobProduct = ({ productData }) => {
                             />
                         </td>
                         <td>
-                            <span>{jobProdData.jobProductDescription}</span>
+                            <input
+                                type="text"
+                                name="jobProductDescription"
+                                placeholder="Descripción"
+                                defaultValue={jobProdData.jobProductDescription}
+                                onClick={(e) => e.target.select()}
+                                onBlur={handleDescriptionChange}
+                            />
                         </td>
                         <td>
                             <input

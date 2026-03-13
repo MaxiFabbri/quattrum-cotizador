@@ -347,30 +347,6 @@ const NewJobProcess = ({ initialProcessData, productStatus }) => {
                         }}
                     />
                 </td>
-                {/* <td>
-                    <input
-                        type="text"
-                        name="jobProcessNote"
-                        placeholder="Notas del Proceso"
-                        defaultValue={jobProcessData.jobProcessNote}
-                        onClick={(e) => e.target.select()}
-                        onInput={handleNoteChange}
-                    />
-                </td> */}
-                {/* <td>
-                    <select
-                        id="jobProcessStatus"
-                        name="jobProcessStatus"
-                        value={jobProcessData.jobProcessStatus}
-                        onChange={handleStatusChange}
-                        required
-                    >
-                        <option value="Aprobado">Aprobado</option>
-                        <option value="En Produccion">En Produccion</option>
-                        <option value="Terminado">Terminado</option>
-                        <option value="Entregado">Entregado</option>
-                    </select>
-                </td> */}
                 <td>
                     <IconButton
                         icon="/images/delete.png"
