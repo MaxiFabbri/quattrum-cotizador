@@ -38,9 +38,7 @@ const LoginForm = () => {
                     onClick={handleSubmit}
                     />
             </form>
-
         </>
-
     );
 };
 

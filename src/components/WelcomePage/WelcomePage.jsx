@@ -1,8 +1,4 @@
-import { useEffect } from 'react'
-
 import './welcome-page.css'
-import { apiClient } from '../../config/axiosConfig.js';
-
 
 function WelcomePage() {
 
