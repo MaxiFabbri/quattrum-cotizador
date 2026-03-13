@@ -1,10 +1,9 @@
 import React, { createContext, useState, useEffect, useRef } from 'react';
-import { apiClient, apiUrl } from '../config/axiosConfig.js';
+import { apiClient } from '../config/axiosConfig.js';
 import { io } from 'socket.io-client';
 
 
 export const AuthContext = createContext();
-// const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -13,11 +12,14 @@ export const AuthProvider = ({ children }) => {
     const [userName, setUserName] = useState('')
     const [userId, setUserId] = useState('')
 
+    const wsUrl = import.meta.env.VITE_WS_URL;
+
     const socketRef = useRef(null);
+
     useEffect(() => {
         if (isAuthenticated) {
             console.log('Conectando al servidor de WebSocket...');
-            socketRef.current = io(apiUrl, {
+            socketRef.current = io(wsUrl, {
                 auth: {
                     userName,
                     userRole,
