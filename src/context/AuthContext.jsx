@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
 
     const socketRef = useRef(null);
 
+    
     // useEffect(() => {
     //     if (isAuthenticated) {
     //         console.log('Conectando al servidor de WebSocket...');
