@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useRef } from 'react';
+import { createContext, useState, useEffect, useRef } from 'react';
 import { apiClient } from '../config/axiosConfig.js';
 import { io } from 'socket.io-client';
 
@@ -20,10 +20,12 @@ export const AuthProvider = ({ children }) => {
         if (isAuthenticated) {
             console.log('Conectando al servidor de WebSocket...');
             socketRef.current = io(wsUrl, {
+                transports: ["websocket"],   // fuerza WebSocket en lugar de polling
+                withCredentials: true,       // permite credenciales si tu backend lo requiere
                 auth: {
                     userName,
                     userRole,
-                    userId
+                    userId,
                 },
             });
         }
@@ -98,16 +100,16 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider 
-            value={{ 
-                isAuthenticated, 
-                authenticating, 
-                userRole, 
+        <AuthContext.Provider
+            value={{
+                isAuthenticated,
+                authenticating,
+                userRole,
                 userName,
                 userId,
-                login, 
-                logout, 
-                checkAuth, 
+                login,
+                logout,
+                checkAuth,
                 socket: socketRef
             }}
         >

@@ -35,13 +35,14 @@ function WebSocketTestPage() {
   };
 
   useEffect(() => {
+    console.log("UsersList en WebSocketTestPage: ", usersList);
+    console.log("ServerUsers en WebSocketTestPage: ", serverUsers);
     updateActiveUsersList(serverUsers);
   }, [usersList]);
 
   const updateActiveUsersList = (usersMapObj) => {
     console.log("Actualizando lista de usuarios activos con el mapa recibido: ", usersMapObj);
     const newUsersList = usersList.map(user => {
-      console.log("Procesando usuario: ", user);
       const socketId = usersMapObj[user._id]; // clave = userId
       console.log(`Usuario ${user.first_name} (user ID: ${user._id}) - Socket ID: ${socketId}`);
       return {
