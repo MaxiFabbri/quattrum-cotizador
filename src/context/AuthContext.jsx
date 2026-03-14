@@ -16,19 +16,19 @@ export const AuthProvider = ({ children }) => {
 
     const socketRef = useRef(null);
 
-    
-    // useEffect(() => {
-    //     if (isAuthenticated) {
-    //         console.log('Conectando al servidor de WebSocket...');
-    //         socketRef.current = io(wsUrl, {
-    //             auth: {
-    //                 userName,
-    //                 userRole,
-    //                 userId
-    //             },
-    //         });
-    //     }
-    // }, [isAuthenticated]);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            console.log('Conectando al servidor de WebSocket...');
+            socketRef.current = io(wsUrl, {
+                auth: {
+                    userName,
+                    userRole,
+                    userId
+                },
+            });
+        }
+    }, [isAuthenticated]);
 
     const login = async (email, password) => {
         try {
