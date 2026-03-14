@@ -5,7 +5,6 @@ import './websocket-test.css';
 function NewSocketMessage({ activeUsersList, emiterUserId, onSend }) {
     const [messageContent, setMessageContent] = useState('');
     const [target, setTarget] = useState('');
-    console.log('Usuarios activos en NewSocketMessage: ', activeUsersList);
 
     const sendNewSocketMessage = (target, messageContent) => {
         console.log('Enviando mensaje desde:', emiterUserId, 'hacia:', target, 'con contenido:', messageContent);

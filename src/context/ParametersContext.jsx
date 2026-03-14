@@ -35,6 +35,7 @@ export const ParametersProvider = ({ children }) => {
     const getUsersList = async () => {
         try {
             const response = await apiClient.get('users');
+            console.log("Lista de usuarios recuperada: ", response.data.response);
             setUsersList(response.data.response);
         } catch (error) {
             console.error('Error al recuperar la lista de usuarios:', error);

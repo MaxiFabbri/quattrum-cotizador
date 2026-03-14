@@ -48,6 +48,7 @@ function WebSocketTestPage() {
         socketId: socketId || null
       };
     });
+    console.log("Lista de usuarios actualizada: ", newUsersList);
     setActiveUsersList(newUsersList);
   };
 
