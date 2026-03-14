@@ -35,8 +35,8 @@ function WebSocketTestPage() {
   };
 
   useEffect(() => {
-    console.log("UsersList en WebSocketTestPage: ", usersList);
-    console.log("ServerUsers en WebSocketTestPage: ", serverUsers);
+    console.log("Lista de usuarios actualizada en TestPage: ", usersList);	
+    console.log("Mapa de usuarios del servidor en TestPage: ", serverUsers);
     updateActiveUsersList(serverUsers);
   }, [usersList]);
 
@@ -61,6 +61,7 @@ function WebSocketTestPage() {
   }, [logs]);
 
   useEffect(() => {
+    console.log('Estableciendo listeners de WebSocket en TestPage...');
     if (socket.current) {
       console.log('Socket en testPage: ', socket.current);
 

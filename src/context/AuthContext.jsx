@@ -28,20 +28,6 @@ export const AuthProvider = ({ children }) => {
                     userId,
                 },
             });
-            socketRef.current.on("connect", () => {
-                console.log("Conectado al servidor de WebSocket con ID:", socketRef.current.id);
-            });
-            socketRef.current.on("usersUpdate", (usersMap) => {
-                console.log("Usuarios conectados: ", usersMap);
-                });
-
-            socketRef.current.on("disconnect", () => {
-                console.log("Desconectado del servidor de WebSocket");
-            });
-
-            socketRef.current.on("connect_error", (error) => {
-                console.error("Error de conexión al servidor de WebSocket:", error);
-            });
         }
     }, [isAuthenticated]);
 
