@@ -44,7 +44,6 @@ function WebSocketTestPage() {
     console.log("Actualizando lista de usuarios activos con el mapa recibido: ", usersMapObj);
     const newUsersList = usersList.map(user => {
       const socketId = usersMapObj[user._id]; // clave = userId
-      console.log(`Usuario ${user.first_name} (user ID: ${user._id}) - Socket ID: ${socketId}`);
       return {
         userId: user._id,
         userName: user.first_name,
@@ -61,7 +60,7 @@ function WebSocketTestPage() {
   }, [logs]);
 
   useEffect(() => {
-    console.log('Estableciendo listeners de WebSocket en TestPage...');
+    console.log('Estableciendo listeners de WebSocket en TestPage...', socket.current);
     if (socket.current) {
       console.log('Socket en testPage: ', socket.current);
 
