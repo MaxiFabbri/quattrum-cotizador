@@ -39,8 +39,11 @@ function WebSocketTestPage() {
   }, [usersList]);
 
   const updateActiveUsersList = (usersMapObj) => {
+    console.log("Actualizando lista de usuarios activos con el mapa recibido: ", usersMapObj);
     const newUsersList = usersList.map(user => {
+      console.log("Procesando usuario: ", user);
       const socketId = usersMapObj[user._id]; // clave = userId
+      console.log(`Usuario ${user.first_name} (user ID: ${user._id}) - Socket ID: ${socketId}`);
       return {
         userId: user._id,
         userName: user.first_name,
