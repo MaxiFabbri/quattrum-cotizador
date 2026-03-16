@@ -59,7 +59,6 @@ const useCalculateFunctions = () => {
     };
 
     const calculateKitUniteSellingPrice = (totalProductCost, financingCost, quantity, targetUtilities, totalQuotationCost) => {
-
         // Calculo las utilidades deseadas de los parametros generales
         // calculo el minutilitie que le corresponde a este producto por regla de 3 simple
         let minUtilitie = (totalProductCost / totalQuotationCost) * targetUtilities.kitMinimun

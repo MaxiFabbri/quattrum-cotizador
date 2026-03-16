@@ -20,6 +20,7 @@ export const JobProvider = ({ children }) => {
     const { utilitiesTable, tax } = useContext(ParametersContext);
     const { calculateUnitSellingPrice, calculateKitUniteSellingPrice, getSellingFinanceCost, getBuyingFinanceCost } = useCalculateFunctions();
     const navigate = useNavigate();
+    let jobProductsTotalCost = []
 
     const initialJobDataState = {
         jobId: "",
@@ -74,6 +75,60 @@ export const JobProvider = ({ children }) => {
         }
     }, [jobData]);
 
+    const getJobTotalCost = () => {
+        let totalCost = 0;
+        jobData.jobProducts.map((product) => {
+            // Actualizo los costos del producto en base a TC
+            product.shipmentCost = +product.enteredShipmentCost / jobData.exchangeRate;
+            product.otherCost = +product.enteredOtherCost / jobData.exchangeRate;
+
+            let totalProductCost = 0;
+            let newProductDescription = ""
+            // Paso por los procesos del producto y actualizo el subtotal y la descripción
+            product.processes = product.processes.map((process) => {
+                // Actualizo los costos del proceso en la moneda de la cotización
+                process.unitCost = +process.enteredUnitCost / (process.currency === "Peso" ? jobData.exchangeRate : 1);
+                process.fixedCost = +process.enteredFixedCost / (process.currency === "Peso" ? jobData.exchangeRate : 1);
+                // Calculo el coeficiente de ajuste
+                const adjust = +(1 + (Number(process.adjustPercentage) || 0) / 100)
+                const newSubtotalProcessCost = +(((process.unitCost * product.quantity) * adjust) + process.fixedCost)
+                totalProductCost += +newSubtotalProcessCost;
+                if (newProductDescription === "") {
+                    newProductDescription = process.description
+                } else {
+                    newProductDescription = newProductDescription + ", " + process.description
+                }
+                // Actualizo el subtotal del proceso en el context         
+                updateJobProcessInProduct({ 
+                    subTotalProcessCost: newSubtotalProcessCost,
+                    unitCost: process.unitCost,
+                    fixedCost: process.fixedCost 
+                }, process.processId);
+                return {
+                    ...process,
+                    subTotalProcessCost: newSubtotalProcessCost,
+                };
+            });
+            // Levanto los datos del producto del context
+            totalProductCost =
+                +(
+                    +totalProductCost +
+                    +product.shipmentCost +
+                    +product.otherCost
+                );
+            // Sumo el costo del producto al costo de la cotización
+            totalCost += totalProductCost;
+            jobProductsTotalCost.push({ id: product.jobProductId, totalProductCost: totalProductCost, jobProductDescription: newProductDescription });
+            // Actualizo el producto en el context
+            updateJobProduct({
+                jobProductDescription: newProductDescription,
+                shipmentCost: product.shipmentCost,
+                otherCost: product.otherCost
+            }, product.jobProductId);
+            // }
+        });
+        return totalCost;
+    };
 
     // Función para actualizar la cotización completa
     const updateJobData = (updatedData) => {
@@ -272,7 +327,6 @@ export const JobProvider = ({ children }) => {
 
     const calculateJobData = (calculateAll) => {
         console.log("Calculando Job... Recalcular todo: ", calculateAll, jobData);
-
         const isJobValid = validateJob(jobData)
         console.log("isJobValid: ", isJobValid);
         if (!isJobValid.isValid) {
@@ -382,13 +436,12 @@ export const JobProvider = ({ children }) => {
         setIsUpdated(true);
     };
     const handleCalculateSetJob = async (recalculateAll) => {
-        const quotationTotalCost = getQuotationTotalCost();
+        const jobTotalCost = getJobTotalCost();	
         // Calculo las utilidades deseadas de los parametros generales
-        const targetUtilities = utilitiesTable.find((utility) => quotationTotalCost < utility.upTo);
-
-        for (const product of quotationData.products) {
+        const targetUtilities = utilitiesTable.find((utility) => jobTotalCost < utility.upTo);
+        for (const product of jobData.jobProducts) {
             // Calculo las utilidades deseadas de los parametros generales
-            const productCost = productsTotalCost.find((el) => el.id === product.productId);
+            const productCost = jobProductsTotalCost.find((el) => el.id === product.jobProductId);
 
             // Calculo el costo Financiero
             let totalProductCost = 0;
@@ -396,29 +449,26 @@ export const JobProvider = ({ children }) => {
             let buyingFinanceCost = 0;
             let newFinancingCost = 0;
             let newProductDescription = "";
-            const updatedProcesses = [];
+            const updatedJobProcesses = [];
 
             for (const process of product.processes) {
-
                 const adjust = 1 + ((Number(process.adjustPercentage) || 0) / 100);
                 const newSubtotalProcessCost = ((process.unitCost * product.quantity) * adjust) + process.fixedCost;
                 totalProductCost += newSubtotalProcessCost;
                 newProductDescription += newProductDescription ? `, ${process.description}` : process.description;
 
                 // Calculo costo financiero de cada proceso
-                const sellCost = await getSellingFinanceCost(newSubtotalProcessCost, product.productionDays);
+                const sellCost = await getSellingFinanceCost(newSubtotalProcessCost, product.productionDays, jobData.customerPaymentDetails, jobData.monthlyRate);
                 sellingFinanceCost += sellCost;
                 const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, process.supplierPaymentDetails, product.productionDays);
                 buyingFinanceCost += buyCost;
-
-                // console.log("Proceso: ", process.description, +(sellCost - buyCost).toFixed(2), "Selling Finance cost: ", sellCost, " Buying Finance Cost: ", buyCost);
             }
             toast.info(`Calculando el costo del producto: ${newProductDescription}`, {
                 position: "top-center",
                 autoClose: 1000
             })
 
-            if (quotationData.calculateFinancing) {
+            if (jobData.calculateFinancing) {
                 // Calculo el costo financiero del producto
                 if (sellingFinanceCost > buyingFinanceCost) {
                     newFinancingCost = sellingFinanceCost - buyingFinanceCost;
@@ -426,34 +476,31 @@ export const JobProvider = ({ children }) => {
             } else {
                 newFinancingCost = 0;
             }
-
-            const calculatedSellingPrice = calculateKitUniteSellingPrice(productCost.totalProductCost, newFinancingCost, product.quantity, targetUtilities, quotationTotalCost);
-            const pesosPrice = parseFloat((calculatedSellingPrice * quotationData.exchangeRate).toFixed(0));
-
+            const calculatedSellingPrice = calculateKitUniteSellingPrice(productCost.totalProductCost, newFinancingCost, product.quantity, targetUtilities, jobTotalCost);
+            const pesosPrice = parseFloat((calculatedSellingPrice * jobData.exchangeRate).toFixed(0));
             if (!recalculateAll) {
-                updateProduct({
-                    productId: product.productId,
-                    productDescription: newProductDescription,
+                updateJobProduct({
+                    jobProductId: product.productId,
+                    jobProductDescription: newProductDescription,
                     calculatedSellingPrice,
                     unitSellingPrice: product.unitSellingPrice,
                     isManual: product.isManual,
                     financingCost: newFinancingCost,
                     totalProductCost: productCost.totalProductCost,
                     pesosPrice: pesosPrice
-                }, product.productId);
+                }, product.jobProductId);
             } else {
-                updateProduct({
-                    productId: product.productId,
-                    productDescription: newProductDescription,
+                updateJobProduct({
+                    jobProductId: product.jobProductId,
+                    jobProductDescription: newProductDescription,
                     calculatedSellingPrice,
                     unitSellingPrice: calculatedSellingPrice,
                     isManual: false,
                     financingCost: newFinancingCost,
                     totalProductCost: productCost.totalProductCost,
                     pesosPrice: pesosPrice
-                }, product.productId);
+                }, product.jobProductId);
             }
-
         }
         setIsUpdated(true);
     };
@@ -485,6 +532,7 @@ export const JobProvider = ({ children }) => {
         }));
     };
     const updateJobProduct = (updatedJobProduct, id) => {
+
         setJobData((prevData) => ({
             ...prevData,
             jobProducts: prevData.jobProducts.map((jobProd) => {

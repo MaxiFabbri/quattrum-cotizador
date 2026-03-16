@@ -149,12 +149,9 @@ const DetailedJobContainer = () => {
             newData
         );
         setLoading(false);
-        console.log("Job data recibida con job Status: ", newData.jobStatus)
         if (newData.jobStatus === "Aprobado") {
-            console.log("Job confirmado: ", newData)
             const adminStatus = calculateJobStatus(newData)
             const finalData = { ...newData, ...adminStatus, jobStatus: "Nuevo" }
-            console.log("Job con status calculado: ", finalData)
             updateJobData(
                 finalData
             );
@@ -224,9 +221,7 @@ const DetailedJobContainer = () => {
                                 <ButtonCancelJob />
                                 <ButtonSaveJob />
                                 <ButtonAddJobProduct />
-                                <ButtonCalculateJob />
-
-                                {/* <ButtonConfirmJob /> */}
+                                {jobData.jobStatus === "Nuevo" && <ButtonCalculateJob />}
                                 <TextButton
                                     text="Cancelar"
                                     onClick={() => navigate("/production")}
