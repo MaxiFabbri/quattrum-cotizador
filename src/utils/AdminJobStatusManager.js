@@ -10,8 +10,8 @@ function sellingInvoiceRulesForNewJobs(invoice) {
         updated.isPendingIssuance = false;
     }
     if (updated.collections.some(collection =>
-        collection.collectionDate == null ||
-        collection.collectionDate === ""
+        (collection.collectionDate == null ||
+        collection.collectionDate === "") && collection.collectionType !== "Saldo"
     )) {
         updated.hasCollectionsPending = true;
     } else {

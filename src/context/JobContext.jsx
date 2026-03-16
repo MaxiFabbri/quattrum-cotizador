@@ -140,7 +140,6 @@ export const JobProvider = ({ children }) => {
     };
 
     const updateJobDataAndSave = async (updatedData) => {
-        console.log("Actualizando jobData y guardando... ", updatedData);
         setJobData((prevData) => ({
             ...prevData,
             ...updatedData,
@@ -236,6 +235,7 @@ export const JobProvider = ({ children }) => {
                     autoClose: 800,
                 }
             )
+            console.log("Job guardado correctamente: ", responseJob);
             setIsUpdated(false);
         } catch (error) {
             console.error("Error al guardar el pedido: ", error);

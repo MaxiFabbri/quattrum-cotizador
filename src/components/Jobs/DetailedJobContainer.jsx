@@ -15,7 +15,6 @@ import ButtonSaveJob from "./JobsUtils/ButtonSaveJob.jsx";
 import ButtonAddJobProduct from "./JobsUtils/ButtonAddJobProduct.jsx";
 import ButtonCalculateJob from "./JobsUtils/ButtonCalculateJob.jsx";
 import ButtonCancelJob from "./JobsUtils/ButtonCancelJob.jsx";
-import ButtonConfirmJob from "./JobsUtils/ButtonConfirmJob.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 import { calculateJobStatus } from "../../utils/AdminJobStatusManager.js";
 

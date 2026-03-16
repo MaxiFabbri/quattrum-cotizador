@@ -52,14 +52,6 @@ const NewJob = () => {
             paymentMethodName: newCustomerPaymentMethod.customer_payment_description || "",
             customerPaymentDetails: newCustomerPaymentMethod.customer_payment_details || [],
         }));
-
-        // setIsSaved(false);
-        // updateQuotationData({
-        //     paymentMethodId: newCustomerPaymentMethod._id || "",
-        //     paymentMethodName: newCustomerPaymentMethod.customer_payment_description || "",
-        //     customerPaymentDetails: newCustomerPaymentMethod.customer_payment_details || [],
-        //     // paymentDaysToCollect: newCustomerPaymentMethod.days_to_collect || 0,
-        // });
     };
 
     const handleAddInvoice = (index) => {
@@ -327,6 +319,7 @@ const NewJob = () => {
                                                                     onChange={(e) => handleCollectionChange(index, cIndex, { collectionType: e.target.value })}
                                                                 >
                                                                     <option value="Anticipo">Anticipo</option>
+                                                                    <option value="Saldo">Saldo</option>
                                                                     <option value="Total">Total</option>
                                                                     <option value="Otro">Otro</option>
                                                                 </select>
