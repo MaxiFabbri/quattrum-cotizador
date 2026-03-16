@@ -1,23 +1,27 @@
 import { useState, useEffect, useRef, useContext, use } from 'react';
-import './websocket-test.css';
-import { AuthContext } from '../../context/AuthContext';
+import { SocketContext } from '../../context/SocketContext';
 import { ParametersContext } from '../../context/ParametersContext';
 import NewSocketMessage from './NewSocketMessage';
 
+import './websocket-test.css';
+
 function WebSocketTestPage() {
 	const { usersList } = useContext(ParametersContext);
+	const { socket, connectedUsers, isSocketConnected } = useContext(SocketContext);
 	const [isConnected, setIsConnected] = useState(false);
 	const [message, setMessage] = useState('');
 	const [logs, setLogs] = useState([]);
 	const [autoScroll, setAutoScroll] = useState(true);
 	const logsEndRef = useRef(null);
-	const { socket } = useContext(AuthContext);
-	const [activeUsersList, setActiveUsersList] = useState([]);
-	const [serverUsers, setServerUsers] = useState({});
+
+
+	useEffect(() => {
+		console.log("Usuarios conectados en TestPage: ", connectedUsers);
+	}, [connectedUsers]);
 
 	// Esta función recibe los datos del hijo
 	const handleSendMessage = (target, messageContent) => {
-		console.log('En Test Page Enviando mensaje desde:', socket.current.auth.userName, ' hacia: ', target, ' con contenido: ', messageContent);
+		// console.log('En Test Page Enviando mensaje desde:', socket.current.auth.userName, ' hacia: ', target, ' con contenido: ', messageContent);
 		try {
 			// Enviar un mensaje a un usuario específico
 			socket.current.emit("privateMessage", {
@@ -33,84 +37,6 @@ function WebSocketTestPage() {
 		}
 	};
 
-	useEffect(() => {
-		console.log("Lista de usuarios actualizada en TestPage: ", usersList);
-		console.log("Mapa de usuarios del servidor en TestPage: ", serverUsers);
-		updateActiveUsersList(serverUsers);
-	}, [usersList]);
-
-	const updateActiveUsersList = (usersMapObj) => {
-		console.log("Actualizando lista de usuarios activos con el mapa recibido: ", usersMapObj);
-		const newUsersList = usersList.map(user => {
-			const socketId = usersMapObj[user._id]; // clave = userId
-			return {
-				userId: user._id,
-				userName: user.first_name,
-				isActive: !!socketId,   // true si existe
-				socketId: socketId || null
-			};
-		});
-		console.log("Lista de usuarios actualizada: ", newUsersList);
-		setActiveUsersList(newUsersList);
-	};
-
-	useEffect(() => {
-		scrollToBottom();
-	}, [logs]);
-
-	useEffect(() => {
-		console.log('Estableciendo listeners de WebSocket en TestPage...', socket.current);
-		if (socket.current) {
-			console.log('Socket en testPage: ', socket.current);
-
-			socket.current.on("connect", () => {
-				console.log("Conectado al servidor de WebSocket con ID:", socket.current.id);
-				setIsConnected(true);
-				addLog(`Conectado con ID: ${socket.current.id}`, 'success');
-			});
-
-			// 👇 escuchar mensajes del servidor
-			socket.current.on("response", (msg) => {
-				console.log("Respuesta recibida: ", msg);
-				addLog(`Respuesta recibida:  ${msg}`, 'received');
-			});
-
-			socket.current.on("newMessage", (msg) => {
-				console.log("Nuevo mensaje recibido: ", msg);
-				addLog(`Nuevo mensaje recibido:  ${msg}`, 'received');
-			});
-
-			socket.current.on("usersUpdate", (usersMap) => {
-				console.log("Usuarios conectados: ", usersMap);
-				setServerUsers(usersMap);
-				updateActiveUsersList(usersMap)
-			});
-
-			socket.current.on("privateMessage", ({ msg }) => {
-				console.log("Mensaje privado recibido: ", msg);
-				// const { from, message } = msg;
-				// console.log("Mensaje privado recibido : ", from, " - ", message);
-				addLog(`Nuevo mensaje PRIVADO recibido de:  ${msg.from} con contenido: ${msg.message}`, 'received');
-			})
-
-			// cleanup: remover listeners al desmontar
-			return () => {
-				socket.current.off("connect");
-				socket.current.off("message");
-				socket.current.off("privateMessage");
-				socket.current.off("newMessage");
-				socket.current.off("usersUpdate");
-			};
-		}
-	}, [socket]);
-
-	const connect = () => {
-		console.log('Intentando conectar al servidor de WebSocket...');
-		if (socket.current && !socket.current.connected) {
-			socket.current.connect();
-		}
-	};
-
 	const addLog = (message, type = 'info') => {
 		const timestamp = new Date().toLocaleTimeString();
 		setLogs(prev => [...prev, { message, type, timestamp }]);
@@ -122,13 +48,11 @@ function WebSocketTestPage() {
 		}
 	};
 
-	const disconnect = () => {
-		if (socket.current) {
-			addLog('Cerrando conexión...', 'info');
-			socket.current.close();
-			setIsConnected(false);
-		}
-	};
+	// const disconnect = () => {
+	// 	if (socket.current) {
+	// 		addLog('Cerrando conexión...', 'info');
+	// 	}
+	// };
 
 	const sendMessage = () => {
 		if (!socket.current.connected) {
@@ -172,7 +96,7 @@ function WebSocketTestPage() {
 				<div className="connection-panel">
 					<div className="users-list">
 						<ul>
-							{activeUsersList.map(user => (
+							{connectedUsers.map(user => (
 								<li key={user.userId}>
 									{user.isActive ? ' ✅ - ' : ' ❌ - '}
 									{user.userName}
@@ -182,21 +106,22 @@ function WebSocketTestPage() {
 					</div>
 					<div className="connection-controls">
 						<div className="connection-status">
-							<span className={`status-indicator ${isConnected ? 'connected' : 'disconnected'}`}></span>
-							<span>{isConnected ? 'Conectado' : 'Desconectado'}</span>
+							<span className={`status-indicator ${isSocketConnected ? 'connected' : 'disconnected'}`}></span>
+							<span>{isSocketConnected ? 'Conectado' : 'Desconectado'}</span>
 						</div>
 					</div>
 
 				</div>
 
 				<div className="message-panel">
-					{socket.current?.id && (
+					{isSocketConnected ? (
 						<NewSocketMessage
-							activeUsersList={activeUsersList}
-							emiterUserId={socket.current.id}
+							activeUsersList={connectedUsers}
+							emiterUserId={socket.current?.id}
 							onSend={handleSendMessage}
 						/>
-					)}
+					) : null}
+
 				</div>
 
 				<div className="logs-panel">
