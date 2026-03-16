@@ -49,8 +49,8 @@ function buyingInvoiceRulesForNewProcesses(invoice) {
     }
 
     if (updated.payments.some(payment =>
-        payment.paymentDate == null ||
-        payment.paymentDate === ""
+        (payment.paymentDate == null ||
+        payment.paymentDate === "") && payment.paymentType !== "Saldo"
     )) {
         updated.hasPaymentsPending = true;
     } else {

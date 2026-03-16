@@ -447,6 +447,7 @@ const NewJobProcess = ({ initialProcessData, productStatus }) => {
                                                                         onChange={(e) => handlePaymentChange(index, pIndex, { paymentType: e.target.value })}
                                                                     >
                                                                         <option value="Anticipo">Anticipo</option>
+                                                                        <option value="Saldo">Saldo</option>
                                                                         <option value="Total">Total</option>
                                                                         <option value="Otro">Otro</option>
                                                                     </select>
