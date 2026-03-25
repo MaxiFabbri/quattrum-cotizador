@@ -23,7 +23,6 @@ export const SocketProvider = ({ children }) => {
 
             // Montar listeners una sola vez
             newSocket.on("usersUpdate", (usersObj) => {
-                console.log("Usuarios conectados actualizados: ", usersObj);
                 setSocketUserMap(usersObj);
             });
 
@@ -31,8 +30,8 @@ export const SocketProvider = ({ children }) => {
                 console.log("Mensaje broadcast recibido:", msg);
             });
 
-            newSocket.on("privateMessage", ({ from, message }) => {
-                console.log(`Mensaje privado de ${from}: ${message}`);
+            newSocket.on("privateMessage", ({ emiterUserId, message }) => {
+                console.log(`Mensaje privado de ${emiterUserId}: ${message}`);
             });
 
             return () => {
@@ -48,8 +47,7 @@ export const SocketProvider = ({ children }) => {
         }
     }, [isAuthenticated, userName, userRole, userId]);
 
-    useEffect(() => {
-        console.log("Socket actualizado en SocketProvider: ", socket, "Usuarios conectados: ", usersList);	
+    useEffect(() => {	
         updateActiveUsersList(socketUserMap);
     }, [socket, usersList, socketUserMap]);
 

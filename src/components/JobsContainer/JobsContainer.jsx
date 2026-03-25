@@ -45,9 +45,7 @@ const JobsContainer = () => {
                 acc[key] = true;
                 return acc;
             }, {});
-
-            // const response = await apiClient.get(`/jobs/paginated?page=${jobPage}&name=${jobFilter}&status=${jobStatusFilter}&limit=20`);
-            // setJobs(response.data.response);
+            console.log("Fetching jobs with params: ", { status: jobStatusFilter });
             const response = await apiClient.get("/jobs/paginated", {
                 params: {
                     page: jobPage,

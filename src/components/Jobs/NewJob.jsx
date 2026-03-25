@@ -1,7 +1,8 @@
 import { use, useContext, useEffect, useState } from "react";
-import "./DetailedJobContainer.css"
+// import "./DetailedJobContainer.css"
+import "./NewJob.css"
 
-import { ParametersContext } from "../../context/ParametersContext.jsx";
+// import { ParametersContext } from "../../context/ParametersContext.jsx";
 import { AuthContext } from "../../context/AuthContext.jsx";
 import { JobContext } from "../../context/JobContext.jsx";
 
@@ -10,20 +11,21 @@ import CurrencySelect from "../NewQuotation/InputComponents/CurrencySelect.jsx";
 import ExchangeRateInput from "../NewQuotation/InputComponents/ExchangeRateInput.jsx";
 import IsKitCheckbox from "../NewQuotation/InputComponents/IsKitCheckbox.jsx";
 
-import SelectCustomer from "../Utils/Selectors/SelectCustomer.jsx";
+// import SelectCustomer from "../Utils/Selectors/SelectCustomer.jsx";
 import SelectCustomerPayMethod from "../Utils/Selectors/SelectCustomerPaymentMethod.jsx";
 import IconButton from "../Utils/IconButton.jsx";
 import TextButton from "../Utils/TextButton.jsx";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { getInvoiceRowClass } from "./JobsUtils/JobClassValidations.js";
 import { calculateInvoicesStatus } from "../../utils/AdminJobStatusManager.js"
 import JobStatusSelect from "./JobsUtils/JobStatusSelect.jsx";
 import JobEventForm from "./JobsUtils/JobEventForm.jsx";
 import JobEventsTable from "./JobsUtils/JobEventsTable.jsx";
+import ImageLinkUploader from "./JobsUtils/ImageLinkUploader.jsx";
 
 
 const NewJob = () => {
-    const { getDolarPrice } = useContext(ParametersContext);
+    // const { getDolarPrice } = useContext(ParametersContext);
     const { userId, userName } = useContext(AuthContext);
     const { jobData, setJobData, updateJobData, updateJobDataAndSave } = useContext(JobContext);
     const [showInvoices, setShowInvoices] = useState(false);
@@ -157,6 +159,32 @@ const NewJob = () => {
         updateJobDataAndSave({ jobEvents: updatedEvents });
     };
 
+    function parseDriveLink(driveUrl) {
+        const match = driveUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) {
+            const fileId = match[1];
+            return {
+                url: driveUrl,
+
+            };
+        }
+        return { url: driveUrl, thumbnail: null };
+    }
+
+
+    const handleAddImage = (link, description) => {
+        console.log("Adding Link: ", link, " Description: ", description);
+        const newImage = {
+            url: link,
+            description: description || "",
+        }
+
+        setJobData((prevData) => ({
+            ...prevData,
+            images: [...(prevData.images || []), newImage]
+        }));
+    };
+
     const formatDateForInput = (dateString) => {
         if (!dateString) return ""; // Si no hay fecha, retorna string vacío para evitar errores
         const newDate = new Date(dateString).toISOString().split("T")[0];
@@ -215,7 +243,6 @@ const NewJob = () => {
                         text="Agregar evento"
                         onClick={() => setShowEventsForm(true)}
                     />
-                    {/* <button onClick={() => setShowEventsForm(true)}>Agregar evento</button> */}
                     {showEventsForm && (
                         <div className="overlay-style">
                             <div className="modal-style">
@@ -236,6 +263,25 @@ const NewJob = () => {
                         text={showInvoices ? "Colapsar Facturas" : "Expandir Facturas"}
                         onClick={() => setShowInvoices(!showInvoices)}
                     />
+                </td>
+            </tr>
+            <tr key={jobData.jobId + "-images"} className="images-row">
+                <td>
+                    <ImageLinkUploader onAddImage={handleAddImage} />
+                </td>
+                <td colSpan={9} >
+                    <h4>Lista de imagenes</h4>
+                    {jobData.images && (
+                        // { jobData.images.length > 0 && (
+                        <div className="images-list">
+                            {jobData.images.map((image, index) => (
+                                <a key={index} href={image.url} target="_blank" rel="noopener noreferrer">
+                                    <span>{image.description}</span>
+                                </a>
+                            ))}
+                        </div>
+
+                    )}
                 </td>
             </tr>
 
@@ -351,7 +397,7 @@ const NewJob = () => {
                     </td>
                 </tr>
             )}
-            <tr>
+            <tr key={jobData.jobId + "-events"}>
                 {!showEvents && (
                     <td colSpan={10} >
                         <div className="show-events-button-container">

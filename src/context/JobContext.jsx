@@ -221,6 +221,7 @@ export const JobProvider = ({ children }) => {
             isKit: jobData.isKit,
             jobNotes: jobData.jobNotes,
             jobEvents: jobData.jobEvents,
+            images: jobData.images,
         }
         // Actualizo en la DB la información de job en la BD
         try {

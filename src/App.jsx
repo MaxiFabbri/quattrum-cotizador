@@ -41,9 +41,6 @@ import GeneralParameters from './components/GeneralParameters/GeneralParameters.
 import JobsContainer from './components/JobsContainer/JobsContainer.jsx';
 import DetailedJobContainer from './components/Jobs/DetailedJobContainer.jsx';
 
-// WebSocket Test
-import WebSocketTestPage from './components/WebSocketTest/WebSocketTestPage.jsx';
-
 // Layout para Cotizaciones
 function QuotationsLayout() {
   return (
@@ -103,9 +100,6 @@ function App() {
 
                 {/* Parámetros */}
                 <Route path="/parameters" element={<GeneralParameters />} />
-
-                {/* WebSocket Test */}
-                <Route path="/websocket-test" element={<WebSocketTestPage />} />
               </Route>
 
               {/* Layout Producción */}

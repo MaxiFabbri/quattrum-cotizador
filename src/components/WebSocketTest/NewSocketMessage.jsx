@@ -7,7 +7,6 @@ function NewSocketMessage({ activeUsersList, emiterUserId, onSend }) {
     const [target, setTarget] = useState('');
 
     const sendNewSocketMessage = (target, messageContent) => {
-        console.log('Enviando mensaje desde:', emiterUserId, 'hacia:', target, 'con contenido:', messageContent);
         onSend(target, messageContent);
         setMessageContent('');
     }

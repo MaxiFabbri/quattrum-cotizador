@@ -138,6 +138,7 @@ const DetailedJobContainer = () => {
             isKit: recievedData.isKit || false,
             jobNotes: recievedData.jobNotes || "",
             jobEvents: recievedData.jobEvents || [],
+            images: recievedData.images || [],
         }
         // agrego los Productos
         const responseJobProducts = await apiClient.get(`/job-products/job/${id}`)
