@@ -1,9 +1,9 @@
 .job-events-table-container {
-    max-height: 120px;
-    width: 95%;
+    max-height: 200px;
+    width: 97%;
     overflow-y: auto;
-    margin: auto;
     margin-top: 5px;
+    margin-right: 3%    ;
 }
 
 .event-table {

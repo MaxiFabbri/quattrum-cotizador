@@ -1,4 +1,6 @@
 import { useState } from "react";
+import "./ImageLinkUploader.css";
+import TextButton from "../../Utils/TextButton";
 
 function ImageLinkUploader({ onAddImage }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -16,18 +18,18 @@ function ImageLinkUploader({ onAddImage }) {
 
     return (
         <div className="image-link-uploader">
-            <button onClick={() => setIsOpen(true)}>Subir Imagen</button>
-
+            {!isOpen &&
+                <TextButton text="Subir Imagen" onClick={() => setIsOpen(true)} />
+            }
             {isOpen && (
-                <div style={styles.overlay}>
-                    <div style={styles.modal}>
-                        <h3>Agregar link de imagen</h3>
+                <div className="image-link-form">
+                    <div>
+                        <h4>Agregar link de archivo</h4>
                         <input
                             type="text"
                             value={link}
                             onChange={(e) => setLink(e.target.value)}
                             placeholder="https://ejemplo.com/imagen.jpg"
-                            style={styles.input}
                         />
                         <input 
                             type="text" 
@@ -35,9 +37,9 @@ function ImageLinkUploader({ onAddImage }) {
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="Descripción (opcional)"
                         />
-                        <div style={styles.actions}>
-                            <button onClick={handleSubmit}>Agregar</button>
-                            <button onClick={() => setIsOpen(false)}>Cancelar</button>
+                        <div className="image-link-form-buttons">
+                            <TextButton text="Agregar" onClick={handleSubmit} />
+                            <TextButton text="Cancelar" onClick={() => setIsOpen(false)} />
                         </div>
                     </div>
                 </div>

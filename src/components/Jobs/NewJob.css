@@ -11,6 +11,7 @@
 
 .images-list {
     display: flex;
+    flex-direction: column;
     flex-wrap: wrap;
     gap: 2%;
     line-height: normal;
@@ -19,42 +20,16 @@
     font-size: 0.8em;
 }
 
-.image-link-uploader {
-    text-align: center;
+.images-section {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 }
 
-/* 
-    overlay: {
-        position: "fixed",
-        top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: "rgba(0,0,0,0.5)",
-        display: "flex", justifyContent: "center", alignItems: "center",
-    },
-    modal: {
-        background: "#fff",
-        padding: "20px",
-        borderRadius: "8px",
-        width: "300px",
-        textAlign: "center",
-    },
-    input: {
-        width: "100%",
-        padding: "8px",
-        marginBottom: "10px",
-    },
-    actions: {
-        display: "flex",
-        justifyContent: "space-between",
-    },
-    gallery: {
-        marginTop: "20px",
-        display: "flex",
-        gap: "10px",
-        flexWrap: "wrap",
-    },
-    image: {
-        width: "100px",
-        height: "100px",
-        objectFit: "cover",
-        borderRadius: "4px",
-    }, */
+.files-button-container {
+    display: flex;
+    justify-content: center;
+}
+
+
+

@@ -31,6 +31,7 @@ const NewJob = () => {
     const [showInvoices, setShowInvoices] = useState(false);
     const [showEventsForm, setShowEventsForm] = useState(false);
     const [showEvents, setShowEvents] = useState(false);
+    const [showFiles, setShowFiles] = useState(false);
 
     // Manejo de cambios en los inputs
     const handleInputChange = (e) => {
@@ -265,29 +266,58 @@ const NewJob = () => {
                     />
                 </td>
             </tr>
-            <tr key={jobData.jobId + "-images"} className="images-row">
-                <td>
-                    <ImageLinkUploader onAddImage={handleAddImage} />
-                </td>
-                <td colSpan={9} >
-                    <h4>Lista de imagenes</h4>
-                    {jobData.images && (
-                        // { jobData.images.length > 0 && (
-                        <div className="images-list">
-                            {jobData.images.map((image, index) => (
-                                <a key={index} href={image.url} target="_blank" rel="noopener noreferrer">
-                                    <span>{image.description}</span>
-                                </a>
-                            ))}
+            <tr className="images-row">
+                {!showFiles && (
+                    <td colSpan={3} >
+                        <div className="files-button-container">
+                            <TextButton text="Archivos" onClick={() => setShowFiles(true)} />
                         </div>
+                        
+                    </td>
+                )}
+                {showFiles && (
+                    <td colSpan={3} >
+                        <div className="files-button-container">
+                            <TextButton text="Archivos" onClick={() => setShowFiles(false)} />
+                        </div>
+                        <div className="images-section">
+                            <ImageLinkUploader onAddImage={handleAddImage} />
+                            {jobData.images && (
+                                // { jobData.images.length > 0 && (
+                                <div className="images-list">
+                                    {jobData.images.map((image, index) => (
+                                        <a key={index} href={image.url} target="_blank" rel="noopener noreferrer">
+                                            <span>{image.description}</span>
+                                        </a>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </td>
+                )}
 
-                    )}
-                </td>
+                {!showEvents && (
+                    <td colSpan={8} >
+                        <div className="show-events-button-container">
+                            <TextButton text="Mostrar Eventos" onClick={() => setShowEvents(true)} />
+                        </div>
+                    </td>
+                )}
+                {showEvents && (
+                    <JobEventsTable
+                        events={jobData.jobEvents
+                            .filter((event) => event.eventProductId === null)
+                            .reverse()
+                        }
+                        onClose={() => setShowEvents(false)}
+                    />
+                )}
+
             </tr>
 
             {showInvoices && (
                 <tr>
-                    <td colSpan={9} className="invoices-container">
+                    <td colSpan={10} className="invoices-container">
                         <table className="invoices-subtable">
                             <tbody>
                                 <tr className="invoice-head">
@@ -397,24 +427,6 @@ const NewJob = () => {
                     </td>
                 </tr>
             )}
-            <tr key={jobData.jobId + "-events"}>
-                {!showEvents && (
-                    <td colSpan={10} >
-                        <div className="show-events-button-container">
-                            <TextButton text="Mostrar Eventos" onClick={() => setShowEvents(true)} />
-                        </div>
-                    </td>
-                )}
-                {showEvents && (
-                    <JobEventsTable
-                        events={jobData.jobEvents
-                            .filter((event) => event.eventProductId === null)
-                            .reverse()
-                        }
-                        onClose={() => setShowEvents(false)}
-                    />
-                )}
-            </tr>
         </>
     );
 };
