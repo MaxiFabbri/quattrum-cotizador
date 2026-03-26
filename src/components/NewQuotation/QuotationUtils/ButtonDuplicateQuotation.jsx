@@ -13,6 +13,7 @@ const ButtonDuplicateQuotation = () => {
     const navigate = useNavigate();
 
     const saveDuplicatedQuotation = async () => {
+        console.log("Iniciando duplicación de cotización...");
         let newQuotationId = "";
 
         const quotationToSave = {
@@ -26,8 +27,9 @@ const ButtonDuplicateQuotation = () => {
             quoteStatus: quotationData.quoteStatus,            
             quoteProductsDescription: quotationData.quoteProductsDescription,
             isKit: quotationData.isKit,
-            calculateFinancing: quotationData.calculateFinancing,
+            calculateFinancing: true,
         };
+        console.log("quotationToSave en duplicate Quotation: ", quotationToSave);
 
         try {
             const responseQuote = await apiClient.post("/quotations", quotationToSave);
@@ -37,7 +39,7 @@ const ButtonDuplicateQuotation = () => {
                 id: newQuotationId,
                 date: today,
                 monthlyRate: paramMonthlyRate,
-                exchangeRate: dolarPrice,
+                calculateFinancing: true,
             });
         } catch (error) {
             console.error("Error al guardar la cotización: ", error);
