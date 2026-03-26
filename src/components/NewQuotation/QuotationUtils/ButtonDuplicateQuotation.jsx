@@ -16,15 +16,17 @@ const ButtonDuplicateQuotation = () => {
         let newQuotationId = "";
 
         const quotationToSave = {
-            date: today,
+            date: today,            
             customerId: quotationData.customerId,
             paymentMethodId: quotationData.paymentMethodId,
+            customerPaymentDetails: quotationData.customerPaymentDetails,
             monthlyRate: paramMonthlyRate,
-            currency: quotationData.currency,
-            exchangeRate: dolarPrice,
-            quoteStatus: quotationData.quoteStatus,
+            currency: quotationData.currency,            
+            exchangeRate: quotationData.exchangeRate,
+            quoteStatus: quotationData.quoteStatus,            
             quoteProductsDescription: quotationData.quoteProductsDescription,
             isKit: quotationData.isKit,
+            calculateFinancing: quotationData.calculateFinancing,
         };
 
         try {
