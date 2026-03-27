@@ -17,7 +17,7 @@ const ButtonConfirmJob = () => {
             return;
         } else {
             console.log("Job data is valid. Proceeding to calculate and save.");
-            // await changeJobStatus("En Producción", jobId);
+            await changeJobStatus("En Preparación");
         }
     }
 

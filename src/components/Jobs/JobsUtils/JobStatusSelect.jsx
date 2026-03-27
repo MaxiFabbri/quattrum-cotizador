@@ -1,10 +1,12 @@
 const JobStatusSelect = ({ value, onChange }) => {
+    console.log("JobStatusSelect value: ", value)
     return (
         <td>
+            {/* <span>{value}</span> */}
             <select
                 id="quoteStatus"
                 name="quoteStatus"
-                value={value}
+                defaultValue={value}
                 onChange={onChange}
                 required
             >

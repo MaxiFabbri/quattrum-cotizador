@@ -76,6 +76,33 @@ function buyingInvoiceRulesForReadyProcesses(invoice) {
     return updated;
 }
 
+const leastAdvancedStatus = (job) => {
+    if(job.jobStatus === "Nuevo" || job.jobStatus === "Cerrado" || job.jobStatus === "Anulado") {
+        return job.jobStatus;
+    }
+    const statusOrder = [
+        "En Preparación",
+        "En Producción",
+        "Listo",
+        "Entregado"
+    ];
+
+    // Obtenemos los estados de los jobProducts
+    const productStatuses = job.jobProducts.map(p => p.jobProductStatus);
+
+    // Si no hay jobProducts, devolvemos el status actual del job
+    if (productStatuses.length === 0) {
+        return job.jobStatus;
+    }
+
+    // Encontramos el menos avanzado
+    const leastAdvanced = productStatuses.reduce((current, next) => {
+        return statusOrder.indexOf(next) < statusOrder.indexOf(current) ? next : current;
+    });
+
+    return leastAdvanced;
+};
+
 export function calculateInvoicesStatus(invoices, jobStatus) {
     console.log("Calculando Invoices Status: ", invoices, " - JobStatus: ", jobStatus)
     let updatedInvoices = [];
@@ -101,7 +128,9 @@ export function calculateJobStatus(jobData) {
     const processesInvoices = jobData.jobProducts.flatMap(product =>
         product.processes.flatMap(process => process.invoices)
     );
+    const jobStatus = leastAdvancedStatus(jobData);
     const updatedData = {
+        jobStatus,
         hasInvoicesPendingIssuance: salesInvoices.some(invoice => invoice.isPendingIssuance),
         hasCollectionsPending: salesInvoices.some(invoice => invoice.hasCollectionsPending),
         hasPurchaseInvocesToRecieve: processesInvoices.some(invoice => invoice.isInvoicePendingReception),

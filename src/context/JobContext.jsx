@@ -62,7 +62,7 @@ export const JobProvider = ({ children }) => {
     // Se ejecuta y GUARDA en la persistencia cuando isUpdated cambia a `true`
     useEffect(() => {
         if (isUpdated) {
-            saveJobData();
+            saveJobData(jobData);
             setIsUpdated(false); // Resetear el estado para futuras ejecuciones
         }
     }, [isUpdated]);
@@ -99,10 +99,10 @@ export const JobProvider = ({ children }) => {
                     newProductDescription = newProductDescription + ", " + process.description
                 }
                 // Actualizo el subtotal del proceso en el context         
-                updateJobProcessInProduct({ 
+                updateJobProcessInProduct({
                     subTotalProcessCost: newSubtotalProcessCost,
                     unitCost: process.unitCost,
-                    fixedCost: process.fixedCost 
+                    fixedCost: process.fixedCost
                 }, process.processId);
                 return {
                     ...process,
@@ -147,7 +147,7 @@ export const JobProvider = ({ children }) => {
         setIsUpdated(true);
     }
 
-    const changeJobStatus = async (newStatus, jobId) => {
+    const changeJobStatus = async (newStatus) => {
         const newData = {
             ...jobData,
             jobStatus: newStatus,
@@ -163,10 +163,9 @@ export const JobProvider = ({ children }) => {
     // Funcion para Cancelar un trabajo
     const cancelJobData = async () => {
         console.log("Cancelando Job en context: ", jobData);
-
-        changeQuotationStatus("Cotizado", jobData.quotationId);
-
+        
         if (window.confirm("¿Estás seguro de que deseas ANULAR este pedido?")) {
+            changeQuotationStatus("Cotizado", jobData.quotationId);
             const jobId = jobData.jobId;
             const jobToSave = {
                 ...jobData,
@@ -190,7 +189,6 @@ export const JobProvider = ({ children }) => {
                 console.error("Error al guardar el pedido: ", error);
             }
         }
-
         navigate("/production");
     };
 
@@ -213,7 +211,7 @@ export const JobProvider = ({ children }) => {
             invoices: jobData.invoices,
             currency: jobData.currency,
             exchangeRate: jobData.exchangeRate,
-            jobStatus: jobData.jobStatus,
+            jobStatus: updatedStatusData.jobStatus,
             hasInvoicesPendingIssuance: updatedStatusData.hasInvoicesPendingIssuance,
             hasCollectionsPending: updatedStatusData.hasCollectionsPending,
             hasPurchaseInvocesToRecieve: updatedStatusData.hasPurchaseInvocesToRecieve,
@@ -437,7 +435,7 @@ export const JobProvider = ({ children }) => {
         setIsUpdated(true);
     };
     const handleCalculateSetJob = async (recalculateAll) => {
-        const jobTotalCost = getJobTotalCost();	
+        const jobTotalCost = getJobTotalCost();
         // Calculo las utilidades deseadas de los parametros generales
         const targetUtilities = utilitiesTable.find((utility) => jobTotalCost < utility.upTo);
         for (const product of jobData.jobProducts) {

@@ -15,6 +15,8 @@ import ButtonSaveJob from "./JobsUtils/ButtonSaveJob.jsx";
 import ButtonAddJobProduct from "./JobsUtils/ButtonAddJobProduct.jsx";
 import ButtonCalculateJob from "./JobsUtils/ButtonCalculateJob.jsx";
 import ButtonCancelJob from "./JobsUtils/ButtonCancelJob.jsx";
+import ButtonConfirmJob from "./JobsUtils/ButtonConfirmJob.jsx";
+import ButtonCloseJob from "./JobsUtils/ButtonCloseJob.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 import { calculateJobStatus } from "../../utils/AdminJobStatusManager.js";
 
@@ -218,14 +220,16 @@ const DetailedJobContainer = () => {
                                 </SortableContext>
                             </div>
                             <div className="job-buttons-container">
-                                <ButtonCancelJob />
                                 <ButtonSaveJob />
-                                <ButtonAddJobProduct />
+                                {jobData.jobStatus === "Nuevo" && <ButtonConfirmJob />}
                                 {jobData.jobStatus === "Nuevo" && <ButtonCalculateJob />}
+                                {jobData.jobStatus === "Entregado" && <ButtonCloseJob />}
+                                <ButtonAddJobProduct />
                                 <TextButton
                                     text="Cancelar"
                                     onClick={() => navigate("/production")}
                                 />
+                                <ButtonCancelJob />
                             </div>
                         </>
                     </DndContext>

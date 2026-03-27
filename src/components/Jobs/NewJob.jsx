@@ -1,8 +1,6 @@
 import { use, useContext, useEffect, useState } from "react";
-// import "./DetailedJobContainer.css"
 import "./NewJob.css"
 
-// import { ParametersContext } from "../../context/ParametersContext.jsx";
 import { AuthContext } from "../../context/AuthContext.jsx";
 import { JobContext } from "../../context/JobContext.jsx";
 
@@ -18,14 +16,11 @@ import TextButton from "../Utils/TextButton.jsx";
 // import { toast } from "react-toastify";
 import { getInvoiceRowClass } from "./JobsUtils/JobClassValidations.js";
 import { calculateInvoicesStatus } from "../../utils/AdminJobStatusManager.js"
-import JobStatusSelect from "./JobsUtils/JobStatusSelect.jsx";
 import JobEventForm from "./JobsUtils/JobEventForm.jsx";
 import JobEventsTable from "./JobsUtils/JobEventsTable.jsx";
 import ImageLinkUploader from "./JobsUtils/ImageLinkUploader.jsx";
 
-
 const NewJob = () => {
-    // const { getDolarPrice } = useContext(ParametersContext);
     const { userId, userName } = useContext(AuthContext);
     const { jobData, setJobData, updateJobData, updateJobDataAndSave } = useContext(JobContext);
     const [showInvoices, setShowInvoices] = useState(false);
@@ -237,7 +232,9 @@ const NewJob = () => {
                 </td>
                 <CurrencySelect value={jobData.currency} onChange={(e) => handleChange({ currency: e.target.value })} />
                 <ExchangeRateInput value={jobData.exchangeRate} onChange={(e) => handleChange({ exchangeRate: +(e.target.value) })} />
-                <JobStatusSelect value={jobData.jobStatus} onChange={handleStatusChange} />
+                <td>
+                    <span>{jobData.jobStatus}</span>
+                </td>
                 <IsKitCheckbox checked={jobData.isKit} onChange={(e) => handleChange({ isKit: e.target.checked })} />
                 <td>
                     <TextButton
@@ -272,7 +269,7 @@ const NewJob = () => {
                         <div className="files-button-container">
                             <TextButton text="Archivos" onClick={() => setShowFiles(true)} />
                         </div>
-                        
+
                     </td>
                 )}
                 {showFiles && (
