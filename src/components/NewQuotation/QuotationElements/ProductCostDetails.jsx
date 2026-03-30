@@ -10,14 +10,6 @@ const ProductCostDetails = ({ productData, exchangeRate }) => {
   const totalTax = (totalSellingPrice * tax);
   const netUtitlitie = (totalSellingPrice - productData.totalProductCost - totalTax - productData.financingCost);
 
-  // console.log("Product Cost Details: ", productData)
-  // console.log("Parameters tax: ", tax, " Total Tax: ", totalTax)
-  console.log("Total Selling Price: ", totalSellingPrice * exchangeRate)
-  console.log("Total Product Cost: ", productData.totalProductCost * exchangeRate)
-  console.log("Total Tax: ", totalTax * exchangeRate)
-  console.log("Financing Cost: ", productData.financingCost * exchangeRate)
-  console.log("Net Utility: ", netUtitlitie * exchangeRate)
-
   return (
     <tr>
       <td colSpan="9">

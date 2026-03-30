@@ -15,7 +15,6 @@ const useCalculateFunctions = () => {
             (amountToFinance * Math.pow(monthlyRate, monthsToFinance))
             - amountToFinance
         );
-
         return itemFinanceCost;
     }
 
@@ -28,21 +27,19 @@ const useCalculateFunctions = () => {
         return sellFinanceCost;
     };
 
-    const getBuyingFinanceCost = async (subTotalCost, supplierPaymentDetails, productionDays) => {
+    const getBuyingFinanceCost = async (subTotalCost, supplierPaymentDetails, productionDays, jobMonthlyRate) => {
         let buyFinanceCost = 0;
         let paymentDetails = supplierPaymentDetails;
         buyFinanceCost += paymentDetails.reduce((acc, element) => {
-            return acc + calculateItemFinanceCost(subTotalCost, productionDays, element);
+            return acc + calculateItemFinanceCost(subTotalCost, productionDays, element, jobMonthlyRate);
         }, 0);
         return buyFinanceCost;
     };
 
     const calculateUnitSellingPrice = (totalProductCost, financingCost, quantity) => {
-
             const targetUtility = utilitiesTable.find((utility) => totalProductCost < utility.upTo);
             let minUtilitie = targetUtility.productMinimun;
             let percentageUtilitie = targetUtility.productUtilitie / 100;
-
             // calculo utilidad por porjentaje
             let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
             // Si el costo total por porcentaje es menor al minimo, lo cambio por el minimo

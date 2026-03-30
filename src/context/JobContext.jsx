@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import validateJob from "../components/Jobs/JobsUtils/ValidateJob.jsx";
 import useCalculateFunctions from "../components/Utils/CalculateFunctions.jsx";
 import { calculateJobStatus, calculateInvoicesStatus, calculateProcessInvoicesStatus } from "../utils/AdminJobStatusManager.js";
+import { calculateTotalProductCost, calculateSubTotalProcessCost } from "../utils/CalculateTotalProductCost.js";
 
 export const JobContext = createContext();
 
@@ -196,7 +197,6 @@ export const JobProvider = ({ children }) => {
         console.log("Guardando Job: ", jobData);
         const updatedStatusData = calculateJobStatus(jobData)
         updateJobData(updatedStatusData);
-
         // preparo la informacion de job para guardar en la DB
         const jobId = jobData.jobId;
         const jobToSave = {
@@ -242,6 +242,8 @@ export const JobProvider = ({ children }) => {
 
         // Paso por todos los productos
         jobData.jobProducts.map(async (product, index) => {
+            const newTotalProductCost = calculateTotalProductCost(product, jobData.exchangeRate);
+
             let newJobProductId = product.jobProductId;
             // preparo la informacion de Product para guardar en la DB
             const productToSave = {
@@ -257,7 +259,7 @@ export const JobProvider = ({ children }) => {
                 calculatedSellingPrice: product.calculatedSellingPrice,
                 unitSellingPrice: product.unitSellingPrice,
                 isManual: product.isManual,
-                totalProductCost: product.totalProductCost,
+                totalProductCost: newTotalProductCost,
                 jobProductNote: product.jobProductNote,
                 jobProductStatus: product.jobProductStatus,
                 order: index,
@@ -268,6 +270,7 @@ export const JobProvider = ({ children }) => {
                 if (product.savedToDb) {
                     // Si el producto ya está guardado, lo actualizo
                     const responseProduct = await apiClient.put(`/job-products/${product.jobProductId}`, productToSave);
+                    updateJobProduct({ totalProductCost: newTotalProductCost }, product.jobProductId);
                 } else {
                     // Si el producto no está guardado, lo creo
                     const responseProduct = await apiClient.post(`/job-products`, productToSave);
@@ -282,7 +285,7 @@ export const JobProvider = ({ children }) => {
                 console.error("Error al guardar el producto: ", error);
             }
             product.processes.map(async (process, index) => {
-
+                const newSubtotalProcessCost = calculateSubTotalProcessCost(process, product.quantity, jobData.exchangeRate);
                 // preparo la informacion de Process para guardar en la DB con el ID del producto
                 const processToSave = {
                     jobProductId: newJobProductId,
@@ -297,7 +300,7 @@ export const JobProvider = ({ children }) => {
                     fixedCost: process.fixedCost,
                     enteredFixedCost: process.enteredFixedCost,
                     adjustPercentage: process.adjustPercentage,
-                    subTotalProcessCost: +process.subTotalProcessCost,
+                    subTotalProcessCost: +newSubtotalProcessCost,
                     order: index,
                     jobProcessNote: process.jobProcessNote,
                     jobProcessStatus: process.jobProcessStatus,
@@ -307,6 +310,7 @@ export const JobProvider = ({ children }) => {
                     if (process.savedToDb) {
                         // Si el proceso ya está guardado en la DB, lo actualizo
                         const responseProcess = await apiClient.put(`/job-processes/${process.jobProcId}`, processToSave);
+                        updateJobProcessInProduct({ subTotalProcessCost: newSubtotalProcessCost }, process.jobProcId);
                     } else {
                         // Si el proceso no está guardado en la DB, lo creo
                         const responseProcess = await apiClient.post(`/job-processes`, processToSave);
@@ -371,9 +375,8 @@ export const JobProvider = ({ children }) => {
                 // Calculo costo financiero de cada proceso
                 const sellCost = await getSellingFinanceCost(newSubtotalProcessCost, jobProduct.productionDays, jobData.customerPaymentDetails, jobData.monthlyRate);
                 sellingFinanceCost += sellCost;
-                const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, jobProcess.supplierPaymentDetails, jobProduct.productionDays);
+                const buyCost = await getBuyingFinanceCost(newSubtotalProcessCost, jobProcess.supplierPaymentDetails, jobProduct.productionDays, jobData.monthlyRate);
                 buyingFinanceCost += buyCost;
-                // console.log("Proceso: ", process.description, +(sellCost - buyCost).toFixed(2), "Selling Finance cost: ", sellCost, " Buying Finance Cost: ", buyCost);
 
                 // Actualizar el costo del proceso en el producto
                 updateJobProcessInProduct({ subTotalProcessCost: newSubtotalProcessCost }, jobProcess.jobProcId);
@@ -392,7 +395,6 @@ export const JobProvider = ({ children }) => {
                 // Calculo el costo financiero del producto
                 if (sellingFinanceCost > buyingFinanceCost) {
                     newFinancingCost = sellingFinanceCost - buyingFinanceCost;
-                    // console.log("Selling Finance Cost: ", sellingFinanceCost, " Buying Finance Cost: ", buyingFinanceCost, " New Financing Cost: ", newFinancingCost);
                 }
             } else {
                 newFinancingCost = 0;
@@ -417,7 +419,6 @@ export const JobProvider = ({ children }) => {
                     pesosPrice: pesosPrice
                 }, jobProduct.jobProductId);
             } else {
-                console.log("Actualizando jobProduct automáticamente: ", jobProduct);
                 updateJobProduct({
                     jobProductId: jobProduct.jobProductId,
                     productDescription: newProductDescription,
@@ -513,7 +514,6 @@ export const JobProvider = ({ children }) => {
         }
     }
     const deleteJobProductFromDb = async (jobProdId) => {
-        console.log("Eliminando jobProduct de la DB con ID: ", jobProdId);
         try {
             await apiClient.delete(`/job-products/${jobProdId}`)
         } catch (error) {
@@ -523,7 +523,6 @@ export const JobProvider = ({ children }) => {
 
     // Función para agregar un producto al array de productos
     const addJobProduct = (jobProdData) => {
-        console.log("Agregando jobProduct: ", jobProdData);
         setIsUpdated(false)
         setJobData((prevData) => ({
             ...prevData,
@@ -558,12 +557,10 @@ export const JobProvider = ({ children }) => {
 
     // Función para agregar un proceso a un producto específico
     const addJobProcessToProduct = (newJobProcess) => {
-        console.log("Agregando jobProcess: ", newJobProcess);
         setIsSaved(false);
         setJobData((prevData) => ({
             ...prevData,
             jobProducts: prevData.jobProducts.map((jobProduct) => {
-                console.log("Map de los jobProducts: ", jobProduct);
                 return jobProduct.jobProductId === newJobProcess.jobProductId
                     ? { ...jobProduct, processes: [...jobProduct.processes, newJobProcess] }
                     : jobProduct;
@@ -594,7 +591,6 @@ export const JobProvider = ({ children }) => {
         });
     };
     const removeJobProcessInProduct = (productId, procId) => {
-        console.log("Eliminando jobProcess con ID: ", procId, " del jobProduct con ID: ", productId);
         setIsUpdated(false)
         // Encuentra el producto y proceso específicos
         const updatedJobProducts = jobData.jobProducts.map((jobProduct) => {
@@ -602,10 +598,8 @@ export const JobProvider = ({ children }) => {
                 const targetProcess = jobProduct.processes.find(
                     (jobProcess) => jobProcess.jobProcId === procId
                 );
-                console.log("Proceso objetivo encontrado: ", targetProcess);
                 // Verifica si esta en la DB y lo borra de la misma
                 if (targetProcess.savedToDb) {
-                    console.log("El proceso está en la DB, procediendo a eliminarlo: ", targetProcess);
                     deleteJobProcessFromDb(targetProcess.jobProcId);
                 }
 

@@ -75,7 +75,7 @@ const NewJobProduct = ({ productData }) => {
 
     useEffect(() => {
         calculatePercentageUtilitie();
-    }, [jobProdData.pesosPrice]);
+    }, [jobProdData]);
 
     useEffect(() => {
         if (!jobProdData.isManual) {
@@ -172,7 +172,6 @@ const NewJobProduct = ({ productData }) => {
 
     // Eliminar el producto del contexto
     const handleDeleteJobProduct = () => {
-        console.log("Eliminando producto: ", jobProdData.jobProductId);
         removeJobProduct(jobProdData.jobProductId);
     };
     const handlePriceChange = (e) => {
@@ -190,8 +189,6 @@ const NewJobProduct = ({ productData }) => {
     };
 
     const handleAddEvent = (event) => {
-        console.log("Nuevo evento para el producto ", jobProdData.jobProductId, ": ", event);
-
         setShowEventsForm(false);
         const newEvent = {
             eventDate: new Date(),
@@ -207,7 +204,6 @@ const NewJobProduct = ({ productData }) => {
 
     const handleProcessDragEnd = (event) => {
         const { active, over } = event;
-        console.log("Before Process Drag End: ", jobData.jobProducts)
         if (!active || !over || active.id === over.id) return;
 
         const [activeJobProductId, activeJobProcessId] = active.id.split("#");
