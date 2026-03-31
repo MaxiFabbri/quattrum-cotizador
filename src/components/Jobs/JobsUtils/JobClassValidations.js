@@ -1,4 +1,4 @@
-export function getInvoiceRowClass (invoice) {	
+export function getInvoiceRowClass (invoice) {
     if (invoice.isPendingIssuance) {
         return "row-pending";
     } else if (invoice.hasCollectionsPending) {

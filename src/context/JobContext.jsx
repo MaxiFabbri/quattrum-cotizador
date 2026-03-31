@@ -208,7 +208,7 @@ export const JobProvider = ({ children }) => {
             customerId: jobData.customerId,
             paymentMethodId: jobData.paymentMethodId,
             customerPaymentDetails: jobData.customerPaymentDetails,
-            invoices: jobData.invoices,
+            invoices: updatedStatusData.invoices,
             currency: jobData.currency,
             exchangeRate: jobData.exchangeRate,
             jobStatus: updatedStatusData.jobStatus,
