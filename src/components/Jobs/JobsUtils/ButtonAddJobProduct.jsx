@@ -26,8 +26,8 @@ const ButtonAddJobProduct = () => {
         totalProductCost: 0,
         order: jobData.jobProducts.length + 1,
         jobProductNote: "",
-        jobProductStatus: "Aprobado",
-        jobProcesses: [],
+        jobProductStatus: "En Preparación",
+        processes: [],
         savedToDb: false,
     }
 

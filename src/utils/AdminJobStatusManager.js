@@ -126,15 +126,19 @@ export function calculateProcessInvoicesStatus(invoices, jobProductStatus) {
 export function calculateJobStatus(jobData) {
     const salesInvoices = jobData.invoices || [];
     const processesInvoices = jobData.jobProducts.flatMap(product =>
-        product.processes.flatMap(process => process.invoices)
+        product.processes?.flatMap(process => process.invoices) || []
+
     );
+
+    const noProcesses = jobData.jobProducts.every(product => !product.processes || product.processes.length === 0);
+
     const jobStatus = leastAdvancedStatus(jobData);
     const updatedData = {
         jobStatus,
-        hasInvoicesPendingIssuance: salesInvoices.some(invoice => invoice.isPendingIssuance),
-        hasCollectionsPending: salesInvoices.some(invoice => invoice.hasCollectionsPending),
-        hasPurchaseInvocesToRecieve: processesInvoices.some(invoice => invoice.isInvoicePendingReception),
-        hasPaymentsToMake: processesInvoices.some(invoice => invoice.hasPaymentsPending)
+        hasInvoicesPendingIssuance: noProcesses ? true : salesInvoices.some(invoice => invoice.isPendingIssuance),
+        hasCollectionsPending: noProcesses ? true : salesInvoices.some(invoice => invoice.hasCollectionsPending),
+        hasPurchaseInvocesToRecieve: noProcesses ? true : processesInvoices.some(invoice => invoice.isInvoicePendingReception),
+        hasPaymentsToMake: noProcesses ? true : processesInvoices.some(invoice => invoice.hasPaymentsPending)
     };
     return updatedData;
 }

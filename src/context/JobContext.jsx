@@ -164,7 +164,7 @@ export const JobProvider = ({ children }) => {
     // Funcion para Cancelar un trabajo
     const cancelJobData = async () => {
         console.log("Cancelando Job en context: ", jobData);
-        
+
         if (window.confirm("¿Estás seguro de que deseas ANULAR este pedido?")) {
             changeQuotationStatus("Cotizado", jobData.quotationId);
             const jobId = jobData.jobId;
@@ -523,6 +523,7 @@ export const JobProvider = ({ children }) => {
 
     // Función para agregar un producto al array de productos
     const addJobProduct = (jobProdData) => {
+        console.log("Agregando producto al jobData: ", jobProdData);
         setIsUpdated(false)
         setJobData((prevData) => ({
             ...prevData,
@@ -557,13 +558,18 @@ export const JobProvider = ({ children }) => {
 
     // Función para agregar un proceso a un producto específico
     const addJobProcessToProduct = (newJobProcess) => {
+        console.log("jobData: ", jobData);
+        console.log("Agregando proceso: ", newJobProcess);
         setIsSaved(false);
         setJobData((prevData) => ({
             ...prevData,
             jobProducts: prevData.jobProducts.map((jobProduct) => {
-                return jobProduct.jobProductId === newJobProcess.jobProductId
+                console.log("Dentro del map: ", jobProduct)
+                const newJobProduct = jobProduct.jobProductId === newJobProcess.jobProductId
                     ? { ...jobProduct, processes: [...jobProduct.processes, newJobProcess] }
                     : jobProduct;
+                console.log("jobProduct actualizado: ", newJobProduct);
+                return newJobProduct
             }),
         }));
     };
