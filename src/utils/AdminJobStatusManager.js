@@ -1,4 +1,5 @@
 function sellingInvoiceRulesForNewJobs(invoice) {
+    console.log("Calculando Selling Invoice Rules For New Jobs: ", invoice)
     const updated = { ...invoice };
     if (updated.invoiceType !== "Anticipado") {
         updated.isPendingIssuance = false;
@@ -9,14 +10,16 @@ function sellingInvoiceRulesForNewJobs(invoice) {
     } else {
         updated.isPendingIssuance = false;
     }
-    if (updated.collections.some(collection =>
+    const collectionsPending = updated.collections.some(collection =>
         (collection.collectionDate == null ||
         collection.collectionDate === "") && collection.collectionType !== "Saldo"
-    )) {
+    );
+    if (collectionsPending) {
         updated.hasCollectionsPending = true;
     } else {
         updated.hasCollectionsPending = false;
     }
+    console.log("Updated Selling Invoice: ", updated)
     return updated;
 }
 function sellingInvoicesRulesForReadyJobs(invoice) {
@@ -104,7 +107,6 @@ const leastAdvancedStatus = (job) => {
 };
 
 export function calculateInvoicesStatus(invoices, jobStatus) {
-    console.log("Calculando Invoices Status: ", invoices, " - JobStatus: ", jobStatus)
     let updatedInvoices = [];
     if (["Nuevo", "En Preparación", "En Producción"].includes(jobStatus)) {
         updatedInvoices = invoices.map(sellingInvoiceRulesForNewJobs)
@@ -124,21 +126,23 @@ export function calculateProcessInvoicesStatus(invoices, jobProductStatus) {
 }
 
 export function calculateJobStatus(jobData) {
-    const salesInvoices = jobData.invoices || [];
+    
     const processesInvoices = jobData.jobProducts.flatMap(product =>
         product.processes?.flatMap(process => process.invoices) || []
-
     );
-
     const noProcesses = jobData.jobProducts.every(product => !product.processes || product.processes.length === 0);
-
     const jobStatus = leastAdvancedStatus(jobData);
+
+    const salesInvoices = calculateInvoicesStatus(jobData.invoices, jobStatus);
+
     const updatedData = {
         jobStatus,
+        invoices: salesInvoices,
         hasInvoicesPendingIssuance: noProcesses ? true : salesInvoices.some(invoice => invoice.isPendingIssuance),
         hasCollectionsPending: noProcesses ? true : salesInvoices.some(invoice => invoice.hasCollectionsPending),
         hasPurchaseInvocesToRecieve: noProcesses ? true : processesInvoices.some(invoice => invoice.isInvoicePendingReception),
         hasPaymentsToMake: noProcesses ? true : processesInvoices.some(invoice => invoice.hasPaymentsPending)
     };
+    console.log("Updated Job Data: ", updatedData)
     return updatedData;
 }

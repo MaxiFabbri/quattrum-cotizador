@@ -28,17 +28,6 @@ const NewJob = () => {
     const [showEvents, setShowEvents] = useState(false);
     const [showFiles, setShowFiles] = useState(false);
 
-    // Manejo de cambios en los inputs
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        console.log("Input changed:", name, value);
-        setJobData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }))
-        // setIsUpdated(true);
-    };
-
     const handleChange = (updates) => {
         updateJobData(updates);
     };
@@ -119,26 +108,6 @@ const NewJob = () => {
         const newUpdatedInvoices = calculateInvoicesStatus(updatedInvoices, jobData.jobStatus)
         updateJobData({ invoices: newUpdatedInvoices });
     };
-
-    const handleStatusChange = (e) => {
-        console.log("Handle Status Change: ", e.target.value);
-        const newInvoices = calculateInvoicesStatus(jobData.invoices, e.target.value);
-        const newEvent = {
-            eventDate: new Date(),
-            eventUserId: userId,
-            eventUserName: userName,
-            eventProductId: null,
-            eventNote: `Cambio de estado a: ${e.target.value}`
-        }
-        const updatedEvents = [...jobData.jobEvents, newEvent];
-
-        const updatedJobData = {
-            invoices: newInvoices,
-            jobStatus: e.target.value,
-            jobEvents: updatedEvents
-        };
-        updateJobDataAndSave(updatedJobData);
-    }
 
     const handleAddEvent = (event) => {
         console.log("Nuevo evento: ", event);

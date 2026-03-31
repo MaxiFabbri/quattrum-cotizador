@@ -72,7 +72,7 @@ const NewJobProcess = ({ initialProcessData, productStatus }) => {
         if (jobProcessData.currency === "Peso") {
             exchange = jobData.exchangeRate;
         }
-        // console.log("recalculating costs for jobProcessData: ", quotationData.exchangeRate, " - ", exchange)
+
         setJobProcessData((prevData) => ({
             ...prevData,
             enteredUnitCost: newTempUnitCost,
@@ -150,7 +150,6 @@ const NewJobProcess = ({ initialProcessData, productStatus }) => {
 
     const handleSupplierPaymentMethodUpdate = (supplierPaymentMethod) => {
         setIsSaved(false)
-        console.log("updating payment method: ", supplierPaymentMethod)
         setJobProcessData((prevData) => ({
             ...prevData,
             supplierPaymentMethodId: supplierPaymentMethod._id || "",
@@ -420,7 +419,6 @@ const NewJobProcess = ({ initialProcessData, productStatus }) => {
                                         <td>
                                             {invoice.payments && invoice.invoiceType !== "Mensual" && (
                                             <>
-                                                {/* {console.log("invoice payments: ", invoice.payments)} */}
                                                 <table className="payments-subtable">
                                                     <tbody>
                                                         {invoice.payments.map((payment, pIndex) => (

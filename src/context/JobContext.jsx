@@ -6,7 +6,7 @@ import { QuotationContext } from "./QuotationContext.jsx";
 import { toast } from "react-toastify";
 import validateJob from "../components/Jobs/JobsUtils/ValidateJob.jsx";
 import useCalculateFunctions from "../components/Utils/CalculateFunctions.jsx";
-import { calculateJobStatus, calculateInvoicesStatus, calculateProcessInvoicesStatus } from "../utils/AdminJobStatusManager.js";
+import { calculateJobStatus } from "../utils/AdminJobStatusManager.js";
 import { calculateTotalProductCost, calculateSubTotalProcessCost } from "../utils/CalculateTotalProductCost.js";
 
 export const JobContext = createContext();

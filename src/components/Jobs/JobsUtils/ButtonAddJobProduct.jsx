@@ -39,7 +39,6 @@ const ButtonAddJobProduct = () => {
             jobId: jobData.jobId,
             ...initialJobProdDataState,
         }
-        console.log("Adding job product:", newJobProduct);
         setJobProdData(newJobProduct)
         addJobProduct(newJobProduct);
     };
