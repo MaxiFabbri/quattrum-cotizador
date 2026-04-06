@@ -1,12 +1,20 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import './JobEventForm.css';
 
 const JobEventForm = ({ onAddEvent, productId }) => {
-    console.log('JobEventForm renderizado con productId:', productId);
+
     const [newEvent, setNewEvent] = useState({
-        eventProductId: productId || null, // asignamos el productId al nuevo evento
+        eventProductId: productId || null,
         eventNote: ''
     });
+
+    const textareaRef = useRef(null);
+
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.focus();
+        }
+    }, []); // se ejecuta solo al montar
 
     const handleChange = useCallback((e) => {
         const { name, value } = e.target;
@@ -16,9 +24,8 @@ const JobEventForm = ({ onAddEvent, productId }) => {
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
         if (onAddEvent) {
-            onAddEvent(newEvent); // enviamos el evento al padre
+            onAddEvent(newEvent);
         }
-        // no limpiamos porque la idea es cerrar el formulario desde el padre
     }, [newEvent, onAddEvent]);
 
     return (
@@ -28,6 +35,7 @@ const JobEventForm = ({ onAddEvent, productId }) => {
                 <div className="event-note">
                     <label>Nota:</label>
                     <textarea
+                        ref={textareaRef} // asignamos el ref
                         name="eventNote"
                         value={newEvent.eventNote}
                         onChange={handleChange}
@@ -36,7 +44,6 @@ const JobEventForm = ({ onAddEvent, productId }) => {
                 <button type="submit">Agregar evento</button>
             </form>
         </div>
-
     );
 };
 
