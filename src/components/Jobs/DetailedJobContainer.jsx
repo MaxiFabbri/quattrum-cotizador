@@ -22,7 +22,7 @@ import { calculateJobStatus } from "../../utils/AdminJobStatusManager.js";
 
 
 const DetailedJobContainer = () => {
-    const { jobData, updateJobData, clearJobData, setIsSaved, setIsUpdated } = useContext(JobContext);
+    const { jobData, updateJobData, clearJobData, isSaved, setIsSaved, setIsUpdated } = useContext(JobContext);
     const [activeId, setActiveId] = useState(null)
     const [loading, setLoading] = useState(true);
     const { id } = useParams()
@@ -220,7 +220,7 @@ const DetailedJobContainer = () => {
                                 </SortableContext>
                             </div>
                             <div className="job-buttons-container">
-                                <ButtonSaveJob />
+                                {isSaved ? null : <ButtonSaveJob />}
                                 {jobData.jobStatus === "Nuevo" && <ButtonConfirmJob />}
                                 {jobData.jobStatus === "Nuevo" && <ButtonCalculateJob />}
                                 {jobData.jobStatus === "Entregado" && <ButtonCloseJob />}

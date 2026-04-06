@@ -70,6 +70,7 @@ export const JobProvider = ({ children }) => {
 
     useEffect(() => {
         console.log("jobData actualizado: ", jobData);
+        console.log("isSaved: ", isSaved);
         if (statusChange) {
             setStatusChange(false);
             setIsUpdated(true);
@@ -197,7 +198,7 @@ export const JobProvider = ({ children }) => {
         console.log("Guardando Job: ", jobData);
         const updatedStatusData = calculateJobStatus(jobData)
         updateJobData(updatedStatusData);
-        // preparo la informacion de job para guardar en la DB
+
         const jobId = jobData.jobId;
         const jobToSave = {
             jobId: jobId,
@@ -326,6 +327,7 @@ export const JobProvider = ({ children }) => {
                 }
             });
         });
+        setIsSaved(true);
     };
 
     const calculateJobData = (calculateAll) => {
@@ -651,6 +653,7 @@ export const JobProvider = ({ children }) => {
                 jobStatusFilter,
                 setJobStatusFilter,
                 setIsUpdated,
+                isSaved,
                 setIsSaved,
                 statusChange,
                 setStatusChange,
