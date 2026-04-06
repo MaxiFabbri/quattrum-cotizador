@@ -35,6 +35,7 @@ const NewJobProduct = ({ productData }) => {
     const [showEventsForm, setShowEventsForm] = useState(false);
     const [showProdEvents, setShowProdEvents] = useState(false);
 
+
     if (jobProdData.calculatedSellingPrice == null || Number.isNaN(jobProdData.calculatedSellingPrice)) {
         setJobProdData((prevData) => ({
             ...prevData,
@@ -118,7 +119,7 @@ const NewJobProduct = ({ productData }) => {
         }))
         setIsJobProdUpdated(false);
     };
-    // Manejo de cambios en los inputs
+    // Manejo de cambios en los inputs Numericos
     const handleInputChange = (e) => {
         setIsSaved(false)
         const { name, value } = e.target;
@@ -136,7 +137,15 @@ const NewJobProduct = ({ productData }) => {
         }))
         setIsJobProdUpdated(false); // Cambiamos el estado a `false` para indicar que se ha actualizado
     };
-
+    const handleInputChangeText = (e) => {
+        setIsSaved(false)
+        const { name, value } = e.target;
+        setJobProdData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }))
+        setIsJobProdUpdated(false); // Cambiamos el estado a `false` para indicar que se ha actualizado
+    };
 
     const handleStatusChange = (e) => {
         const { value } = e.target;
@@ -263,6 +272,7 @@ const NewJobProduct = ({ productData }) => {
                         <th>Utilidad</th>
                         <th>Precio Unitario</th>
                         <th>Estado</th>
+                        <th>Notas</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -373,6 +383,16 @@ const NewJobProduct = ({ productData }) => {
                                 <option value="Listo">Listo</option>
                                 <option value="Entregado">Entregado</option>
                             </select>
+                        </td>
+                        <td>
+                            <input
+                                type="text"
+                                name="jobProductNote"
+                                placeholder="Notas"
+                                defaultValue={jobProdData.jobProductNote}
+                                onClick={(e) => e.target.select()}
+                                onBlur={handleInputChangeText}
+                            />
                         </td>
                         <td>
                             <TextButton

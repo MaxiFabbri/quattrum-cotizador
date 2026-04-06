@@ -69,8 +69,7 @@ export const JobProvider = ({ children }) => {
     }, [isUpdated]);
 
     useEffect(() => {
-        console.log("jobData actualizado: ", jobData);
-        console.log("isSaved: ", isSaved);
+        console.log("jobData actualizado: ", isSaved, " con: ", jobData);
         if (statusChange) {
             setStatusChange(false);
             setIsUpdated(true);
