@@ -22,7 +22,7 @@ import ImageLinkUploader from "./JobsUtils/ImageLinkUploader.jsx";
 
 const NewJob = () => {
     const { userId, userName } = useContext(AuthContext);
-    const { jobData, setJobData, updateJobData, updateJobDataAndSave } = useContext(JobContext);
+    const { jobData, setJobData, updateJobData, updateJobDataAndSave, setIsSaved } = useContext(JobContext);
     const [showInvoices, setShowInvoices] = useState(false);
     const [showEventsForm, setShowEventsForm] = useState(false);
     const [showEvents, setShowEvents] = useState(false);
@@ -88,6 +88,7 @@ const NewJob = () => {
     }
 
     const handleInvoiceChange = (index, updates) => {
+        setIsSaved(false);
         const updatedInvoices = jobData.invoices.map((invoice, i) =>
             i === index ? { ...invoice, ...updates } : invoice
         );
@@ -95,6 +96,7 @@ const NewJob = () => {
         updateJobData({ invoices: newUpdatedInvoices });
     }
     const handleCollectionChange = (invoiceIndex, collectionIndex, updatedCollection) => {
+        setIsSaved(false);
         console.log("Updating collection at index ", collectionIndex, " of invoice ", invoiceIndex, " with updates: ", updatedCollection);
         const updatedInvoices = [...jobData.invoices];
         const updatedCollections = [...updatedInvoices[invoiceIndex].collections];
