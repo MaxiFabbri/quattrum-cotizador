@@ -42,6 +42,7 @@ const NewJob = () => {
     };
 
     const handleAddInvoice = (index) => {
+        setIsSaved(false);
         console.log("Adding new invoice for job: ", jobData);
         const newInvoice = {
             invoiceNumber: "",
@@ -61,6 +62,7 @@ const NewJob = () => {
         setJobData({ ...jobData, invoices: updatedInvoices });
     }
     const handleDeleteInvoice = (invoiceToDelete) => {
+        setIsSaved(false);
         console.log("Deleting invoice: ", invoiceToDelete, " from job: ", jobData.invoices);
         const updatedInvoices = jobData.invoices.filter((_, index) => index !== invoiceToDelete);
         const newUpdatedInvoices = calculateInvoicesStatus(updatedInvoices, jobData.jobStatus)
@@ -68,6 +70,7 @@ const NewJob = () => {
     }
 
     const handleAddCollect = (invoiceIndex, collectionIndex) => {
+        setIsSaved(false);
         console.log("Adding new collection to invoice ", invoiceIndex, " last collect: ", collectionIndex, " JobData: ", jobData.invoices);
         const newCollect = {
             collectionDate: "",
@@ -80,6 +83,7 @@ const NewJob = () => {
         setJobData({ ...jobData, invoices: newUpdatedInvoices });
     }
     const handleDeleteCollect = (invoiceIndex, collectionIndex) => {
+        setIsSaved(false);
         console.log("Deleting collection ", collectionIndex, " from invoice ", invoiceIndex, " JobData: ", jobData.invoices);
         const updatedInvoices = [...jobData.invoices];
         updatedInvoices[invoiceIndex].collections = updatedInvoices[invoiceIndex].collections.filter((_, index) => index !== collectionIndex);
