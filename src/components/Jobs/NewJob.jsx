@@ -22,7 +22,7 @@ import ImageLinkUploader from "./JobsUtils/ImageLinkUploader.jsx";
 
 const NewJob = () => {
     const { userId, userName } = useContext(AuthContext);
-    const { jobData, setJobData, updateJobData, updateJobDataAndSave, setIsSaved } = useContext(JobContext);
+    const { jobData, setJobData, updateJobData, updateJobDataAndSave, setIsSaved, setIsUpdated } = useContext(JobContext);
     const [showInvoices, setShowInvoices] = useState(false);
     const [showEventsForm, setShowEventsForm] = useState(false);
     const [showEvents, setShowEvents] = useState(false);
@@ -30,6 +30,16 @@ const NewJob = () => {
 
     const handleChange = (updates) => {
         updateJobData(updates);
+    };
+
+    const handleEditEvent = () => {
+        console.log("Eventos actuales: ", jobData.jobEvents);
+        const updatedJobData = {
+            jobEvents: jobData.jobEvents
+        };
+        console.log("Actualizando eventos del producto con: ", updatedJobData);
+        updateJobData(updatedJobData);
+        setIsUpdated(true);
     };
 
     const handleCustomerPaymentMethodUpdate = (newCustomerPaymentMethod) => {
@@ -282,6 +292,7 @@ const NewJob = () => {
                             .reverse()
                         }
                         onClose={() => setShowEvents(false)}
+                        onEdit={handleEditEvent}
                     />
                 )}
 

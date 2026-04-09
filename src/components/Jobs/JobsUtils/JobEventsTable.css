@@ -24,7 +24,6 @@
     text-align: center;
 }
 
-
 .event-table th:nth-child(1) {
     width: 12%;
 }
@@ -59,4 +58,11 @@
 
 .event-table tr:nth-child(even) {
     background-color: #f3f3f3;
+}
+
+.event-note-input {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    /* font-size: small; */
 }

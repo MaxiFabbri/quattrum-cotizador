@@ -14,7 +14,7 @@ export const JobContext = createContext();
 export const JobProvider = ({ children }) => {
     const [isUpdated, setIsUpdated] = useState(false);
     const [statusChange, setStatusChange] = useState(false);
-    const { updateQuotationData, changeQuotationStatus } = useContext(QuotationContext);
+    const { changeQuotationStatus } = useContext(QuotationContext);
     const [isSaved, setIsSaved] = useState(true);
     const [jobFilter, setJobFilter] = useState("");
     const [jobStatusFilter, setJobStatusFilter] = useState("");
@@ -131,6 +131,7 @@ export const JobProvider = ({ children }) => {
         return totalCost;
     };
 
+    
     // Función para actualizar la cotización completa
     const updateJobData = (updatedData) => {
         setJobData((prevData) => ({

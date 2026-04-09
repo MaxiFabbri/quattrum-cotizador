@@ -19,7 +19,7 @@ import "./JobProduct.css";
 
 const NewJobProduct = ({ productData }) => {
     const { userId, userName } = useContext(AuthContext);
-    const { jobData, setIsSaved, updateJobData, updateJobProduct, removeJobProduct, updateJobDataAndSave, setStatusChange } = useContext(JobContext);
+    const { jobData, setIsSaved, updateJobData, updateJobProduct, removeJobProduct, updateJobDataAndSave, setStatusChange, setIsUpdated } = useContext(JobContext);
     const { tax } = useContext(ParametersContext);
 
     const [jobProdData, setJobProdData] = useState(productData);
@@ -119,6 +119,7 @@ const NewJobProduct = ({ productData }) => {
         }))
         setIsJobProdUpdated(false);
     };
+
     // Manejo de cambios en los inputs Numericos
     const handleInputChange = (e) => {
         setIsSaved(false)
@@ -146,7 +147,6 @@ const NewJobProduct = ({ productData }) => {
         }))
         setIsJobProdUpdated(false); // Cambiamos el estado a `false` para indicar que se ha actualizado
     };
-
     const handleStatusChange = (e) => {
         const { value } = e.target;
         setIsSaved(false)
@@ -178,6 +178,15 @@ const NewJobProduct = ({ productData }) => {
         setIsJobProdUpdated(false);
         setStatusChange(true);
     };
+    const handleEditEvent = () => {
+        console.log("Eventos actuales: ", jobData.jobEvents);
+        const updatedJobData = {
+                jobEvents: jobData.jobEvents
+        };
+        console.log("Actualizando eventos del producto con: ", updatedJobData);
+        updateJobData(updatedJobData);
+        setIsUpdated(true);        
+        };
 
     // Eliminar el producto del contexto
     const handleDeleteJobProduct = () => {
@@ -210,7 +219,6 @@ const NewJobProduct = ({ productData }) => {
 
         updateJobDataAndSave({ jobEvents: updatedEvents });
     };
-
     const handleProcessDragEnd = (event) => {
         const { active, over } = event;
         if (!active || !over || active.id === over.id) return;
@@ -437,6 +445,7 @@ const NewJobProduct = ({ productData }) => {
                                     .reverse()
                                 }
                                 onClose={() => setShowProdEvents(false)}
+                                onEdit={handleEditEvent}
                             />
                         )}
                     </tr>
