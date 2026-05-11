@@ -49,6 +49,7 @@ const DetailedJobContainer = () => {
             return {
                 jobProcId: process._id,
                 jobProductId: process.jobProductId,
+                jobId: process.jobId,
                 description: process.description,
                 supplierId: process.supplierId._id,
                 supplierPaymentMethodId: process.supplierPaymentMethodId._id,

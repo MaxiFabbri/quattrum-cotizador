@@ -290,6 +290,7 @@ export const JobProvider = ({ children }) => {
                 // preparo la informacion de Process para guardar en la DB con el ID del producto
                 const processToSave = {
                     jobProductId: newJobProductId,
+                    jobId: process.jobId,
                     description: process.description,
                     supplierId: process.supplierId,
                     supplierPaymentMethodId: process.supplierPaymentMethodId,
