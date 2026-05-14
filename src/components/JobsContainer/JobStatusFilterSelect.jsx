@@ -9,6 +9,7 @@ const JobStatusFilterSelect = ({ value, onChange }) => {
                 required
             >
                 <option value="">Activos</option>
+                <option value="ActivosProduccion">Activos Prod</option>
                 <option value="Nuevo">Nuevo</option>
                 <option value="En Preparación">En Preparación</option>
                 <option value="En Producción">En Producción</option>
