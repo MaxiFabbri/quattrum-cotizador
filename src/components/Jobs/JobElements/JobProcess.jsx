@@ -291,11 +291,18 @@ const NewJobProcess = ({ initialProcessData, productStatus }) => {
                         onChange={handleInputChange}
                     />
                 </td>
-                <td>
+                <td className="supplier-select-container">
                     <SelectSupplier
                         defaultSupplier={jobProcessData.supplierName || ""}
                         onSelectSupplier={handleSupplierUpdate}
                     />
+                    <a
+                        href={`/suppliers/edit/${jobProcessData.supplierId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <img src="/images/link.png" alt="link" />
+                    </a>
                 </td>
                 <td>
                     <SelectSupplierPayMethod

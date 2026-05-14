@@ -1,36 +1,7 @@
-.process-invoices-container {
-    height: auto;
-    margin-top: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    background-color: #f9f9f9;
-}
-
-.process-invoices-subtable {
-    width: 100%;
-    border-collapse: collapse;
-    margin: auto;
-    height: auto;
-}
-
-.process-invoice-row {
-    display: grid;
-    grid-template-columns: 4% 4% 14% 10% 14% 4% 50%;
-    padding: 5px;
-    /* background-color: #fff; */
-    align-items: center;
-    border-radius: 10px;
-    margin-bottom: 5px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    height: auto;
-
-}
-
 .job-table-processes{
     border-radius: 5px;
     background-color: #fff;
-    width: 96%;
+    /* width: 96%; */
     border-collapse: collapse;
 
 }
@@ -42,7 +13,38 @@
     font-size: 1em;
     font-weight: normal;
 }
+.supplier-select-container {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
 
+
+.process-invoices-container {
+    height: auto;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+.process-invoices-subtable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: auto;
+    height: auto;
+}
+.process-invoice-row {
+    display: grid;
+    grid-template-columns: 4% 4% 14% 10% 14% 4% 50%;
+    padding: 5px;
+    /* background-color: #fff; */
+    align-items: center;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    height: auto;
+}
 .payments-subtable{
     width: 100%;
     border-collapse: collapse;
@@ -53,3 +55,5 @@
     margin: 3px 0px;
     grid-template-columns: 5% 32% 20% 32% 10%;
 }
+
+

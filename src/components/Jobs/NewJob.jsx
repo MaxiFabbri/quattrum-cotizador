@@ -229,6 +229,13 @@ const NewJob = () => {
                         placeholder="Cliente"
                         defaultValue={jobData.customerName}
                     />
+                    <a
+                        href={`/customers/edit/${jobData.customerId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <img src="/images/link.png" alt="link" />
+                    </a>
                 </td>
                 <td>
                     <SelectCustomerPayMethod

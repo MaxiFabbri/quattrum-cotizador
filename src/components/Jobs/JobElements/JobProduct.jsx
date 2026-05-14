@@ -281,7 +281,7 @@ const NewJobProduct = ({ productData }) => {
                         <th>Precio Unitario</th>
                         <th>Estado</th>
                         <th>Notas</th>
-                        <th></th>
+                        {/* <th></th> */}
                         <th></th>
                     </tr>
                 </thead>
@@ -450,7 +450,7 @@ const NewJobProduct = ({ productData }) => {
                         )}
                     </tr>
                     <tr key={"processes-" + jobProdData.jobProductId} id={"processes-" + jobProdData.jobProductId}>
-                        <td colSpan="11">
+                        <td colSpan="14">
                             {jobProdData.processes && jobProdData.processes.length > 0 ? (
                                 <div>
                                     <DndContext

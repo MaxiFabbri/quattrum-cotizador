@@ -51,7 +51,7 @@
     font-weight: 500;
 }
 
-.job-product-container tbody tr td {
+.job-product-container tbody tr {
     padding: 0px 10px;
     font-size: 0.9em;
 }
