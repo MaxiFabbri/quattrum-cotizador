@@ -326,25 +326,6 @@ const NewJob = () => {
                         onEdit={handleEditEvent}
                     />
                 )}
-                <td>
-                    <TextButton
-                        text="Agregar evento"
-                        onClick={() => setShowEventsForm(true)}
-                    />
-                    {showEventsForm && (
-                        <div className="overlay-style">
-                            <div className="modal-style">
-                                <button
-                                    style={{ float: 'right' }}
-                                    onClick={() => setShowEventsForm(false)}
-                                >
-                                    ✖
-                                </button>
-                                <JobEventForm onAddEvent={handleAddEvent} productId={null} />
-                            </div>
-                        </div>
-                    )}
-                </td>
             </tr>
 
             {showInvoices && (
