@@ -152,7 +152,6 @@ const NewJob = () => {
         return { url: driveUrl, thumbnail: null };
     }
 
-
     const handleAddImage = (link, description) => {
         console.log("Adding Link: ", link, " Description: ", description);
         const newImage = {
@@ -178,6 +177,17 @@ const NewJob = () => {
         return "row-default";
     }
     const dateClass = getDateClass();
+
+    const handleJobNotesChange = (e) => {
+        setIsSaved(false)
+        const { value } = e.target;
+        console.log("Updating job notes with: ", value);
+        setJobData((prevData) => ({
+            ...prevData,
+            jobNotes: value,
+        }))
+        setIsUpdated(false);
+    };
 
     return (
         <>
@@ -222,25 +232,6 @@ const NewJob = () => {
                 </td>
                 <IsKitCheckbox checked={jobData.isKit} onChange={(e) => handleChange({ isKit: e.target.checked })} />
                 <td>
-                    <TextButton
-                        text="Agregar evento"
-                        onClick={() => setShowEventsForm(true)}
-                    />
-                    {showEventsForm && (
-                        <div className="overlay-style">
-                            <div className="modal-style">
-                                <button
-                                    style={{ float: 'right' }}
-                                    onClick={() => setShowEventsForm(false)}
-                                >
-                                    ✖
-                                </button>
-                                <JobEventForm onAddEvent={handleAddEvent} productId={null} />
-                            </div>
-                        </div>
-                    )}
-                </td>
-                <td>
                     <IconButton
                         icon={showInvoices ? "/images/collapse.png" : "/images/expand.png"}
                         text={showInvoices ? "Colapsar Facturas" : "Expandir Facturas"}
@@ -277,7 +268,20 @@ const NewJob = () => {
                         </div>
                     </td>
                 )}
+                    <td colSpan={5}>
+                        <input
+                            className="job-notes-input"
+                            type="text"
+                            name="jobNotes"
+                            placeholder="Notas del Pedido"
+                            defaultValue={jobData.jobNotes}
+                            onClick={(e) => e.target.select()}
+                            onBlur={handleJobNotesChange}
+                        />
+                    </td>
+            </tr>
 
+            <tr>
                 {!showEvents && (
                     <td colSpan={8} >
                         <div className="show-events-button-container">
@@ -295,7 +299,25 @@ const NewJob = () => {
                         onEdit={handleEditEvent}
                     />
                 )}
-
+                <td>
+                    <TextButton
+                        text="Agregar evento"
+                        onClick={() => setShowEventsForm(true)}
+                    />
+                    {showEventsForm && (
+                        <div className="overlay-style">
+                            <div className="modal-style">
+                                <button
+                                    style={{ float: 'right' }}
+                                    onClick={() => setShowEventsForm(false)}
+                                >
+                                    ✖
+                                </button>
+                                <JobEventForm onAddEvent={handleAddEvent} productId={null} />
+                            </div>
+                        </div>
+                    )}
+                </td>
             </tr>
 
             {showInvoices && (

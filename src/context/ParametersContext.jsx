@@ -46,6 +46,7 @@ export const ParametersProvider = ({ children }) => {
         if (!isAuthenticated) return; // Evita ejecutar si no está autenticado
         try {
             const response = await apiDolar.get();
+            console.log('Respuesta de dolarHoy:', response.data.venta);
             const newDolar = response.data.venta;
 
             if (newDolar !== dolarPrice) {

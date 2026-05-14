@@ -31,5 +31,11 @@
     justify-content: center;
 }
 
+.job-notes-input {
+    width: 100%;
+    padding: 3px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
 
 

@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { QuotationContext } from "../../../context/QuotationContext.jsx";
-import { ParametersContext } from "../../../context/ParametersContext.jsx";
+import { AuthContext } from "../../../context/AuthContext.jsx";
 import { JobContext } from "../../../context/JobContext.jsx";
 import { apiClient } from "../../../config/axiosConfig.js";
 import TextButton from "../../Utils/TextButton.jsx";
@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const ButtonApproveQuotation = () => {
     const { quotationData, changeQuotationStatus } = useContext(QuotationContext);
+    const { userId, userName } = useContext(AuthContext);
     const { JobData, updateJobData, addJobProduct, addJobProcessToProduct } = useContext(JobContext);
     const [shouldCalculate, setShouldCalculate] = useState(false);
     const today = new Date().toISOString().split("T")[0];
@@ -106,6 +107,14 @@ const ButtonApproveQuotation = () => {
 
         const newSellingInvoices = defineSellingInvoices(quotationData.customerPaymentDetails);
 
+        const newEvent = {
+            eventDate: new Date(),
+            eventUserId: userId,
+            eventUserName: userName,
+            eventProductId: null,
+            eventNote: "Cotización aprobada, se creó el pedido"
+        }
+
         const jobToSave = {
             quotationId: quotationData.id,
             calculateFinancing: quotationData.calculateFinancing,
@@ -126,7 +135,8 @@ const ButtonApproveQuotation = () => {
             hasPurchaseInvocesToRecieve: true,
             hasPaymentsToMake: true,
             isKit: quotationData.isKit,
-            jobNotes: ""
+            jobNotes: "",
+            jobEvents: [newEvent]
         };
 
         try {
