@@ -18,12 +18,12 @@ function ImageLinkUploader({ onAddImage }) {
 
     return (
         <div className="image-link-uploader">
-            {!isOpen &&
+            {!isOpen && (
                 <TextButton text="Subir Imagen" onClick={() => setIsOpen(true)} />
-            }
+            )}
             {isOpen && (
-                <div className="image-link-form">
-                    <div>
+                <div className="modal-overlay">
+                    <div className="image-link-form">
                         <h4>Agregar link de archivo</h4>
                         <input
                             type="text"
@@ -31,8 +31,8 @@ function ImageLinkUploader({ onAddImage }) {
                             onChange={(e) => setLink(e.target.value)}
                             placeholder="https://ejemplo.com/imagen.jpg"
                         />
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="Descripción (opcional)"

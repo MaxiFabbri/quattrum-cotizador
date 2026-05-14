@@ -29,6 +29,7 @@ const NewJob = () => {
     const [showFiles, setShowFiles] = useState(false);
 
     const handleChange = (updates) => {
+        setIsSaved(false)
         updateJobData(updates);
     };
 
@@ -153,6 +154,7 @@ const NewJob = () => {
     }
 
     const handleAddImage = (link, description) => {
+        setIsSaved(false);
         console.log("Adding Link: ", link, " Description: ", description);
         const newImage = {
             url: link,
@@ -162,6 +164,15 @@ const NewJob = () => {
         setJobData((prevData) => ({
             ...prevData,
             images: [...(prevData.images || []), newImage]
+        }));
+    };
+
+    const handleDeleteImage = (index) => () => {
+        setIsSaved(false);
+        console.log("Deleting image at index: ", index, " from jobData: ", jobData.images);
+        setJobData((prevData) => ({
+            ...prevData,
+            images: prevData.images.filter((_, i) => i !== index)
         }));
     };
 
@@ -259,26 +270,35 @@ const NewJob = () => {
                                 // { jobData.images.length > 0 && (
                                 <div className="images-list">
                                     {jobData.images.map((image, index) => (
-                                        <a key={index} href={image.url} target="_blank" rel="noopener noreferrer">
-                                            <span>{image.description}</span>
-                                        </a>
+                                        <div className="image-item" key={index}>
+                                            <IconButton
+                                                icon="/images/delete.png"
+                                                text="Eliminar Imagen"
+                                                onClick={handleDeleteImage(index)}
+                                            />
+
+                                            <a key={index} href={image.url} target="_blank" rel="noopener noreferrer">
+                                                <span>{image.description}</span>
+                                            </a>
+                                        </div>
+
                                     ))}
                                 </div>
                             )}
                         </div>
                     </td>
                 )}
-                    <td colSpan={5}>
-                        <input
-                            className="job-notes-input"
-                            type="text"
-                            name="jobNotes"
-                            placeholder="Notas del Pedido"
-                            defaultValue={jobData.jobNotes}
-                            onClick={(e) => e.target.select()}
-                            onBlur={handleJobNotesChange}
-                        />
-                    </td>
+                <td colSpan={5}>
+                    <input
+                        className="job-notes-input"
+                        type="text"
+                        name="jobNotes"
+                        placeholder="Notas del Pedido"
+                        defaultValue={jobData.jobNotes}
+                        onClick={(e) => e.target.select()}
+                        onBlur={handleJobNotesChange}
+                    />
+                </td>
             </tr>
 
             <tr>

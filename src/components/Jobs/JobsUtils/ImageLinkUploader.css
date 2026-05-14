@@ -1,14 +1,19 @@
-/* .image-link-form {
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* oscurece el fondo */
     display: flex;
-    justify-content: "center";
-    align-items: "center";
-} */
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    /* asegura que quede arriba del grid */
+}
+
+
 
 .image-link-form {
     background: #fff;
@@ -28,33 +33,3 @@
     display: flex;
     justify-content: space-around;
 }
-
-
-/* 
-    overlay: {
-        position: "fixed",
-        top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: "rgba(0,0,0,0.5)",
-        display: "flex", justifyContent: "center", alignItems: "center",
-    },
-    input: {
-        width: "100%",
-        padding: "8px",
-        marginBottom: "10px",
-    },
-    actions: {
-        display: "flex",
-        justifyContent: "space-between",
-    },
-    gallery: {
-        marginTop: "20px",
-        display: "flex",
-        gap: "10px",
-        flexWrap: "wrap",
-    },
-    image: {
-        width: "100px",
-        height: "100px",
-        objectFit: "cover",
-        borderRadius: "4px",
-    }, */
