@@ -3,6 +3,9 @@ import { useParams, useNavigate } from "react-router-dom"
 import TextButton from "../Utils/TextButton.jsx";
 import SelectSupplierPayMethod from "../Utils/Selectors/SelectSupplierPaymentMethod.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
+import ContanctTableItem from "../Customers/ContactTableItem.jsx";
+import IconButton from "../Utils/IconButton.jsx";
+import { v4 as uuidv4 } from 'uuid';
 import "./EditSupplier.css";
 
 
@@ -16,6 +19,7 @@ const EditSupplier = () => {
     const fetchSupplierData = async () => {
         try {
             const response = await apiClient.get(`/suppliers/${id}`);
+            console.log("Datos del proveedor obtenidos:", response.data.response);
             setNewSupplierData(response.data.response); // Asigna el objeto de la respuesta
         } catch (error) {
             console.error("Error al cargar el proveedor:", error);
@@ -29,6 +33,16 @@ const EditSupplier = () => {
             fetchSupplierData();
         } else {
             setLoading(false);
+            setNewSupplierData({
+                name: "",
+                code: "",
+                cuit: "",
+                email: "",
+                phone: "",
+                supplierPaymentMethodId: "",
+                supplierNote: "",
+                supplierContact: [],
+            });
         }
     }, []);
 
@@ -62,6 +76,7 @@ const EditSupplier = () => {
             email: newSupplierData.email || "",
             supplierPaymentMethodId: newSupplierData.supplierPaymentMethodId,
             supplierNote: newSupplierData.supplierNote || "",
+            supplierContact: newSupplierData.supplierContact || [],
         }
         try {
             const response = await apiClient.post("/suppliers", data);
@@ -120,6 +135,40 @@ const EditSupplier = () => {
             return false;
         }
         return true;
+    }
+
+
+    const handleAddItem = () => {
+        setNewSupplierData((prevData) => ({
+            ...prevData,
+            supplierContact: [...((prevData.supplierContact) || []),
+            {
+                id: uuidv4(),
+                name: "",
+                position: "",
+                email: "",
+                phone: ""
+            }
+            ]
+        }));
+    }
+    const handleDelete = (id) => {
+        console.log("Eliminar Item ", id);
+        const updatedTable = (newSupplierData.supplierContact || []).filter(item => item.id !== id);
+        setNewSupplierData((prevData) => ({
+            ...prevData,
+            supplierContact: updatedTable
+        }));
+    };
+    const handleChange = (e, itemId) => {
+        const { name, value } = e.target;
+        const updatedTable = newSupplierData.supplierContact.map(item =>
+            item.id === itemId ? { ...item, [name]: value } : item
+        );
+        setNewSupplierData((prevData) => ({
+            ...prevData,
+            supplierContact: updatedTable
+        }));
     }
 
     return (
@@ -191,6 +240,43 @@ const EditSupplier = () => {
                                     onSelectSupplierPayMethod={handleSupplierPaymentMethodUpdate}
                                 />
                             </div>
+
+
+                            <div className="contacts-table-border">
+                                <table className="contacts-table">
+                                    <thead>
+                                        <tr>
+                                            <th colSpan="6" className="contacts-table-title">Contactos</th>
+                                        </tr>
+                                        <tr>
+                                            <th className="contacts-table-th" style={{ width: "50px" }}> </th>
+                                            <th className="contacts-table-th" style={{ width: "150px" }}>Nombre</th>
+                                            <th className="contacts-table-th" style={{ width: "150px" }}>Cargo</th>
+                                            <th className="contacts-table-th" style={{ width: "150px" }}>Mail</th>
+                                            <th className="contacts-table-th" style={{ width: "150px" }}>Telefono</th>
+                                            <th className="contacts-table-th" style={{ width: "50px" }}>
+                                                <IconButton
+                                                    icon="/images/create.png"
+                                                    title="Agregar Item"
+                                                    onClick={() => handleAddItem()}
+                                                />
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {newSupplierData.supplierContact.map((item) => (
+                                            <ContanctTableItem
+                                                key={item.id}
+                                                item={item}
+                                                handleDelete={handleDelete}
+                                                handleChange={(e) => handleChange(e, item.id)}
+                                            />
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
                             <p>
                                 <span>Nota</span>
                                 <textarea
@@ -200,7 +286,6 @@ const EditSupplier = () => {
                                     onInput={handleInputChange}
                                 />
                             </p>
-
                         </div>
                         <div className="supplierActions">
                             <TextButton text="Guardar" onClick={handleSaveSupplier} />

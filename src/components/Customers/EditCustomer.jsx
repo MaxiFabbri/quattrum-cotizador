@@ -141,13 +141,13 @@ const EditCustomer = () => {
         setNewCustomerData((prevData) => ({
             ...prevData,
             customerContact: [...((prevData.customerContact) || []),
-                {
-                    id: uuidv4(),
-                    name: "",
-                    position: "",
-                    email: "",
-                    phone: ""
-                }
+            {
+                id: uuidv4(),
+                name: "",
+                position: "",
+                email: "",
+                phone: ""
+            }
             ]
         }));
     }
@@ -224,7 +224,7 @@ const EditCustomer = () => {
                                     onInput={handleInputChange}
                                 />
                             </p>
-                            <p>
+                            {/* <p>
                                 <span>Teléfono: </span>
                                 <input
                                     className="input"
@@ -234,8 +234,8 @@ const EditCustomer = () => {
                                     defaultValue={newCustomerData.phone}
                                     onInput={handleInputChange}
                                 />
-                            </p>
-                            <p>
+                            </p> */}
+                            {/* <p>
                                 <span>Email: </span>
                                 <input
                                     type="text"
@@ -244,7 +244,7 @@ const EditCustomer = () => {
                                     defaultValue={newCustomerData.email}
                                     onInput={handleInputChange}
                                 />
-                            </p>
+                            </p> */}
                             <div>
                                 <span>Forma de pago: </span>
                                 <SelectCustomerPayMethod
@@ -253,37 +253,37 @@ const EditCustomer = () => {
                                 />
                             </div>
                             <div className="contacts-table-border">
-                            <table className="contacts-table">
-                                <thead>
-                                    <tr>
-                                        <th colSpan="6" className="contacts-table-title">Contactos</th>
-                                    </tr>
-                                    <tr>
-                                        <th className="contacts-table-th" style={{ width: "50px" }}> </th>
-                                        <th className="contacts-table-th" style={{ width: "150px" }}>Nombre</th>
-                                        <th className="contacts-table-th" style={{ width: "150px" }}>Cargo</th>
-                                        <th className="contacts-table-th" style={{ width: "150px" }}>Mail</th>
-                                        <th className="contacts-table-th" style={{ width: "150px" }}>Telefono</th>
-                                        <th className="contacts-table-th" style={{ width: "50px" }}>
-                                            <IconButton
-                                                icon="/images/create.png"
-                                                title="Agregar Item"
-                                                onClick={() => handleAddItem()}
+                                <table className="contacts-table">
+                                    <thead>
+                                        <tr>
+                                            <th colSpan="6" className="contacts-table-title">Contactos</th>
+                                        </tr>
+                                        <tr>
+                                            <th className="contacts-table-th" style={{ width: "50px" }}> </th>
+                                            <th className="contacts-table-th" style={{ width: "150px" }}>Nombre</th>
+                                            <th className="contacts-table-th" style={{ width: "150px" }}>Cargo</th>
+                                            <th className="contacts-table-th" style={{ width: "150px" }}>Mail</th>
+                                            <th className="contacts-table-th" style={{ width: "150px" }}>Telefono</th>
+                                            <th className="contacts-table-th" style={{ width: "50px" }}>
+                                                <IconButton
+                                                    icon="/images/create.png"
+                                                    title="Agregar Item"
+                                                    onClick={() => handleAddItem()}
+                                                />
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {newCustomerData.customerContact.map((item) => (
+                                            <ContanctTableItem
+                                                key={item.id}
+                                                item={item}
+                                                handleDelete={handleDelete}
+                                                handleChange={(e) => handleChange(e, item.id)}
                                             />
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {newCustomerData.customerContact.map((item) => (
-                                        <ContanctTableItem
-                                            key={item.id}
-                                            item={item}
-                                            handleDelete={handleDelete}
-                                            handleChange={(e) => handleChange(e, item.id)}
-                                        />
-                                    ))}
-                                </tbody>
-                            </table>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
                             <p>
                                 <span>Nota</span>

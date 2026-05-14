@@ -1,6 +1,5 @@
-/* Estilo general del formulario */
 .detailedSupplier {
-    max-width: 600px;
+    max-width: 900px;
     margin: 5px auto;
     padding: 5px 10px;
     background-color: #f9f9f9;
@@ -25,6 +24,8 @@
 .supplierInfo span {
     font-size: 1rem;
     font-weight: bold;
+    text-align: start;
+    width: 150px;
     color: #555;
 }
 
@@ -46,6 +47,38 @@
     overflow: auto;
     resize: vertical;
 }
+
+/* Contacts table */
+.contacts-table-border {
+    margin-top: 5px;
+    padding: 5px;
+    border: #555 1px solid;
+    border-radius: 10px;
+}
+.contacts-table {
+    border-collapse: collapse;
+    width: 100%;
+    /* margin: auto; */
+}
+.contacts-table-title {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+.contacts-table thead {
+    border-bottom: #888 1px solid;
+}
+
+.contacts-table-th {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 400;
+}
+.contacts-table tbody tr input {
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
 
 /* Botón de acción */
 .supplierActions {
