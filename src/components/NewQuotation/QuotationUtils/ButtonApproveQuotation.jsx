@@ -136,7 +136,8 @@ const ButtonApproveQuotation = () => {
             hasPaymentsToMake: true,
             isKit: quotationData.isKit,
             jobNotes: "",
-            jobEvents: [newEvent]
+            jobEvents: [newEvent],
+            updatedAt: new Date()
         };
 
         try {

@@ -115,7 +115,6 @@ const DetailedJobContainer = () => {
     const getJobDataFromDb = async (id) => {
         const responseJob = await apiClient.get(`/jobs/populated/${id}`)
         const recievedData = responseJob.data.response
-
         let newData = {
             jobId: recievedData._id,
             calculateFinancing: recievedData.calculateFinancing,
@@ -142,6 +141,7 @@ const DetailedJobContainer = () => {
             jobNotes: recievedData.jobNotes || "",
             jobEvents: recievedData.jobEvents || [],
             images: recievedData.images || [],
+            updatedAt: recievedData.updatedAt,
         }
         // agrego los Productos
         const responseJobProducts = await apiClient.get(`/job-products/job/${id}`)

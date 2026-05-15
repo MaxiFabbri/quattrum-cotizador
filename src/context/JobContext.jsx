@@ -131,7 +131,7 @@ export const JobProvider = ({ children }) => {
         return totalCost;
     };
 
-    
+
     // Función para actualizar la cotización completa
     const updateJobData = (updatedData) => {
         setJobData((prevData) => ({
@@ -221,6 +221,7 @@ export const JobProvider = ({ children }) => {
             jobNotes: jobData.jobNotes,
             jobEvents: jobData.jobEvents,
             images: jobData.images,
+            updatedAt: jobData.updatedAt,
         }
         // Actualizo en la DB la información de job en la BD
         try {
@@ -229,16 +230,27 @@ export const JobProvider = ({ children }) => {
                 {
                     pending: "Guardando el pedido...",
                     success: "Pedido guardado correctamente",
-                    error: "Error al guardar el pedido",
                 },
                 {
-                    autoClose: 800,
+                    autoClose: 1500,
                 }
             )
             console.log("Job guardado correctamente: ", responseJob);
+            setJobData((prevData) => ({
+                ...prevData,
+                updatedAt: responseJob.data.response.updatedAt,
+            }));
             setIsUpdated(false);
         } catch (error) {
             console.error("Error al guardar el pedido: ", error);
+            toast.error(
+                "No se pudo guardar el pedido. haga clic para continuar.",
+                {
+                    autoClose: false, // el usuario debe cerrarlo manualmente
+                    closeOnClick: true,
+                    draggable: true,
+                }
+            );
         }
 
         // Paso por todos los productos
