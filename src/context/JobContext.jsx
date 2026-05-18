@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { apiClient } from "../config/axiosConfig.js";
 import { ParametersContext } from "./ParametersContext.jsx";
 import { QuotationContext } from "./QuotationContext.jsx";
+import { SocketContext } from "./SocketContext.jsx";
 import { toast } from "react-toastify";
 import validateJob from "../components/Jobs/JobsUtils/ValidateJob.jsx";
 import useCalculateFunctions from "../components/Utils/CalculateFunctions.jsx";
@@ -19,6 +20,7 @@ export const JobProvider = ({ children }) => {
     const [jobFilter, setJobFilter] = useState("");
     const [jobStatusFilter, setJobStatusFilter] = useState("");
     const { utilitiesTable, tax } = useContext(ParametersContext);
+    const { socket } = useContext(SocketContext);
     const { calculateUnitSellingPrice, calculateKitUniteSellingPrice, getSellingFinanceCost, getBuyingFinanceCost } = useCalculateFunctions();
     const navigate = useNavigate();
     let jobProductsTotalCost = []

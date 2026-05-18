@@ -13,6 +13,11 @@ export const SocketProvider = ({ children }) => {
     const [isSocketConnected, setIsSocketConnected] = useState(false);
     const [socketUserMap, setSocketUserMap] = useState({});
     const [connectedUsers, setConnectedUsers] = useState({});
+    const [message, setMessage] = useState(null);
+
+    useEffect(() => {
+        console.log("Connected Users: ", connectedUsers);
+    }, [connectedUsers]);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -34,11 +39,32 @@ export const SocketProvider = ({ children }) => {
                 console.log(`Mensaje privado de ${emiterUserId}: ${message}`);
             });
 
+
+            newSocket.on("job:open:response", ({ jobId }) => {
+                console.log("job:open:response recibido para jobId: ", jobId, " Ya está abierto ");
+                setMessage({type: "alert", text: `El job ${jobId} ya está abierto por otro usuario`});
+            })
+
+            // Cuando otro usuario abre el mismo job
+            newSocket.on("job:userJoined", ({ jobId }) => {
+                console.log(`El job ${jobId} fue abierto por otro usuario`);
+                setMessage({type: "info", text: `Otro usuario está abriendo el job ${jobId} `});
+            });
+
+            // Cuando otro usuario cierra el job
+            newSocket.on("job:userLeft", ({ jobId, userId }) => {
+                console.log(`Usuario ${userId} cerró el job ${jobId}`);
+                setMessage({type: "info", text: `Otro usuario cerró el job ${jobId} `});
+            });
+
             return () => {
                 // desmontar todos los listeners juntos
                 newSocket.off("usersUpdate");
                 newSocket.off("newMessage");
                 newSocket.off("privateMessage");
+                newSocket.off("job:open:response");
+                newSocket.off("job:userJoined");
+                newSocket.off("job:userLeft");
             };
         } else {
             closeSocket();
@@ -70,7 +96,7 @@ export const SocketProvider = ({ children }) => {
 
 
     return (
-        <SocketContext.Provider value={{ socket, connectedUsers, isSocketConnected }}>
+        <SocketContext.Provider value={{ socket, connectedUsers, isSocketConnected, message, setMessage }}>
             {children}
         </SocketContext.Provider>
     );

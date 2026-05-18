@@ -10,6 +10,9 @@ import NewJob from "./NewJob.jsx";
 import JobProduct from "./JobElements/JobProduct.jsx";
 
 import { JobContext } from "../../context/JobContext.jsx";
+import { SocketContext } from "../../context/SocketContext.jsx";
+import { AuthContext } from "../../context/AuthContext.jsx";
+
 import TextButton from "../Utils/TextButton.jsx";
 import ButtonSaveJob from "./JobsUtils/ButtonSaveJob.jsx";
 import ButtonAddJobProduct from "./JobsUtils/ButtonAddJobProduct.jsx";
@@ -19,10 +22,14 @@ import ButtonConfirmJob from "./JobsUtils/ButtonConfirmJob.jsx";
 import ButtonCloseJob from "./JobsUtils/ButtonCloseJob.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 import { calculateJobStatus } from "../../utils/AdminJobStatusManager.js";
+import { toast } from "react-toastify";
 
 
 const DetailedJobContainer = () => {
     const { jobData, updateJobData, clearJobData, isSaved, setIsSaved, setIsUpdated } = useContext(JobContext);
+    const { socket, isSocketConnected, message, setMessage } = useContext(SocketContext);
+    const { userId } = useContext(AuthContext);
+
     const [activeId, setActiveId] = useState(null)
     const [loading, setLoading] = useState(true);
     const { id } = useParams()
@@ -32,6 +39,40 @@ const DetailedJobContainer = () => {
         clearJobData();
         getJobDataFromDb(id);
     }, [id]);
+
+    useEffect(() => {
+        const jobId = id;
+        if (isSocketConnected && socket) {
+            console.log("Emitiendo job:open jobId: ", jobId, " y userId: ", userId);
+            // Aviso al servidor que abrí este job
+            socket.emit("job:open", { jobId, userId });
+
+            // Cleanup: cuando cierro la vista, aviso que lo cerré
+            return () => {
+                socket.emit("job:close", { jobId, userId });
+            };
+        }
+    }, [isSocketConnected, socket, id, userId]);
+
+    useEffect(() => {
+        console.log("Mensaje en SocketContext: ", message);
+        if (message !== null) {
+            if (message.type === "alert") {
+                console.log("mostrar alerta ", message.text)
+                toast.error(message.text, {
+                    autoClose: false,   // 🔑 no se cierra automáticamente
+                    closeOnClick: true, // se cierra al hacer click
+                });
+            } else if (message.type === "info") {
+                console.log("mostrar info ", message.text)
+                toast.info(message.text, {
+                    autoClose: 3000,
+                    closeOnClick: true,
+                })
+            }
+        }
+        setMessage(null)
+    }, [message])
 
     // Formatear la fecha
     const formatDate = (utcDate) => {

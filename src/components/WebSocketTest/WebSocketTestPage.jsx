@@ -13,6 +13,7 @@ function WebSocketTestPage() {
     const [logs, setLogs] = useState([]);
     const [autoScroll, setAutoScroll] = useState(true);
     const logsEndRef = useRef(null);
+    
 
 
     useEffect(() => {
