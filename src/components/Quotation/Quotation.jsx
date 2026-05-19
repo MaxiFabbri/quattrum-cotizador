@@ -37,7 +37,12 @@ const Quotation = ({ quote, onDelete }) => {
                 />
             </td>
             <td>{formatDate(quote.date)}</td>
-            <td>{quote.customer.name}</td>
+            <td>
+                {quote.customer.name}
+                {quote.customerNote && quote.customerNote.trim() !== ""
+                    ? ` - ${quote.customerNote}`
+                    : ""}
+            </td>
             <td>{quote.currency}</td>
             <td>{quote.isKit ? "Sí" : "No"}</td>
             <td colSpan="3" style={{ padding: "0px" }}>
