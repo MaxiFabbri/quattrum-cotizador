@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
 import { closestCenter, DndContext } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -14,10 +14,11 @@ import { QuotationContext } from "../../context/QuotationContext";
 import ButtonCalculateQuotation from "./QuotationUtils/ButtonCalculateQuotation.jsx";
 import ButtonAddProduct from "./QuotationUtils/ButtonAddProduct";
 import ButtonSaveQuotation from "./QuotationUtils/ButtonSaveQuotation.jsx";
+import ButtonDuplicateQuotation from "./QuotationUtils/ButtonDuplicateQuotation.jsx";
 
 const NewQuotationContainer = () => {
     const { dolarPrice, paramMonthlyRate } = useContext(ParametersContext);
-    const { quotationData, clearQuotationData, updateQuotationData, setIsSaved } = useContext(QuotationContext);
+    const { quotationData, clearQuotationData, updateQuotationData, setIsSaved, isSaved } = useContext(QuotationContext);
     const [activeId, setActiveId] = useState(null)
     const today = new Date().toISOString().split("T")[0];
 
@@ -30,6 +31,10 @@ const NewQuotationContainer = () => {
             exchangeRate: +(dolarPrice),
         });
     }, [dolarPrice, paramMonthlyRate, today]);
+
+    useEffect(() => {
+        console.log("Quotation Data Updated:", isSaved);
+    }, [quotationData]);
 
     const handleProductsDragEnd = (event) => {
         const { active, over } = event;
@@ -84,6 +89,7 @@ const NewQuotationContainer = () => {
                             <ButtonAddProduct />
                             <ButtonCalculateQuotation />
                             <ButtonSaveQuotation />
+                            {isSaved ? (<ButtonDuplicateQuotation />) : null}
                         </div>
                     </>
                 ) : (
