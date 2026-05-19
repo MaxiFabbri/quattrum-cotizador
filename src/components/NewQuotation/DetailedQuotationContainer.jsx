@@ -117,6 +117,7 @@ const DetailedQuotationContainer = () => {
             date: formatDate(newData.date),
             customerId: newData.customerId._id,
             customerName: newData.customerId.name,
+            customerNote: newData.customerNote || "",
             paymentMethodName: newData.paymentMethodId.customer_payment_description,
             paymentMethodId: newData.paymentMethodId._id,
             customerPaymentDetails: newData.paymentMethodId.customer_payment_details,

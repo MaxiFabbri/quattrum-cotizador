@@ -105,6 +105,14 @@ const NewQuotation = () => {
                     onSelectCustomer={handleCustomerUpdate} />
             </td>
             <td>
+                <input
+                    type="text"
+                    value={quotationData.customerNote}
+                    onChange={(e) => handleChange({ customerNote: e.target.value })}
+                    placeholder="Nota"
+                />
+            </td>
+            <td>
                 <SelectCustomerPayMethod
                     defaultPayment={quotationData.paymentMethodName || ""}
                     onSelectCustomerPayMethod={handleCustomerPaymentMethodUpdate}

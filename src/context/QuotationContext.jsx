@@ -20,6 +20,7 @@ export const QuotationProvider = ({ children }) => {
         date: "",
         customerId: "",
         customerName: "",
+        customerNote: "",
         paymentMethodId: "",
         paymentMethodName: "",
         customerPaymentDetails: [],
@@ -369,6 +370,7 @@ export const QuotationProvider = ({ children }) => {
         const quotationToSave = {
             date: quotationData.date,
             customerId: quotationData.customerId,
+            customerNote: quotationData.customerNote,
             paymentMethodId: quotationData.paymentMethodId,
             customerPaymentDetails: quotationData.customerPaymentDetails,
             monthlyRate: quotationData.monthlyRate,

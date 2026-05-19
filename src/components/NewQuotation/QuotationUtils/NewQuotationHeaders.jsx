@@ -4,6 +4,7 @@ const QuotationHeader = () => {
             <tr key={"quotation-header"}>
                 <th>Fecha</th>
                 <th>Cliente</th>
+                <th>Nota Cliente</th>
                 <th>Forma de pago</th>
                 <th>Tasa de Interes</th>
                 <th>Moneda</th>
