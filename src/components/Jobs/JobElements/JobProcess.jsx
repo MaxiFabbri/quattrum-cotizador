@@ -182,7 +182,7 @@ const NewJobProcess = ({ initialProcessData, productStatus }) => {
         setIsSaved(false)
         const newInvoice = {
             invoiceNumber: "",
-            invoiceType: "Total",
+            invoiceType: "Anticipado",
             invoiceNote: "",
             isInvoicePendingReception: true,
             hasPaymentsPending: true,
