@@ -20,6 +20,7 @@ import ButtonCalculateJob from "./JobsUtils/ButtonCalculateJob.jsx";
 import ButtonCancelJob from "./JobsUtils/ButtonCancelJob.jsx";
 import ButtonConfirmJob from "./JobsUtils/ButtonConfirmJob.jsx";
 import ButtonCloseJob from "./JobsUtils/ButtonCloseJob.jsx";
+import ButtonReopenJob from "./JobsUtils/ButtonReopenJob.jsx";
 import { apiClient } from "../../config/axiosConfig.js";
 import { calculateJobStatus } from "../../utils/AdminJobStatusManager.js";
 import { toast } from "react-toastify";
@@ -263,9 +264,11 @@ const DetailedJobContainer = () => {
                             </div>
                             <div className="job-buttons-container">
                                 {isSaved ? null : <ButtonSaveJob />}
+                                {(jobData.jobStatus === "Cerrado" || jobData.jobStatus === "Entregado")  && <ButtonReopenJob />}
                                 {jobData.jobStatus === "Nuevo" && <ButtonConfirmJob />}
                                 {jobData.jobStatus === "Nuevo" && <ButtonCalculateJob />}
-                                {jobData.jobStatus === "Entregado" && <ButtonCloseJob />}
+                                {(jobData.jobStatus === "Entregado" || jobData.jobStatus === "Reclamo") && <ButtonCloseJob />}
+                                
                                 <ButtonAddJobProduct />
                                 <TextButton
                                     text="Cancelar"

@@ -80,7 +80,7 @@ function buyingInvoiceRulesForReadyProcesses(invoice) {
 }
 
 const leastAdvancedStatus = (job) => {
-    if(job.jobStatus === "Nuevo" || job.jobStatus === "Cerrado" || job.jobStatus === "Anulado") {
+    if(job.jobStatus === "Nuevo" || job.jobStatus === "Cerrado" || job.jobStatus === "Anulado"  || job.jobStatus === "Reclamo") {
         return job.jobStatus;
     }
     const statusOrder = [
