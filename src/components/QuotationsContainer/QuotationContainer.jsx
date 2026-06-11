@@ -9,6 +9,11 @@ import Quotation from "../Quotation/Quotation.jsx";
 import StatusFilterSelect from "../NewQuotation/InputComponents/StatusFilterSelect.jsx";
 
 const Quotations = () => {
+    useEffect(() => {
+        document.title = "Cotizaciones";
+    }, []);
+
+
     const [quotations, setQuotations] = useState([]); // Estado para las cotizaciones
     const [page, setPage] = useState(1); // Estado para la página actual
     const [loading, setLoading] = useState(true);

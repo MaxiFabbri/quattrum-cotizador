@@ -9,6 +9,10 @@ import JobAdminFilterMenu from "./JobAdminFilterMenu.jsx";
 import JobStatusFilterSelect from "./JobStatusFilterSelect.jsx";
 
 const JobsContainer = () => {
+    useEffect(() => {
+        document.title = "Pedidos"
+    }, []);
+
     const [jobs, setJobs] = useState([]); // Estado para las cotizaciones
     const [jobPage, setJobPage] = useState(1); // Estado para la página actual
     const [loading, setLoading] = useState(true);
@@ -27,7 +31,7 @@ const JobsContainer = () => {
     }, [jobPage, search]);
 
     useEffect(() => {
-        if(jobs.docs){
+        if (jobs.docs) {
             console.log("Jobs fetched: ", jobs.docs);
         }
         return
