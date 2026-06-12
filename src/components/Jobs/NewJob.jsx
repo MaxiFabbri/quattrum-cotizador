@@ -16,7 +16,6 @@ import TextButton from "../Utils/TextButton.jsx";
 // import { toast } from "react-toastify";
 import { getInvoiceRowClass } from "./JobsUtils/JobClassValidations.js";
 import { calculateInvoicesStatus } from "../../utils/AdminJobStatusManager.js"
-import JobEventForm from "./JobsUtils/JobEventForm.jsx";
 import JobEventsTable from "./JobsUtils/JobEventsTable.jsx";
 import ImageLinkUploader from "./JobsUtils/ImageLinkUploader.jsx";
 

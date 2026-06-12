@@ -4,11 +4,23 @@ import { AuthContext } from "../../../context/AuthContext.jsx";
 import TextButton from "../../Utils/TextButton.jsx";
 
 const ButtonReopenJob = () => {
-    const { changeJobStatus, updateJobData, jobData } = useContext(JobContext);
+    const { updateJobDataAndSave, jobData } = useContext(JobContext);
     const { userId, userName } = useContext(AuthContext);
 
-    const handleReopenJob = async () => {
-        changeJobStatus("Reclamo");
+    const handleReopenJob = () => {
+        const newEvent = {
+            eventDate: new Date(),
+            eventUserId: userId,
+            eventUserName: userName,
+            eventProductId: null,
+            eventNote: "Se reabre el trabajo por un reclamo"
+        }
+        const updatedEvents = [...jobData.jobEvents, newEvent];
+        const updatedJobData = {
+            jobEvents: updatedEvents,
+            jobStatus: "Reclamo"
+        };
+        updateJobDataAndSave(updatedJobData);
     }
 
     return (
