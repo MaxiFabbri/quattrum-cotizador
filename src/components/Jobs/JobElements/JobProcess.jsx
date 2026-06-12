@@ -314,7 +314,10 @@ const NewJobProcess = ({ initialProcessData, productStatus }) => {
                 <td>
                     <span>Unit: </span>
                     <input
-                        className="job-input-number"
+                        // className="job-input-number"
+                        className={`job-input-number ${
+                            jobProcessData.currency === "Dolar" ? "usd-class" : "ars-class"
+                        }`}
                         type="number"
                         name="newTempUnitCost"
                         placeholder="$ Unit."

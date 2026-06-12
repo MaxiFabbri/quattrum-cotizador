@@ -55,5 +55,9 @@
     margin: 3px 0px;
     grid-template-columns: 5% 32% 20% 32% 10%;
 }
+.usd-class {
+    background-color: #b2f2bb ;
+    border: 2px solid #4CAF50;
+}
 
 
