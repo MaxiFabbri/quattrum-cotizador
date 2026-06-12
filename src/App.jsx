@@ -44,6 +44,9 @@ import DetailedJobContainer from './components/Jobs/DetailedJobContainer.jsx';
 // WebSocket Test
 import WebSocketTestPage from './components/WebSocketTest/WebSocketTestPage.jsx';
 
+// Dashboard
+import Dashboard from './components/Dashboard/Dashboard.jsx';
+
 // Layout para Cotizaciones
 function QuotationsLayout() {
   return (
@@ -106,6 +109,9 @@ function App() {
 
                 {/* WebSocket Test */}
                 <Route path="/websocket-test" element={<WebSocketTestPage />} />
+
+                {/* Rutas de Dashboard */}
+                <Route path="/dashboard" element={<Dashboard />} />
               </Route>
 
               {/* Layout Producción */}
