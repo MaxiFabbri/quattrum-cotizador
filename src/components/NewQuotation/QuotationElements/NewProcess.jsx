@@ -190,7 +190,9 @@ const NewProcess = ({ initialProcessData }) => {
             <td>
                 <span>Unit: </span>
                 <input
-                    className="input-number"
+                    className={`input-number ${
+                        processData.currency === "Dolar" ? "usd-class" : "ars-class"
+                    }`}
                     type="number"
                     name="newTempUnitCost"
                     placeholder="$ Unit."
