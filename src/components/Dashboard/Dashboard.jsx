@@ -27,31 +27,50 @@ const Dashboard = () => {
     }, []);
 
     // Transformar datos para el gráfico
-    const monthlyData = jobsData
-        ? jobsData.reduce((acc, job) => {
+    let monthlyData = {};
+
+    if (jobsData) {
+        monthlyData = jobsData.reduce((acc, job) => {
             const date = new Date(job.approvalDate);
             const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`; // ej: "2026-3"
 
             if (!acc[monthKey]) {
-                acc[monthKey] = { products: 0, amount: 0 };
+                acc[monthKey] = { amount: 0, jobs: 0 };
             }
 
+            // cada job aprobado cuenta como 1
+            acc[monthKey].jobs += 1;
+
             job.jobProducts.forEach((prod) => {
-                acc[monthKey].products += prod.quantity;
                 acc[monthKey].amount += Math.round(
                     prod.quantity * prod.unitSellingPrice * job.exchangeRate / 1000
                 );
             });
 
             return acc;
-        }, {})
-        : {};
+        }, {});
+        console.log("Monthly Data: ", monthlyData);
+    } else {
+        monthlyData = {};
+    }
 
     const chartData = Object.entries(monthlyData).map(([month, values]) => ({
         month,
-        products: values.products,
         amount: values.amount,
+        jobs: values.jobs,
     }));
+    console.log("Chart Data: ", chartData);
+
+    const CustomLegend = () => (
+        <div className="custom-legend">
+            <div style={{ marginRight: 20 }}>
+                <span className="amount-color">■</span> Importe total en $ miles
+            </div>
+            <div>
+                <span className="jobs-color">■</span> Cantidad de Trabajos
+            </div>
+        </div>
+    );
 
     return (
         <div>
@@ -61,10 +80,10 @@ const Dashboard = () => {
             {jobsData && (
                 <div className="dashboard-barchart">
                     <h3>Trabajos aprobados por mes</h3>
-                    <ResponsiveContainer>
+                    <ResponsiveContainer width="100%" height={350}>
                         <BarChart data={chartData}>
                             <XAxis dataKey="month" />
-                            {/* Eje Y para importe (izquierda) */}
+                            {/* Eje Y para importe (izquierda, escala grande) */}
                             <YAxis
                                 yAxisId="amount"
                                 orientation="left"
@@ -77,15 +96,23 @@ const Dashboard = () => {
                                     }).format(value)
                                 }
                             />
-                            {/* Eje Y para cantidad (derecha) */}
+                            {/* Eje Y para cantidad de trabajos (derecha, escala pequeña) */}
                             <YAxis
-                                yAxisId="products"
+                                yAxisId="jobs"
                                 orientation="right"
                                 width={60}
                                 tick={{ fontSize: 12 }}
                             />
                             <Tooltip />
-                            <Legend />
+
+                            {/* Barra de trabajos usando eje derecho */}
+                            <Bar
+                                yAxisId="jobs"
+                                dataKey="jobs"
+                                fill="#82ca9d"
+                                name="Cantidad de Trabajos"
+                            />
+
                             {/* Barra de importe usando eje izquierdo */}
                             <Bar
                                 yAxisId="amount"
@@ -93,13 +120,7 @@ const Dashboard = () => {
                                 fill="#8884d8"
                                 name="Importe total en $ miles"
                             />
-                            {/* Barra de productos usando eje derecho */}
-                            <Bar
-                                yAxisId="products"
-                                dataKey="products"
-                                fill="#82ca9d"
-                                name="Cantidad de productos"
-                            />
+                            <Legend content={<CustomLegend />} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>

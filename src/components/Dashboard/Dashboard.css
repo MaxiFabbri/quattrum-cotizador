@@ -3,3 +3,14 @@
     margin: auto;
     height: 350px;
 }
+
+.custom-legend {
+    display: flex;
+    justify-content: center;
+}
+.amount-color {
+    color: #8884d8;
+}
+.jobs-color {
+    color: #82ca9d;
+}
