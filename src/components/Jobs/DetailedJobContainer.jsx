@@ -21,6 +21,8 @@ import ButtonCancelJob from "./JobsUtils/ButtonCancelJob.jsx";
 import ButtonConfirmJob from "./JobsUtils/ButtonConfirmJob.jsx";
 import ButtonCloseJob from "./JobsUtils/ButtonCloseJob.jsx";
 import ButtonReopenJob from "./JobsUtils/ButtonReopenJob.jsx";
+import JobTotals from "./JobElements/JobTotals.jsx";
+
 import { apiClient } from "../../config/axiosConfig.js";
 import { calculateJobStatus } from "../../utils/AdminJobStatusManager.js";
 import { toast } from "react-toastify";
@@ -33,6 +35,11 @@ const DetailedJobContainer = () => {
 
     const [activeId, setActiveId] = useState(null)
     const [loading, setLoading] = useState(true);
+    const [totals, setTotals] = useState({
+        revenue: 0,
+        cost: 0,
+        profit: 0,
+    });
     const { id } = useParams()
     const navigate = useNavigate();
 
@@ -74,6 +81,31 @@ const DetailedJobContainer = () => {
         }
         setMessage(null)
     }, [message])
+
+    useEffect(() => {
+        const jobProducts = jobData.jobProducts || [];
+        const dolarPrice = jobData.approvedExchangeRate;
+        console.log("JobData actualizado en Detailed: ", jobProducts);
+        console.log("Dolar Price: ", dolarPrice);
+        const revenue = calculateRevenue(jobProducts) * dolarPrice;
+        const cost = calculateCost(jobProducts) * dolarPrice;
+        const profit = revenue - cost;
+        console.log("Revenue: ", revenue, " Cost: ", cost, " Profit: ", profit);
+        setTotals({ revenue, cost, profit });
+    }, [jobData])
+
+    const calculateRevenue = (products) => {
+        console.log("Calcular revenue: ", products);
+        return products.reduce((acc, product) => {
+            return acc + product.quantity * product.unitSellingPrice;
+        }, 0);
+    }
+    const calculateCost = (products) => {
+        console.log("Calcular cost: ", products);
+        return products.reduce((acc, product) => {
+            return acc + product.totalProductCost;
+        }, 0);
+    }
 
     // Formatear la fecha
     const formatDate = (utcDate) => {
@@ -262,13 +294,20 @@ const DetailedJobContainer = () => {
                                     ))}
                                 </SortableContext>
                             </div>
+
+                            <JobTotals
+                                totalRevenue={totals.revenue}
+                                totalCost={totals.cost}
+                                totalProfit={totals.profit}
+                            />
+
                             <div className="job-buttons-container">
                                 {isSaved ? null : <ButtonSaveJob />}
-                                {(jobData.jobStatus === "Cerrado" || jobData.jobStatus === "Entregado")  && <ButtonReopenJob />}
+                                {(jobData.jobStatus === "Cerrado" || jobData.jobStatus === "Entregado") && <ButtonReopenJob />}
                                 {jobData.jobStatus === "Nuevo" && <ButtonConfirmJob />}
                                 {jobData.jobStatus === "Nuevo" && <ButtonCalculateJob />}
                                 {(jobData.jobStatus === "Entregado" || jobData.jobStatus === "Reclamo") && <ButtonCloseJob />}
-                                
+
                                 <ButtonAddJobProduct />
                                 <TextButton
                                     text="Cancelar"

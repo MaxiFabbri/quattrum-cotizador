@@ -1,0 +1,9 @@
+.job-totals {
+    display: flex;
+    justify-content: space-around;
+}
+.job-totals-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
