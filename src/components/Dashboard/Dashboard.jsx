@@ -105,6 +105,13 @@ const Dashboard = () => {
                             />
                             <Tooltip />
 
+                            {/* Barra de importe usando eje izquierdo */}
+                            <Bar
+                                yAxisId="amount"
+                                dataKey="amount"
+                                fill="#8884d8"
+                                name="Importe total en $ miles"
+                            />
                             {/* Barra de trabajos usando eje derecho */}
                             <Bar
                                 yAxisId="jobs"
@@ -113,13 +120,6 @@ const Dashboard = () => {
                                 name="Cantidad de Trabajos"
                             />
 
-                            {/* Barra de importe usando eje izquierdo */}
-                            <Bar
-                                yAxisId="amount"
-                                dataKey="amount"
-                                fill="#8884d8"
-                                name="Importe total en $ miles"
-                            />
                             <Legend content={<CustomLegend />} />
                         </BarChart>
                     </ResponsiveContainer>

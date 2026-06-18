@@ -10,8 +10,6 @@ const JobTotals = ({ totalRevenue, totalCost, totalProfit }) => {
         }).format(value);
     };
 
-
-
     return (
         <div className="job-totals">
             <div className="job-totals-item">
