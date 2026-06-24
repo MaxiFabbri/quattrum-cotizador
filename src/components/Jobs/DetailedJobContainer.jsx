@@ -85,12 +85,9 @@ const DetailedJobContainer = () => {
     useEffect(() => {
         const jobProducts = jobData.jobProducts || [];
         const dolarPrice = jobData.approvedExchangeRate;
-        console.log("JobData actualizado en Detailed: ", jobProducts);
-        console.log("Dolar Price: ", dolarPrice);
         const revenue = calculateRevenue(jobProducts) * dolarPrice;
         const cost = calculateCost(jobProducts) * dolarPrice;
         const profit = revenue - cost;
-        console.log("Revenue: ", revenue, " Cost: ", cost, " Profit: ", profit);
         setTotals({ revenue, cost, profit });
     }, [jobData])
 

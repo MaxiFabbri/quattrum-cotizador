@@ -3,7 +3,7 @@ import { apiClient } from "../config/axiosConfig.js";
 import { ParametersContext } from "./ParametersContext.jsx";
 import { toast } from "react-toastify";
 import { validateQuotation } from "../components/NewQuotation/QuotationUtils/validateQuotation.jsx";
-
+import { initialQuotationDataState } from "../steate/quotationState.js";
 
 export const QuotationContext = createContext();
 
@@ -14,27 +14,6 @@ export const QuotationProvider = ({ children }) => {
     const [filter, setFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     let productsTotalCost = []
-
-    const initialQuotationDataState = {
-        id: "",
-        date: "",
-        customerId: "",
-        customerName: "",
-        customerNote: "",
-        paymentMethodId: "",
-        paymentMethodName: "",
-        customerPaymentDetails: [],
-        paymentDaysToCollect: 0,
-        monthlyRate: 0,
-        currency: "Peso",
-        exchangeRate: 0,
-        quoteStatus: "Cotizado",
-        quoteUnitSellingPrice: 0,
-        quoteProductsDescription: "",
-        isKit: false,
-        calculateFinancing: true,
-        products: [],
-    };
 
     const [quotationData, setQuotationData] = useState(initialQuotationDataState);
     // Se ejecuta cuando isUpdated cambia a `true`
