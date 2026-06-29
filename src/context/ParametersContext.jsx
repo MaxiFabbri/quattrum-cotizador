@@ -9,7 +9,7 @@ export const ParametersContext = createContext();
 // Proveedor del contexto
 export const ParametersProvider = ({ children }) => {
     const [paramMonthlyRate, setParamMonthlyRate] = useState(0.1);
-    const [tax, setTax] = useState(0.5);
+    const [tax, setTax] = useState(0.05);
     const [utilitiesTable, setUtilitiesTable] = useState([]);
     const [dolarPrice, setDolarPrice] = useState(1080);
     const [isParamsLoaded, setIsParamsLoaded] = useState(false); // Nuevo estado
@@ -20,7 +20,7 @@ export const ParametersProvider = ({ children }) => {
         try {
             const response = await apiClient.get('general-parameters');
             const { monthlyRate, tax, utilitiesTable, dolar } = response.data.response[0];
-            
+            console.log('Parametros Generales Recuperados: ', { monthlyRate, tax, utilitiesTable, dolar });
             setParamMonthlyRate(monthlyRate);
             setTax(tax);
             setUtilitiesTable(utilitiesTable);
@@ -48,7 +48,6 @@ export const ParametersProvider = ({ children }) => {
             const response = await apiDolar.get();
             console.log('Respuesta de dolarHoy:', response.data.venta);
             const newDolar = response.data.venta;
-
             if (newDolar !== dolarPrice) {
                 updateDolarPrice(newDolar);
             }
@@ -114,6 +113,7 @@ export const ParametersProvider = ({ children }) => {
     return (
         <ParametersContext.Provider
             value={{
+                getGeneralParameters,
                 paramMonthlyRate,
                 tax,
                 utilitiesTable,

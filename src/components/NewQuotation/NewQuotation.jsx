@@ -16,7 +16,7 @@ import CalculateFinancingCheckbox from "./InputComponents/CalculateFinancingChec
 import SelectCustomer from "../Utils/Selectors/SelectCustomer.jsx";
 import SelectCustomerPayMethod from "../Utils/Selectors/SelectCustomerPaymentMethod.jsx";
 import { useAddProductWithQuotation } from "./QuotationUtils/useAddProductWithQuotation.jsx";
-import { validateNewQuotation } from "./QuotationUtils/validateQuotation.jsx";
+import { validateNewQuotation } from "../../utils/quotationValidations.js";
 import IconButton from "../Utils/IconButton.jsx";
 import { toast } from "react-toastify";
 

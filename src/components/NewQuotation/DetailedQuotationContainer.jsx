@@ -63,7 +63,7 @@ const DetailedQuotationContainer = () => {
                 enteredFixedCost: +(process.enteredFixedCost).toFixed(2),
                 fixedCost: +(process.fixedCost),
                 subTotalProcessCost: +(process.subTotalProcessCost),
-                jobProcessNote: process.jobProcessNote,
+                // jobProcessNote: process.jobProcessNote,
                 savedToDb: true,
                 order: index,
             }

@@ -1,24 +1,40 @@
 import { apiClient } from "../../config/axiosConfig";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, use } from "react";
 import UtilitieTableItem from "./UtilitieTableItem";
-import { ParametersContext } from "../../context/ParametersContext";
+import { ParametersContext } from "../../context/ParametersContext.jsx";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
 import TextButton from "../Utils/TextButton";
 import "./GeneralParameters.css";
 
 const GeneralParameters = () => {
-    const { paramMonthlyRate, tax, utilitiesTable, updateGeneralParameters } = useContext(ParametersContext);
+    const { paramMonthlyRate, tax, utilitiesTable, updateGeneralParameters, getGeneralParameters } = useContext(ParametersContext);
     const [newMonthlyRate, setNewMonthlyRate] = useState(paramMonthlyRate);
     const [newTax, setNewTax] = useState(tax * 100);
     const [newUtilitiesTable, setNewUtilitiesTable] = useState(utilitiesTable);
-    const [loading, setLoading] = useState(false);
+    const [newMinimum, setNewMinimum] = useState(0);
+
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    const [newMinimum, setNewMinimum] = useState(utilitiesTable[0].productMinimun);
+    
+    useEffect(() => {
+        if (utilitiesTable.length > 0) {
+            setNewMonthlyRate(paramMonthlyRate);
+            setNewTax(tax * 100);
+            setNewUtilitiesTable(utilitiesTable);
+            setNewMinimum(utilitiesTable[0].productMinimun);
+            setLoading(false);
+            return
+        };
+        console.log("utilitiesTable vacia, llamando a getGeneralParameters");
+        getGeneralParameters();
+    }, [utilitiesTable]);
 
     useEffect(() => {
-        orderUtilitiesTable(newUtilitiesTable)
+        if (newUtilitiesTable.length > 0) {
+            orderUtilitiesTable(newUtilitiesTable);
+        }
     }, [newMinimum]);    
 
     const orderUtilitiesTable = (table) => {
