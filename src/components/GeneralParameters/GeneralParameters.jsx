@@ -27,17 +27,17 @@ const GeneralParameters = () => {
             setLoading(false);
             return
         };
-        console.log("utilitiesTable vacia, llamando a getGeneralParameters");
         getGeneralParameters();
     }, [utilitiesTable]);
 
     useEffect(() => {
-        if (newUtilitiesTable.length > 0) {
+        if (newUtilitiesTable.length > 0 && newMinimum > 0 && newMinimum !== utilitiesTable[0].productMinimun ) {
             orderUtilitiesTable(newUtilitiesTable);
         }
     }, [newMinimum]);    
 
     const orderUtilitiesTable = (table) => {
+        console.log("Updating Table: ", table)
         let updatedTable = [...table];
 
         // 🔀 Paso 2: Ordenar por upTo
@@ -63,14 +63,11 @@ const GeneralParameters = () => {
 
     const handleChange = (el, id) => {
         const { name, value } = el.target;
-    
         // 🔄 Paso 1: Clonar y actualizar el item correspondiente
         let updatedTable = [...newUtilitiesTable].map(item =>
             item.id === id ? { ...item, [name]: Number(value) } : item
         );
-    
         orderUtilitiesTable(updatedTable);
-        
     };
 
     const handleAddItem = () => {
@@ -91,7 +88,6 @@ const GeneralParameters = () => {
     const handleDelete = (id) => {
         console.log("Eliminar Item ", id);
         const updatedTable = [...newUtilitiesTable].filter(item => item.id !== id);
-        // setNewUtilitiesTable(prevItems => prevItems.filter(item => item.id !== id));
         orderUtilitiesTable(updatedTable);
     }
 
