@@ -1,5 +1,4 @@
 export const getSellingFinanceCost = async (subTotalCost, productionDays, customerPaymentDetails, monthlyRate) => {
-    console.log("Calculando costo financiero de venta: ", subTotalCost, productionDays, customerPaymentDetails, monthlyRate);
     let sellFinanceCost = 0;
     let paymentDetails = customerPaymentDetails;
     sellFinanceCost += paymentDetails.reduce((acc, element) => {
