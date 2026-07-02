@@ -128,7 +128,7 @@ const DetailedJobContainer = () => {
                 invoices: process.invoices,
                 currency: process.currency,
                 unitCost: +(process.unitCost),
-                enteredUnitCost: +(process.enteredUnitCost).toFixed(2),
+                enteredUnitCost: +(process.enteredUnitCost).toFixed(4),
                 fixedCost: +(process.fixedCost),
                 enteredFixedCost: +(process.enteredFixedCost).toFixed(2),
                 adjustPercentage: process.adjustPercentage,
