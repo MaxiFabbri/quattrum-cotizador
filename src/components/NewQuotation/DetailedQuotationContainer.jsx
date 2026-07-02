@@ -58,12 +58,11 @@ const DetailedQuotationContainer = () => {
                 supplierPaymentDetails: process.supplierPaymentMethodId.supplier_payment_details,
                 daysToPayment: process.daysToPayment,
                 currency: process.currency,
-                enteredUnitCost: +(process.enteredUnitCost).toFixed(2),
+                enteredUnitCost: +(process.enteredUnitCost).toFixed(4),
                 unitCost: +(process.unitCost),
                 enteredFixedCost: +(process.enteredFixedCost).toFixed(2),
                 fixedCost: +(process.fixedCost),
                 subTotalProcessCost: +(process.subTotalProcessCost),
-                // jobProcessNote: process.jobProcessNote,
                 savedToDb: true,
                 order: index,
             }
