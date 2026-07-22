@@ -9,6 +9,7 @@ import validateJob from "../components/Jobs/JobsUtils/ValidateJob.jsx";
 import useCalculateFunctions from "../components/Utils/CalculateFunctions.jsx";
 import { calculateJobStatus } from "../utils/AdminJobStatusManager.js";
 import { calculateTotalProductCost, calculateSubTotalProcessCost } from "../utils/CalculateTotalProductCost.js";
+import { newhandleCalculateJob } from "../utils/jobsCalculations.js";
 
 export const JobContext = createContext();
 
@@ -71,7 +72,7 @@ export const JobProvider = ({ children }) => {
     }, [isUpdated]);
 
     useEffect(() => {
-        console.log("jobData actualizado: ", isSaved, " con: ", jobData);
+        // console.log("jobData actualizado: ", isSaved, " con: ", jobData);
         if (statusChange) {
             setStatusChange(false);
             setIsUpdated(true);
@@ -345,10 +346,9 @@ export const JobProvider = ({ children }) => {
         setIsSaved(true);
     };
 
-    const calculateJobData = (calculateAll) => {
-        console.log("Calculando Job... Recalcular todo: ", calculateAll, jobData);
+    const calculateJobData = async (calculateAll) => {
         const isJobValid = validateJob(jobData)
-        console.log("isJobValid: ", isJobValid);
+
         if (!isJobValid.isValid) {
             isJobValid.errors.map((error) => {
                 toast.error(error, {
@@ -358,12 +358,17 @@ export const JobProvider = ({ children }) => {
             });
             return;
         }
+        const calculatedJob = await newhandleCalculateJob(calculateAll, jobData, utilitiesTable, tax);
+        console.log("New calculatedJob: ", calculatedJob);
+        
+        // if (jobData.isKit) {
+        //     handleCalculateSetJob(calculateAll);
+        // } else {
+        //     handleCalculateJob(calculateAll);
+        // }
 
-        if (jobData.isKit) {
-            handleCalculateSetJob(calculateAll);
-        } else {
-            handleCalculateJob(calculateAll);
-        }
+        setJobData(calculatedJob);
+        setIsUpdated(true);
         setIsSaved(true)
     }
 

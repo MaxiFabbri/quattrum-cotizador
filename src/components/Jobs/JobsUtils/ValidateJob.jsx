@@ -1,10 +1,7 @@
-import { use, useContext, useEffect, useState } from "react";
-// import { QuotationContext } from "../../context/QuotationContext";
-
 
 export const validateJob = (job) => {
     const errors = [];
-    console.log("Validating job: ", job);
+    // console.log("Validating job: ", job);
     function isValidMongoId(id) {
         return typeof id === "string" && /^[a-f\d]{24}$/i.test(id);
     }

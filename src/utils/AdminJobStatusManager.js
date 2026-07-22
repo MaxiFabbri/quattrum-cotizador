@@ -1,5 +1,4 @@
 function sellingInvoiceRulesForNewJobs(invoice) {
-    console.log("Calculando Selling Invoice Rules For New Jobs: ", invoice)
     const updated = { ...invoice };
     if (updated.invoiceType !== "Anticipado") {
         updated.isPendingIssuance = false;
@@ -143,6 +142,5 @@ export function calculateJobStatus(jobData) {
         hasPurchaseInvocesToRecieve: noProcesses ? true : processesInvoices.some(invoice => invoice.isInvoicePendingReception),
         hasPaymentsToMake: noProcesses ? true : processesInvoices.some(invoice => invoice.hasPaymentsPending)
     };
-    console.log("Updated Job Data: ", updatedData)
     return updatedData;
 }

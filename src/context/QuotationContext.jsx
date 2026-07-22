@@ -3,9 +3,10 @@ import { apiClient } from "../config/axiosConfig.js";
 import { ParametersContext } from "./ParametersContext.jsx";
 import { toast } from "react-toastify";
 import { validateQuotation } from "../utils/quotationValidations.js";
+import { handleCalculateQuotation } from "../utils/quotationsCalculations.js";
 import { initialQuotationDataState } from "../state/quotationState.js";
 import { getSellingFinanceCost, getBuyingFinanceCost } from "../utils/financeCostCalculations.js";
-import { handleCalculateQuotation } from "../utils/quotationsCalculations.js";
+
 
 export const QuotationContext = createContext();
 
@@ -40,8 +41,7 @@ export const QuotationProvider = ({ children }) => {
             });
             return;
         }
-        let newData;
-        newData = await handleCalculateQuotation(calculateAll, quotationData, utilitiesTable, tax)
+        const newData = await handleCalculateQuotation(calculateAll, quotationData, utilitiesTable, tax)
         console.log("Nueva cotización calculada: ", newData);
         setQuotationData(newData)
         setIsUpdated(true);

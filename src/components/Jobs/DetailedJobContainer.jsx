@@ -21,6 +21,7 @@ import ButtonCancelJob from "./JobsUtils/ButtonCancelJob.jsx";
 import ButtonConfirmJob from "./JobsUtils/ButtonConfirmJob.jsx";
 import ButtonCloseJob from "./JobsUtils/ButtonCloseJob.jsx";
 import ButtonReopenJob from "./JobsUtils/ButtonReopenJob.jsx";
+import ButtonSendJobToXubio from "./JobsUtils/ButtonSendJobToXubio.jsx";
 import JobTotals from "./JobElements/JobTotals.jsx";
 
 import { apiClient } from "../../config/axiosConfig.js";
@@ -92,13 +93,11 @@ const DetailedJobContainer = () => {
     }, [jobData])
 
     const calculateRevenue = (products) => {
-        console.log("Calcular revenue: ", products);
         return products.reduce((acc, product) => {
             return acc + product.quantity * product.unitSellingPrice;
         }, 0);
     }
     const calculateCost = (products) => {
-        console.log("Calcular cost: ", products);
         return products.reduce((acc, product) => {
             return acc + product.totalProductCost;
         }, 0);
@@ -299,6 +298,7 @@ const DetailedJobContainer = () => {
                             />
 
                             <div className="job-buttons-container">
+                                <ButtonSendJobToXubio />
                                 {isSaved ? null : <ButtonSaveJob />}
                                 {(jobData.jobStatus === "Cerrado" || jobData.jobStatus === "Entregado") && <ButtonReopenJob />}
                                 {jobData.jobStatus === "Nuevo" && <ButtonConfirmJob />}
