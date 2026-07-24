@@ -43,7 +43,6 @@ export const newhandleCalculateJob = async (recalculateAll, jobData, utilitiesTa
             position: "top-center",
             autoClose: 1000
         })
-
         if (jobData.calculateFinancing) {
             if (sellingFinanceCost > buyingFinanceCost) {
                 newFinancingCost = sellingFinanceCost - buyingFinanceCost;
@@ -62,7 +61,7 @@ export const newhandleCalculateJob = async (recalculateAll, jobData, utilitiesTa
         if (newJobData.isKit) {
             const kitMinUtilitie = (totalProductCost / jobTotalCost) * kitTargetUtilities.kitMinimun;
             const kitPercentageUtilitie = kitTargetUtilities.kitUtilitie / 100;
-            calculatedSellingPrice = calculateUniteSellingPrice(finalCost, newFinancingCost, newProduct.quantity, kitPercentageUtilitie, kitMinUtilitie, tax);
+            calculatedSellingPrice = calculateUniteSellingPrice(finalCost, newFinancingCost, newJobProduct.quantity, kitPercentageUtilitie, kitMinUtilitie, tax);
             totalKitPrice += calculatedSellingPrice * newJobProduct.quantity;
         } else {
             calculatedSellingPrice = singleCalculatedSellingPrice;
@@ -109,8 +108,9 @@ export const newhandleCalculateJob = async (recalculateAll, jobData, utilitiesTa
 
     newJobData = {
         ...newJobData,
-        products: updatedJobProducts
+        jobProducts: updatedJobProducts
     };
+    
     return newJobData;
 };
 
@@ -122,6 +122,7 @@ const calculateUniteSellingPrice = (totalProductCost, financingCost, quantity, p
     }
     const totalFinancingCost = parseFloat(financingCost / (1 - tax))
     const unitSellingPrice = parseFloat((newNetProductCost + totalFinancingCost) / quantity);
+    console.log("Precio unitario de venta calculado: ", unitSellingPrice);
     return unitSellingPrice;
 };
 

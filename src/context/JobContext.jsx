@@ -10,6 +10,8 @@ import useCalculateFunctions from "../components/Utils/CalculateFunctions.jsx";
 import { calculateJobStatus } from "../utils/AdminJobStatusManager.js";
 import { calculateTotalProductCost, calculateSubTotalProcessCost } from "../utils/CalculateTotalProductCost.js";
 import { newhandleCalculateJob } from "../utils/jobsCalculations.js";
+import { sendPresupuesto } from "../api/enviarPresupuesto.js";
+import ConfirmToast from "../components/Utils/ConfirmToast.jsx";
 
 export const JobContext = createContext();
 
@@ -60,6 +62,7 @@ export const JobProvider = ({ children }) => {
         isKit: false,
         jobNotes: "",
         jobProducts: [],
+        createdInXubio: false,
     };
     const [jobData, setJobData] = useState(initialJobDataState);
 
@@ -72,7 +75,7 @@ export const JobProvider = ({ children }) => {
     }, [isUpdated]);
 
     useEffect(() => {
-        // console.log("jobData actualizado: ", isSaved, " con: ", jobData);
+        console.log("jobData actualizado: ", isSaved, " con: ", jobData);
         if (statusChange) {
             setStatusChange(false);
             setIsUpdated(true);
@@ -225,7 +228,9 @@ export const JobProvider = ({ children }) => {
             jobEvents: jobData.jobEvents,
             images: jobData.images,
             updatedAt: jobData.updatedAt,
+            createdInXubio: jobData.createdInXubio,
         }
+        console.log("Job a guardar en la DB: ", jobToSave);
         // Actualizo en la DB la información de job en la BD
         try {
             const responseJob = await toast.promise(
@@ -346,6 +351,43 @@ export const JobProvider = ({ children }) => {
         setIsSaved(true);
     };
 
+    const updateXubioStatus = async (createdInXubio) => {
+        console.log("Actualizando estado de Xubio a: ", createdInXubio);
+        const newData = {
+            ...jobData,
+            createdInXubio,
+        };
+        setJobData(newData);
+        setIsUpdated(true)
+    }
+
+    const sendJobToXubio = async () => {
+        console.log("Enviando Job a Xubio: ", jobData);
+
+        if (jobData.createdInXubio) {
+            return new Promise((resolve) => {
+                toast(
+                    <ConfirmToast
+                        message="Este pedido ya lo crearon en Xubio, ¿está seguro de continuar?"
+                        onConfirm={() => resolve(true)}
+                        onCancel={() => resolve(false)}
+                    />,
+                    { position: "top-center", autoClose: false }
+                );
+            }).then(async (continuar) => {
+                if (!continuar) return;
+
+                try {
+                    const response = await sendPresupuesto(jobData);
+                    console.log("Response from Xubio API en context:", response);
+                    updateXubioStatus(true);
+                } catch (error) {
+                    console.error("Error al enviar el pedido a Xubio: ", error);
+                }
+            });
+        }
+    }
+
     const calculateJobData = async (calculateAll) => {
         const isJobValid = validateJob(jobData)
 
@@ -360,12 +402,6 @@ export const JobProvider = ({ children }) => {
         }
         const calculatedJob = await newhandleCalculateJob(calculateAll, jobData, utilitiesTable, tax);
         console.log("New calculatedJob: ", calculatedJob);
-        
-        // if (jobData.isKit) {
-        //     handleCalculateSetJob(calculateAll);
-        // } else {
-        //     handleCalculateJob(calculateAll);
-        // }
 
         setJobData(calculatedJob);
         setIsUpdated(true);
@@ -656,6 +692,7 @@ export const JobProvider = ({ children }) => {
                 jobData,
                 setJobData,
                 saveJobData,
+                sendJobToXubio,
                 calculateJobData,
                 clearJobData,
                 cancelJobData,

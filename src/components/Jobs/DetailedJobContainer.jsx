@@ -212,6 +212,7 @@ const DetailedJobContainer = () => {
             jobEvents: recievedData.jobEvents || [],
             images: recievedData.images || [],
             updatedAt: recievedData.updatedAt,
+            createdInXubio: recievedData.createdInXubio || false,
         }
         // agrego los Productos
         const responseJobProducts = await apiClient.get(`/job-products/job/${id}`)
@@ -298,8 +299,7 @@ const DetailedJobContainer = () => {
                             />
 
                             <div className="job-buttons-container">
-                                <ButtonSendJobToXubio />
-                                {isSaved ? null : <ButtonSaveJob />}
+                                {isSaved ? <ButtonSendJobToXubio /> : <ButtonSaveJob />}
                                 {(jobData.jobStatus === "Cerrado" || jobData.jobStatus === "Entregado") && <ButtonReopenJob />}
                                 {jobData.jobStatus === "Nuevo" && <ButtonConfirmJob />}
                                 {jobData.jobStatus === "Nuevo" && <ButtonCalculateJob />}

@@ -68,6 +68,7 @@ const NewJobProcess = ({ initialProcessData, productStatus }) => {
     }, [jobProcessData]);
 
     useEffect(() => {
+        console.log("Updating jobProcessData with newTempUnitCost and newTempFixedCost: ", { newTempUnitCost, newTempFixedCost });
         let exchange = 1;
         if (jobProcessData.currency === "Peso") {
             exchange = jobData.exchangeRate;
