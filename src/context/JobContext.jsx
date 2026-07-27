@@ -363,9 +363,22 @@ export const JobProvider = ({ children }) => {
 
     const sendJobToXubio = async () => {
         console.log("Enviando Job a Xubio: ", jobData);
-
+    
+        // Función auxiliar para enviar el presupuesto
+        const enviar = async () => {
+            try {
+                console.log("dentro del try de enviar a Xubio con jobData: ", jobData);
+                const response = await sendPresupuesto(jobData);
+                console.log("Response from Xubio API en context:", response);
+                updateXubioStatus(true);
+            } catch (error) {
+                console.error("Error al enviar el pedido a Xubio: ", error);
+            }
+        };
+    
         if (jobData.createdInXubio) {
-            return new Promise((resolve) => {
+            console.log("Pedido ya pasado anteriormente a Xubio")
+            const continuar = await new Promise((resolve) => {
                 toast(
                     <ConfirmToast
                         message="Este pedido ya lo crearon en Xubio, ¿está seguro de continuar?"
@@ -374,19 +387,13 @@ export const JobProvider = ({ children }) => {
                     />,
                     { position: "top-center", autoClose: false }
                 );
-            }).then(async (continuar) => {
-                if (!continuar) return;
-
-                try {
-                    const response = await sendPresupuesto(jobData);
-                    console.log("Response from Xubio API en context:", response);
-                    updateXubioStatus(true);
-                } catch (error) {
-                    console.error("Error al enviar el pedido a Xubio: ", error);
-                }
             });
+            if (!continuar) return; // salida temprana si cancela
         }
-    }
+    
+        await enviar();
+    };
+    
 
     const calculateJobData = async (calculateAll) => {
         const isJobValid = validateJob(jobData)
