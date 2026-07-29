@@ -10,7 +10,7 @@ import useCalculateFunctions from "../components/Utils/CalculateFunctions.jsx";
 import { calculateJobStatus } from "../utils/AdminJobStatusManager.js";
 import { calculateTotalProductCost, calculateSubTotalProcessCost } from "../utils/CalculateTotalProductCost.js";
 import { newhandleCalculateJob } from "../utils/jobsCalculations.js";
-import { sendPresupuesto } from "../api/enviarPresupuesto.js";
+import { sendPresupuesto } from "../api/enviarPresupuesto.jsx";
 import ConfirmToast from "../components/Utils/ConfirmToast.jsx";
 
 export const JobContext = createContext();
@@ -370,7 +370,10 @@ export const JobProvider = ({ children }) => {
                 console.log("dentro del try de enviar a Xubio con jobData: ", jobData);
                 const response = await sendPresupuesto(jobData);
                 console.log("Response from Xubio API en context:", response);
-                updateXubioStatus(true);
+                if(!jobData.createdInXubio) {
+                    updateXubioStatus(true);
+                }
+                
             } catch (error) {
                 console.error("Error al enviar el pedido a Xubio: ", error);
             }
