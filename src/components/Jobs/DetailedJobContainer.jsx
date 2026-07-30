@@ -69,8 +69,8 @@ const DetailedJobContainer = () => {
             if (message.type === "alert") {
                 console.log("mostrar alerta ", message.text)
                 toast.error(message.text, {
-                    autoClose: false,   // 🔑 no se cierra automáticamente
-                    closeOnClick: true, // se cierra al hacer click
+                    autoClose: false,
+                    closeOnClick: true,
                 });
             } else if (message.type === "info") {
                 console.log("mostrar info ", message.text)

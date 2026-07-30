@@ -7,6 +7,9 @@ import ContanctTableItem from "./ContactTableItem.jsx";
 import IconButton from "../Utils/IconButton.jsx";
 import { v4 as uuidv4 } from 'uuid';
 import "./EditCustomer.css";
+import { checkCustomerInXubio } from "../../api/sendCustomer.js";
+import { toast } from "react-toastify";
+import ConfirmToast from "../../components/Utils/ConfirmToast.jsx";
 
 
 const EditCustomer = () => {
@@ -65,6 +68,63 @@ const EditCustomer = () => {
     }
     const handleCancel = () => {
         navigate("/customers"); // Redirige a la lista de clientes después de guardar
+    }
+    const copyToClipboard = async (cuit) => {
+        try {
+            const cleanCuit = cuit.replace(/-/g, "");
+            await navigator.clipboard.writeText(cleanCuit);
+            console.log("CUIT copiado al portapapeles:", cleanCuit);
+        } catch (err) {
+            console.error("Error al copiar CUIT:", err);
+        }
+    };
+
+    const handleCheckCustomerInXubio = async () => {
+        const cuit = newCustomerData.cuit;
+        if (!verifyCuit(cuit)) {
+            const message = "El CUIT tiene que tener el formato 11-12345678-9 y es obligatorio para verificar en Xubio.";
+            toast.error(message, {
+                position: "top-center",
+                autoClose: 6000
+            });
+            return;
+        } else {
+            const result = await checkCustomerInXubio(cuit);
+            console.log("Resultado de la verificación en Xubio: ", result.message);
+            if (result.exists) {
+                const message = result.message;
+                toast.success(result.message, {
+                    position: "top-center",
+                    autoClose: 6000
+                });
+            } else {
+                toast(
+                    ({ closeToast }) => (
+                        <ConfirmToast
+                            message={`El CUIT ${cuit} no se encontró en Xubio. Podés cargarlo en Xubio y luego reintentar.`}
+                            onConfirm={() => {
+                                closeToast();
+                                copyToClipboard(cuit);
+                                window.open("https://xubio.com/NXV/ventas/nuevo-cliente", "_blank");
+                                console.log("Usuario fue a cargar cliente en Xubio");
+                                // después de cargar, puede volver a llamar manualmente a sendPresupuesto
+                            }}
+                            onCancel={() => {
+                                closeToast();
+                                console.log("Usuario canceló el proceso");
+                            }}
+                            closeToast={closeToast}
+                        />
+                    ),
+                    { position: "top-center", autoClose: false }
+                );
+            }
+        }
+    }
+    const verifyCuit = (cuit) => {
+        const cuitRegex = /^\d{2}-\d{8}-\d{1}$/;
+        console.log("Verificando CUIT: ", cuit, " Resultado: ", cuitRegex.test(cuit));
+        return cuitRegex.test(cuit);
     }
 
     const saveNewCustomer = async () => {
@@ -213,6 +273,7 @@ const EditCustomer = () => {
                                     defaultValue={newCustomerData.cuit}
                                     onInput={handleInputChange}
                                 />
+                                <TextButton text="Verificar en Xubio" onClick={handleCheckCustomerInXubio} />
                             </p>
                             <p>
                                 <span>Dir. de Entrega: </span>
@@ -224,27 +285,6 @@ const EditCustomer = () => {
                                     onInput={handleInputChange}
                                 />
                             </p>
-                            {/* <p>
-                                <span>Teléfono: </span>
-                                <input
-                                    className="input"
-                                    type="text"
-                                    name="phone"
-                                    placeholder="Número de teléfono"
-                                    defaultValue={newCustomerData.phone}
-                                    onInput={handleInputChange}
-                                />
-                            </p> */}
-                            {/* <p>
-                                <span>Email: </span>
-                                <input
-                                    type="text"
-                                    name="email"
-                                    placeholder="Email del cliente"
-                                    defaultValue={newCustomerData.email}
-                                    onInput={handleInputChange}
-                                />
-                            </p> */}
                             <div>
                                 <span>Forma de pago: </span>
                                 <SelectCustomerPayMethod
