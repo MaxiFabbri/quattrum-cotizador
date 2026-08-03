@@ -76,8 +76,8 @@ function handleCustomerValidation(status, source, message, cliente, presupuestoD
 async function postToXubio(body) {
     console.log("Prepared body for Xubio API:", body);
     try {
-        // const response = await apiClient.post("/xubio/", body);
-        const response = { data: { success: true, message: "Simulación de envío" } };
+        const response = await apiClient.post("/xubio/", body);
+        // const response = { data: { success: true, message: "Simulación de envío" } };
         toast.success("Pedido enviado a Xubio correctamente", {
             position: "top-center",
             autoClose: 6000
