@@ -7,8 +7,11 @@ import { v4 as uuidv4 } from 'uuid';
 import TextButton from "../Utils/TextButton";
 import "./GeneralParameters.css";
 
+
+import UtilitiesTableList from "./UtilitiesTableList.jsx";
+
 const GeneralParameters = () => {
-    const { paramMonthlyRate, tax, utilitiesTable, updateGeneralParameters, getGeneralParameters } = useContext(ParametersContext);
+    const { paramMonthlyRate, utilityTables, tax, utilitiesTable, updateGeneralParameters, getGeneralParameters } = useContext(ParametersContext);
     const [newMonthlyRate, setNewMonthlyRate] = useState(paramMonthlyRate);
     const [newTax, setNewTax] = useState(tax * 100);
     const [newUtilitiesTable, setNewUtilitiesTable] = useState(utilitiesTable);
@@ -145,7 +148,24 @@ const GeneralParameters = () => {
                 />
                 <span> %</span>
             </h4>
-            <h4>
+            <div>
+                <h3>Tablas de Utilidades:</h3>
+                <UtilitiesTableList tables={utilityTables} />
+            </div>
+            
+
+            
+            {/* <h4>
+            <span>Tabla de Utilidad: </span>
+                <input
+                    style={{ width: "40px", fontWeight: "bold", fontSize: "16px", textAlign: "right" }}
+                    name="minimum"
+                    type="number"
+                    value={newMinimum}
+                    onChange={(e) => setNewMinimum(Number(e.target.value))}
+                />
+            </h4> */}
+            {/* <h4>
                 <span>Utilidad Minima: U$S </span>
                 <input
                     style={{ width: "40px", fontWeight: "bold", fontSize: "16px", textAlign: "right" }}
@@ -154,10 +174,10 @@ const GeneralParameters = () => {
                     value={newMinimum}
                     onChange={(e) => setNewMinimum(Number(e.target.value))}
                 />
-            </h4>
+            </h4> */}
             <div>
-                <h3>Tabla de Utilidades:</h3>
-                <table className="utilities-table">
+                
+                {/* <table className="utilities-table">
                     <thead>
                         <tr>
                             <th style={{ width: "40px" }}> </th>
@@ -178,13 +198,16 @@ const GeneralParameters = () => {
                             />
                         ))}
                     </tbody>
-                </table>
+                </table> */}
             </div>
             <div className="button-container">
                 <TextButton text="Agregar Item" onClick={handleAddItem} />
                 <TextButton text="Guardar" onClick={handleSaveParameters} />
                 <TextButton text="Cancelar" onClick={handleCancel} />
             </div>
+            {/* <div>
+                <UtilitiesTableContainer />
+            </div> */}
         </div>
     )
 }

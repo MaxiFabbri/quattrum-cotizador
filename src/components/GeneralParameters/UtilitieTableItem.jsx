@@ -1,14 +1,17 @@
 import IconButton from "../Utils/IconButton.jsx";
 
+const getRowId = (item) => item.id || item._id;
+
 const UtilitieTableItem = ({ item, handleDelete, handleChange }) => {
+    const rowId = getRowId(item);
 
     return (
-        <tr id={item.id} key={item.id}>
+        <tr id={rowId} key={rowId}>
             <td>
                 <IconButton
                     icon="/images/delete.png"
                     title="Eliminar Item"
-                    onClick={() => handleDelete(item.id)}
+                    onClick={() => handleDelete(rowId)}
                 />
             </td>
 
@@ -26,7 +29,7 @@ const UtilitieTableItem = ({ item, handleDelete, handleChange }) => {
                     style={{ width: "40px", textAlign: "right" }}
                     type="number"
                     name="productUtilitie"
-                    value={item.productUtilitie}
+                    value={item.productUtility}
                     onChange={(el) => handleChange(el)} />
                 <span>%</span>
             </td>
@@ -36,7 +39,7 @@ const UtilitieTableItem = ({ item, handleDelete, handleChange }) => {
                     style={{ width: "40px", textAlign: "right" }}
                     type="number"
                     name="productMinimun"
-                    value={item.productMinimun}
+                    value={item.productMinimum}
                     disabled={true} 
                     />
             </td>
@@ -45,7 +48,7 @@ const UtilitieTableItem = ({ item, handleDelete, handleChange }) => {
                     style={{ width: "40px", textAlign: "right" }}
                     type="number"
                     name="kitUtilitie"
-                    value={item.kitUtilitie}
+                    value={item.kitUtility}
                     onChange={(el) => handleChange(el)} />
                 <span>%</span>
             </td>
@@ -55,10 +58,9 @@ const UtilitieTableItem = ({ item, handleDelete, handleChange }) => {
                     style={{ width: "40px", textAlign: "right" }}
                     type="number"
                     name="kitMinimun"
-                    value={item.kitMinimun}
+                    value={item.kitMinimum}
                     disabled={true} />
             </td>
-
         </tr>
     );
 }
