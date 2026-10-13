@@ -38,14 +38,14 @@ const useCalculateFunctions = () => {
 
     const calculateUnitSellingPrice = (totalProductCost, financingCost, quantity) => {
             const targetUtility = utilitiesTable.find((utility) => totalProductCost < utility.upTo);
-            let minUtilitie = targetUtility.productMinimun;
-            let percentageUtilitie = targetUtility.productUtilitie / 100;
+            let minUtility = targetUtility.productMinimum;
+            let percentageUtility = targetUtility.productUtility / 100;
             // calculo utilidad por porjentaje
-            let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
+            let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtility + tax)))
             // Si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
-            if (newNetProductCost * percentageUtilitie < minUtilitie) {
+            if (newNetProductCost * percentageUtility < minUtility) {
                 // si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
-                newNetProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax))
+                newNetProductCost = parseFloat((totalProductCost + minUtility) / (1 - tax))
             }
 
             // Calculo el costo financiero
@@ -57,18 +57,18 @@ const useCalculateFunctions = () => {
 
     const calculateKitUniteSellingPrice = (totalProductCost, financingCost, quantity, targetUtilities, totalQuotationCost) => {
         // Calculo las utilidades deseadas de los parametros generales
-        // calculo el minutilitie que le corresponde a este producto por regla de 3 simple
-        let minUtilitie = (totalProductCost / totalQuotationCost) * targetUtilities.kitMinimun
-        let percentageUtilitie = targetUtilities.kitUtilitie / 100;
+        // calculo el minutility que le corresponde a este producto por regla de 3 simple
+        let minUtility = (totalProductCost / totalQuotationCost) * targetUtilities.kitMinimum
+        let percentageUtility = targetUtilities.kitUtility / 100;
         const totalFinancingCost = parseFloat(financingCost / (1 - tax))
 
         // calculo utilidad por porjentaje
-        let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
+        let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtility + tax)))
 
         // Si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
-        if (newNetProductCost * percentageUtilitie < minUtilitie) {
+        if (newNetProductCost * percentageUtility < minUtility) {
             // si el costo total por porcentaje es menor al minimo, lo cambio por el minimo
-            newNetProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax))
+            newNetProductCost = parseFloat((totalProductCost + minUtility) / (1 - tax))
         }
 
         // paso el costo total a costo unitario

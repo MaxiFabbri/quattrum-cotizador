@@ -53,15 +53,15 @@ export const newhandleCalculateJob = async (recalculateAll, jobData, utilitiesTa
 
         const finalCost = totalProductCost + newJobProduct.shipmentCost + newJobProduct.otherCost;
 
-        const singleMinUtilitie = singleTargetUtility.productMinimun;
-        const singlePercentageUtilitie = singleTargetUtility.productUtilitie / 100;
-        const singleCalculatedSellingPrice = calculateUniteSellingPrice(finalCost, newFinancingCost, newJobProduct.quantity, singlePercentageUtilitie, singleMinUtilitie, tax);
+        const singleMinUtility = singleTargetUtility.productMinimum;
+        const singlePercentageUtility = singleTargetUtility.productUtility / 100;
+        const singleCalculatedSellingPrice = calculateUniteSellingPrice(finalCost, newFinancingCost, newJobProduct.quantity, singlePercentageUtility, singleMinUtility, tax);
         totalSinglePrice += singleCalculatedSellingPrice * newJobProduct.quantity;
         let calculatedSellingPrice = 0;
         if (newJobData.isKit) {
-            const kitMinUtilitie = (totalProductCost / jobTotalCost) * kitTargetUtilities.kitMinimun;
-            const kitPercentageUtilitie = kitTargetUtilities.kitUtilitie / 100;
-            calculatedSellingPrice = calculateUniteSellingPrice(finalCost, newFinancingCost, newJobProduct.quantity, kitPercentageUtilitie, kitMinUtilitie, tax);
+            const kitMinUtility = (totalProductCost / jobTotalCost) * kitTargetUtilities.kitMinimum;
+            const kitPercentageUtility = kitTargetUtilities.kitUtility / 100;
+            calculatedSellingPrice = calculateUniteSellingPrice(finalCost, newFinancingCost, newJobProduct.quantity, kitPercentageUtility, kitMinUtility, tax);
             totalKitPrice += calculatedSellingPrice * newJobProduct.quantity;
         } else {
             calculatedSellingPrice = singleCalculatedSellingPrice;
@@ -114,11 +114,11 @@ export const newhandleCalculateJob = async (recalculateAll, jobData, utilitiesTa
     return newJobData;
 };
 
-const calculateUniteSellingPrice = (totalProductCost, financingCost, quantity, percentageUtilitie, minUtilitie, tax) => {
-    console.log("Calculando precio unitario de venta: ", { totalProductCost, financingCost, quantity, percentageUtilitie, minUtilitie, tax });
-    let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtilitie + tax)))
-    if (newNetProductCost * percentageUtilitie < minUtilitie) {
-        newNetProductCost = parseFloat((totalProductCost + minUtilitie) / (1 - tax))
+const calculateUniteSellingPrice = (totalProductCost, financingCost, quantity, percentageUtility, minUtility, tax) => {
+    console.log("Calculando precio unitario de venta: ", { totalProductCost, financingCost, quantity, percentageUtility, minUtility, tax });
+    let newNetProductCost = parseFloat(totalProductCost / (1 - (percentageUtility + tax)))
+    if (newNetProductCost * percentageUtility < minUtility) {
+        newNetProductCost = parseFloat((totalProductCost + minUtility) / (1 - tax))
     }
     const totalFinancingCost = parseFloat(financingCost / (1 - tax))
     const unitSellingPrice = parseFloat((newNetProductCost + totalFinancingCost) / quantity);

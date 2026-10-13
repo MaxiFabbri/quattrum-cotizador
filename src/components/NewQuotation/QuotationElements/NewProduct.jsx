@@ -19,7 +19,7 @@ const NewProduct = ({ productData }) => {
 
     const [isProdUpdated, setIsProdUpdated] = useState(true);
     const [activeId, setActiveId] = useState(null)
-    const [percentageUtilitie, setPercentageUtilitie] = useState(0);
+    const [percentageUtility, setPercentageUtility] = useState(0);
     const [editPrice, setEditPrice] = useState(false);
     const [isManualPrice, setIsManualPrice] = useState(prodData.isManual || false);
     const [pesosPrice, setPesosPrice] = useState(+(prodData.unitSellingPrice * quotationData.exchangeRate).toFixed(0) || 0);
@@ -43,11 +43,11 @@ const NewProduct = ({ productData }) => {
         id: productData.productId
     })
 
-    const calculatePercentageUtilitie = () => {
+    const calculatePercentageUtility = () => {
         const totalSellingPrice = (prodData.unitSellingPrice * prodData.quantity)
         const netSellingPrice = totalSellingPrice - (prodData.financingCost * (1 + tax))
-        const utilitie = totalSellingPrice - prodData.totalProductCost - prodData.financingCost - (totalSellingPrice * tax)
-        setPercentageUtilitie(((utilitie / netSellingPrice) * 100).toFixed(2));
+        const utility = totalSellingPrice - prodData.totalProductCost - prodData.financingCost - (totalSellingPrice * tax)
+        setPercentageUtility(((utility / netSellingPrice) * 100).toFixed(2));
     }
 
     useEffect(() => {
@@ -65,7 +65,7 @@ const NewProduct = ({ productData }) => {
     }, [newEnteredShipmentCost, newEnteredOtherCost]);
 
     useEffect(() => {
-        calculatePercentageUtilitie();
+        calculatePercentageUtility();
     }, [prodData.pesosPrice]);
 
     useEffect(() => {
@@ -269,7 +269,7 @@ const NewProduct = ({ productData }) => {
                         </td>
                         <td>
                             <span className="percentage-utility">
-                                {isNaN(percentageUtilitie) ? '%' : `${percentageUtilitie} %`}
+                                {isNaN(percentageUtility) ? '%' : `${percentageUtility} %`}
                             </span>
                         </td>
                         <td>

@@ -26,7 +26,7 @@ const NewJobProduct = ({ productData }) => {
 
     const [isJobProdUpdate, setIsJobProdUpdated] = useState(true);
     const [activeId, setActiveId] = useState(null)
-    const [percentageUtilitie, setPercentageUtilitie] = useState(0);
+    const [percentageUtility, setPercentageUtility] = useState(0);
     const [editPrice, setEditPrice] = useState(false);
     const [isManualPrice, setIsManualPrice] = useState(jobProdData.isManual || false);
     const [pesosPrice, setPesosPrice] = useState(+(jobProdData.unitSellingPrice * jobData.exchangeRate).toFixed(0));
@@ -53,11 +53,11 @@ const NewJobProduct = ({ productData }) => {
         id: productData.jobProductId
     })
 
-    const calculatePercentageUtilitie = () => {
+    const calculatePercentageUtility = () => {
         const totalSellingPrice = (jobProdData.unitSellingPrice * jobProdData.quantity)
         const netSellingPrice = totalSellingPrice - (jobProdData.financingCost * (1 + tax))
-        const utilitie = totalSellingPrice - jobProdData.totalProductCost - jobProdData.financingCost - (totalSellingPrice * tax)
-        setPercentageUtilitie(((utilitie / netSellingPrice) * 100).toFixed(2));
+        const utility = totalSellingPrice - jobProdData.totalProductCost - jobProdData.financingCost - (totalSellingPrice * tax)
+        setPercentageUtility(((utility / netSellingPrice) * 100).toFixed(2));
     }
 
     useEffect(() => {
@@ -75,7 +75,7 @@ const NewJobProduct = ({ productData }) => {
     }, [newEnteredShipmentCost, newEnteredOtherCost]);
 
     useEffect(() => {
-        calculatePercentageUtilitie();
+        calculatePercentageUtility();
     }, [jobProdData]);
 
     useEffect(() => {
@@ -361,7 +361,7 @@ const NewJobProduct = ({ productData }) => {
                         </td>
                         <td>
                             <span className="job-percentage-utility">
-                                {isNaN(percentageUtilitie) ? '%' : `${percentageUtilitie} %`}
+                                {isNaN(percentageUtility) ? '%' : `${percentageUtility} %`}
                             </span>
                         </td>
                         <td>

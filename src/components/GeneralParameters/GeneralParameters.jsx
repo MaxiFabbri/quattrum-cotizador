@@ -1,216 +1,96 @@
-import { apiClient } from "../../config/axiosConfig";
-import { useState, useEffect, useContext, use } from "react";
-import UtilitieTableItem from "./UtilitieTableItem";
+import { useContext, useEffect, useState } from "react";
 import { ParametersContext } from "../../context/ParametersContext.jsx";
-import { useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from 'uuid';
 import TextButton from "../Utils/TextButton";
+import UtilitiesTableList from "./UtilitiesTableList.jsx";
 import "./GeneralParameters.css";
 
-
-import UtilitiesTableList from "./UtilitiesTableList.jsx";
-
 const GeneralParameters = () => {
-    const { paramMonthlyRate, utilityTables, tax, utilitiesTable, updateGeneralParameters, getGeneralParameters } = useContext(ParametersContext);
+    const {
+        paramMonthlyRate,
+        utilityTables,
+        tax,
+        updateGeneralParameters,
+        isParamsLoaded,
+        getUtilityTables,
+    } = useContext(ParametersContext);
     const [newMonthlyRate, setNewMonthlyRate] = useState(paramMonthlyRate);
     const [newTax, setNewTax] = useState(tax * 100);
-    const [newUtilitiesTable, setNewUtilitiesTable] = useState(utilitiesTable);
-    const [newMinimum, setNewMinimum] = useState(0);
-
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
-
-    
-    useEffect(() => {
-        if (utilitiesTable.length > 0) {
-            setNewMonthlyRate(paramMonthlyRate);
-            setNewTax(tax * 100);
-            setNewUtilitiesTable(utilitiesTable);
-            setNewMinimum(utilitiesTable[0].productMinimun);
-            setLoading(false);
-            return
-        };
-        getGeneralParameters();
-    }, [utilitiesTable]);
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
-        if (newUtilitiesTable.length > 0 && newMinimum > 0 && newMinimum !== utilitiesTable[0].productMinimun ) {
-            orderUtilitiesTable(newUtilitiesTable);
-        }
-    }, [newMinimum]);    
+        setNewMonthlyRate(paramMonthlyRate);
+        setNewTax(tax * 100);
+    }, [paramMonthlyRate, tax]);
 
-    const orderUtilitiesTable = (table) => {
-        console.log("Updating Table: ", table)
-        let updatedTable = [...table];
-
-        // 🔀 Paso 2: Ordenar por upTo
-        updatedTable.sort((a, b) => a.upTo - b.upTo);
-    
-        // 🧮 Paso 3: Calcular productMinimun y KitMinimun
-        for (let i = 1; i < updatedTable.length; i++) {
-            const anterior = updatedTable[i - 1];
-            updatedTable[i].productMinimun = Math.floor((anterior.upTo/(1-(anterior.productUtilitie/100))) - anterior.upTo );
-            updatedTable[i].kitMinimun = Math.floor((anterior.upTo/(1-(anterior.kitUtilitie/100))) - anterior.upTo );
-        }
-    
-        // El primero siempre arranca en newMinimum
-        if (updatedTable.length > 0) {
-            updatedTable[0].productMinimun = newMinimum;
-            updatedTable[0].kitMinimun = newMinimum;
-        }
-    
-        console.log("Updated Table: ",updatedTable);
-        // 🚀 Actualizar estado final
-        setNewUtilitiesTable(updatedTable);
-    }
-
-    const handleChange = (el, id) => {
-        const { name, value } = el.target;
-        // 🔄 Paso 1: Clonar y actualizar el item correspondiente
-        let updatedTable = [...newUtilitiesTable].map(item =>
-            item.id === id ? { ...item, [name]: Number(value) } : item
-        );
-        orderUtilitiesTable(updatedTable);
-    };
-
-    const handleAddItem = () => {
-        console.log("Agregar Item");
-        setNewUtilitiesTable(prevItems => [
-            ...prevItems,
-            {
-                id: uuidv4(),
-                upTo: 99999999,
-                productUtilitie: 18,
-                productMinimun: 0,
-                kitUtilitie: 18,
-                kitMinimun: 0
-            }
-        ]);
-    };
-
-    const handleDelete = (id) => {
-        console.log("Eliminar Item ", id);
-        const updatedTable = [...newUtilitiesTable].filter(item => item.id !== id);
-        orderUtilitiesTable(updatedTable);
-    }
+    const hasParameterChanges =
+        Number(newMonthlyRate) !== Number(paramMonthlyRate)
+        || Number(newTax) !== Number(tax * 100);
 
     const handleCancel = () => {
-        navigate("/"); // Redirige a la lista de clientes después de guardar
-    }
-
-    const validateParametersData = () => {
-        if (newMonthlyRate < 0) {
-            alert("debe ser mayor o igual a 0");
-            return false;
-        }
-        if (newTax < 0) {
-            alert("El impuesto debe ser mayor o igual a 0");
-            return false;
-        }
-        return true;
-    }
+        setNewMonthlyRate(paramMonthlyRate);
+        setNewTax(tax * 100);
+    };
 
     const handleSaveParameters = async () => {
-        if (!validateParametersData()) {
-            return; // Si la validación falla, no continuar
-        } else {
-            console.log("newMonthlyRate: ", newMonthlyRate);
-            console.log("newTax: ", newTax);
-            console.log("newUtilitiesTable: ", newUtilitiesTable);
-            updateGeneralParameters(newMonthlyRate, newTax, newUtilitiesTable)
+        if (newMonthlyRate < 0 || newTax < 0) {
+            alert("La tasa mensual y el impuesto deben ser mayores o iguales a 0.");
+            return;
         }
-        navigate("/"); // Redirige a la lista de clientes después de guardar
-    }
 
-    if (loading) return <p>Cargando...</p>;
+        setIsSaving(true);
+        try {
+            await updateGeneralParameters(Number(newMonthlyRate), Number(newTax));
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    if (!isParamsLoaded) return <p className="parameters-loading">Cargando parámetros...</p>;
+
     return (
-        <div>
+        <div className="general-parameters-page">
             <h2>Parametros Generales</h2>
             <h4>
                 <span>Tasa de Interes mensual: </span>
                 <input
-                    style={{ width: "40px", fontWeight: "bold", fontSize: "16px", textAlign: "right" }}
+                    style={{ width: "60px", fontWeight: "bold", fontSize: "16px", textAlign: "right" }}
                     type="number"
                     name="monthlyRate"
+                    min="0"
+                    step="any"
                     value={newMonthlyRate}
-                    onChange={(e) => setNewMonthlyRate(Number(e.target.value))}
+                    onChange={(event) => setNewMonthlyRate(Number(event.target.value))}
                 />
                 <span> %</span>
             </h4>
             <h4>
                 <span>Tasa de Impuesto: </span>
                 <input
-                    style={{ width: "40px", fontWeight: "bold", fontSize: "16px", textAlign: "right" }}
+                    style={{ width: "60px", fontWeight: "bold", fontSize: "16px", textAlign: "right" }}
                     name="tax"
                     type="number"
+                    min="0"
+                    step="any"
                     value={newTax}
-                    onChange={(e) => setNewTax(Number(e.target.value))}
+                    onChange={(event) => setNewTax(Number(event.target.value))}
                 />
                 <span> %</span>
             </h4>
-            <div>
-                <h3>Tablas de Utilidades:</h3>
-                <UtilitiesTableList tables={utilityTables} />
+            {hasParameterChanges && (
+                <div className="button-container">
+                    <TextButton text="Cancelar" onClick={handleCancel} />
+                    <TextButton
+                        text={isSaving ? "Guardando..." : "Guardar"}
+                        onClick={handleSaveParameters}
+                        disabled={isSaving}
+                    />
+                </div>
+            )}
+            <div className="utility-tables-section">
+                <UtilitiesTableList tables={utilityTables} onTablesRefresh={getUtilityTables} />
             </div>
-            
-
-            
-            {/* <h4>
-            <span>Tabla de Utilidad: </span>
-                <input
-                    style={{ width: "40px", fontWeight: "bold", fontSize: "16px", textAlign: "right" }}
-                    name="minimum"
-                    type="number"
-                    value={newMinimum}
-                    onChange={(e) => setNewMinimum(Number(e.target.value))}
-                />
-            </h4> */}
-            {/* <h4>
-                <span>Utilidad Minima: U$S </span>
-                <input
-                    style={{ width: "40px", fontWeight: "bold", fontSize: "16px", textAlign: "right" }}
-                    name="minimum"
-                    type="number"
-                    value={newMinimum}
-                    onChange={(e) => setNewMinimum(Number(e.target.value))}
-                />
-            </h4> */}
-            <div>
-                
-                {/* <table className="utilities-table">
-                    <thead>
-                        <tr>
-                            <th style={{ width: "40px" }}> </th>
-                            <th style={{ width: "160px" }}>Hasta U$S</th>
-                            <th style={{ width: "160px" }}>Utilidad Deseada</th>
-                            <th style={{ width: "160px" }}>Utilidad Minima</th>
-                            <th style={{ width: "160px" }}>Utilidad KIT Deseada</th>
-                            <th style={{ width: "160px" }}>Utilidad KIT Minima</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {newUtilitiesTable.map((item) => (
-                            <UtilitieTableItem
-                                key={item.id}
-                                item={item}
-                                handleDelete={handleDelete}
-                                handleChange={(e) => handleChange(e, item.id)}
-                            />
-                        ))}
-                    </tbody>
-                </table> */}
-            </div>
-            <div className="button-container">
-                <TextButton text="Agregar Item" onClick={handleAddItem} />
-                <TextButton text="Guardar" onClick={handleSaveParameters} />
-                <TextButton text="Cancelar" onClick={handleCancel} />
-            </div>
-            {/* <div>
-                <UtilitiesTableContainer />
-            </div> */}
         </div>
-    )
-}
+    );
+};
 
 export default GeneralParameters;
-

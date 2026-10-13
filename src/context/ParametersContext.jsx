@@ -7,7 +7,6 @@ export const ParametersContext = createContext();
 
 const getDefaultUtilityRows = (tables = []) => {
     const defaultTable = tables.find((table) => table.isDefault)
-        || tables.find((table) => table.isActive)
         || tables[0];
     return defaultTable?.rows || [];
 };
@@ -29,9 +28,11 @@ export const ParametersProvider = ({ children }) => {
             console.log('Utility Tables Recuperados: ', tables);
             setUtilityTables(tables);
             setUtilitiesTable(getDefaultUtilityRows(tables));
+            return tables;
         } catch (error) {
             console.error('Hubo un error al recuperar las tablas de utilidad:', error);
             alert('Error al conectar con el servidor');
+            return null;
         }
     };
 
@@ -81,7 +82,6 @@ export const ParametersProvider = ({ children }) => {
         const newParameters = {
             monthlyRate: newParamMonthlyRate,
             tax: newTax / 100,
-            dolar: dolarPrice
         };
         console.log("Parametros Generales Actualizados: ", newParameters);
         try {

@@ -2,7 +2,7 @@ import IconButton from "../Utils/IconButton.jsx";
 
 const getRowId = (item) => item.id || item._id;
 
-const UtilitieTableItem = ({ item, handleDelete, handleChange }) => {
+const UtilityTableItem = ({ item, handleDelete, handleChange }) => {
     const rowId = getRowId(item);
 
     return (
@@ -28,7 +28,7 @@ const UtilitieTableItem = ({ item, handleDelete, handleChange }) => {
                 <input
                     style={{ width: "40px", textAlign: "right" }}
                     type="number"
-                    name="productUtilitie"
+                    name="productUtility"
                     value={item.productUtility}
                     onChange={(el) => handleChange(el)} />
                 <span>%</span>
@@ -38,7 +38,7 @@ const UtilitieTableItem = ({ item, handleDelete, handleChange }) => {
                 <input
                     style={{ width: "40px", textAlign: "right" }}
                     type="number"
-                    name="productMinimun"
+                    name="productMinimum"
                     value={item.productMinimum}
                     disabled={true} 
                     />
@@ -47,7 +47,7 @@ const UtilitieTableItem = ({ item, handleDelete, handleChange }) => {
                 <input
                     style={{ width: "40px", textAlign: "right" }}
                     type="number"
-                    name="kitUtilitie"
+                    name="kitUtility"
                     value={item.kitUtility}
                     onChange={(el) => handleChange(el)} />
                 <span>%</span>
@@ -57,7 +57,7 @@ const UtilitieTableItem = ({ item, handleDelete, handleChange }) => {
                 <input
                     style={{ width: "40px", textAlign: "right" }}
                     type="number"
-                    name="kitMinimun"
+                    name="kitMinimum"
                     value={item.kitMinimum}
                     disabled={true} />
             </td>
@@ -65,4 +65,4 @@ const UtilitieTableItem = ({ item, handleDelete, handleChange }) => {
     );
 }
 
-export default UtilitieTableItem;
+export default UtilityTableItem;
