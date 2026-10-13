@@ -97,7 +97,6 @@ const EditCustomer = () => {
             const result = await checkCustomerInXubio(cuit);
             console.log("Resultado de la verificación en Xubio: ", result.message);
             if (result.exists) {
-                const message = result.message;
                 toast.success(result.message, {
                     position: "top-center",
                     autoClose: 6000
