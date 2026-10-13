@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom"
 import TextButton from "../Utils/TextButton.jsx";
 import SelectCustomerPayMethod from "../Utils/Selectors/SelectCustomerPaymentMethod.jsx";
@@ -10,12 +10,16 @@ import "./EditCustomer.css";
 import { checkCustomerInXubio } from "../../api/sendCustomer.js";
 import { toast } from "react-toastify";
 import ConfirmToast from "../../components/Utils/ConfirmToast.jsx";
+import { ParametersContext } from "../../context/ParametersContext.jsx";
+
+const getUtilityTableId = (value) => value?._id || value || null;
 
 
 const EditCustomer = () => {
     const navigate = useNavigate();
     const [newCustomerData, setNewCustomerData] = useState({});
     const [loading, setLoading] = useState(true);
+    const { utilityTables } = useContext(ParametersContext);
 
     const { id } = useParams()
 
@@ -43,6 +47,7 @@ const EditCustomer = () => {
                 email: "",
                 phone: "",
                 customerPaymentMethodId: "",
+                utilityTableId: null,
                 customerContact: [],
                 customerNote: "",
             });
@@ -136,6 +141,7 @@ const EditCustomer = () => {
             email: newCustomerData.email || "",
             phone: newCustomerData.phone || "",
             customerPaymentMethodId: newCustomerData.customerPaymentMethodId,
+            utilityTableId: getUtilityTableId(newCustomerData.utilityTableId),
             customerContact: newCustomerData.customerContact || [],
             customerNote: newCustomerData.customerNote || "",
         }
@@ -151,9 +157,12 @@ const EditCustomer = () => {
         }
     }
     const updateCustomer = async () => {
-        console.log("Updating customer data: ", newCustomerData);
+        const data = {
+            ...newCustomerData,
+            utilityTableId: getUtilityTableId(newCustomerData.utilityTableId),
+        };
         try {
-            const response = await apiClient.put(`/customers/${id}`, newCustomerData);
+            await apiClient.put(`/customers/${id}`, data);
         } catch (error) {
             console.error("Error al actualizar el cliente:", error);
             alert("Error al actualizar el cliente. Por favor, inténtalo de nuevo.");
@@ -291,6 +300,22 @@ const EditCustomer = () => {
                                     defaultPayment={newCustomerData.customerPaymentMethodId?.customer_payment_description}
                                     onSelectCustomerPayMethod={handleCustomerPaymentMethodUpdate}
                                 />
+                            </div>
+                            <div className="customer-utility-table-field">
+                                <span>Tabla de utilidades: </span>
+                                <select
+                                    className="customer-utility-table-select"
+                                    name="utilityTableId"
+                                    value={getUtilityTableId(newCustomerData.utilityTableId) || ""}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">Usar tabla default</option>
+                                    {utilityTables.map((table) => (
+                                        <option key={table._id} value={table._id}>
+                                            {table.tableName}{table.isDefault ? " (default)" : ""}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="contacts-table-border">
                                 <table className="contacts-table">

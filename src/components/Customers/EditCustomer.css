@@ -39,6 +39,23 @@
     transition: border-bottom 0.3s ease-in-out;
 }
 
+.customer-utility-table-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.customer-utility-table-select {
+    flex: 1;
+    min-width: 0;
+    padding: 4px 6px;
+    font-size: 1rem;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    background-color: transparent;
+}
+
 .customerInfo textarea {
     font-family: roboto;
     padding: 3px 6px;
