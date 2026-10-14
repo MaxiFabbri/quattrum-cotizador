@@ -12,6 +12,7 @@ import { calculateTotalProductCost, calculateSubTotalProcessCost } from "../util
 import { newhandleCalculateJob } from "../utils/jobsCalculations.js";
 import { sendPresupuesto } from "../api/enviarPresupuesto.jsx";
 import ConfirmToast from "../components/Utils/ConfirmToast.jsx";
+import { createUtilityTableResolver } from "../utils/utilityTableResolver.js";
 
 export const JobContext = createContext();
 
@@ -22,7 +23,8 @@ export const JobProvider = ({ children }) => {
     const [isSaved, setIsSaved] = useState(true);
     const [jobFilter, setJobFilter] = useState("");
     const [jobStatusFilter, setJobStatusFilter] = useState("");
-    const { utilitiesTable, tax } = useContext(ParametersContext);
+    const { utilityTables, tax } = useContext(ParametersContext);
+    const getUtilityTableById = createUtilityTableResolver(utilityTables);
     const { socket } = useContext(SocketContext);
     const { calculateUnitSellingPrice, calculateKitUniteSellingPrice, getSellingFinanceCost, getBuyingFinanceCost } = useCalculateFunctions();
     const navigate = useNavigate();
@@ -35,6 +37,7 @@ export const JobProvider = ({ children }) => {
         deliveryDate: "",
         isDateCritical: false,
         customerId: "",
+        utilityTableId: "",
         paymentMethodId: "",
         customerPaymentDetails: [],
         invoices: [
@@ -65,6 +68,8 @@ export const JobProvider = ({ children }) => {
         createdInXubio: false,
     };
     const [jobData, setJobData] = useState(initialJobDataState);
+
+    const getJobUtilityRows = () => getUtilityTableById(jobData.utilityTableId)?.rows;
 
     // Se ejecuta y GUARDA en la persistencia cuando isUpdated cambia a `true`
     useEffect(() => {
@@ -206,6 +211,7 @@ export const JobProvider = ({ children }) => {
         updateJobData(updatedStatusData);
 
         const jobId = jobData.jobId;
+        const selectedUtilityTable = getUtilityTableById(jobData.utilityTableId);
         const jobToSave = {
             jobId: jobId,
             quotationId: jobData.quotationId,
@@ -213,6 +219,7 @@ export const JobProvider = ({ children }) => {
             deliveryDate: jobData.deliveryDate,
             isDateCritical: jobData.isDateCritical,
             customerId: jobData.customerId,
+            utilityTableId: selectedUtilityTable?._id || null,
             paymentMethodId: jobData.paymentMethodId,
             customerPaymentDetails: jobData.customerPaymentDetails,
             invoices: updatedStatusData.invoices,
@@ -410,7 +417,18 @@ export const JobProvider = ({ children }) => {
             });
             return;
         }
-        const calculatedJob = await newhandleCalculateJob(calculateAll, jobData, utilitiesTable, tax);
+        const selectedUtilityTable = getUtilityTableById(jobData.utilityTableId);
+        const selectedUtilityRows = selectedUtilityTable?.rows;
+        if (!Array.isArray(selectedUtilityRows) || selectedUtilityRows.length === 0) {
+            toast.error("No hay una tabla de utilidad disponible para calcular el pedido.", {
+                position: "top-center",
+                autoClose: 6000,
+            });
+            return;
+        }
+
+        console.log("Tabla de utilidad resuelta para el job:", selectedUtilityRows);
+        const calculatedJob = await newhandleCalculateJob(calculateAll, jobData, selectedUtilityRows, tax);
         console.log("New calculatedJob: ", calculatedJob);
 
         setJobData(calculatedJob);
@@ -504,9 +522,18 @@ export const JobProvider = ({ children }) => {
         setIsUpdated(true);
     };
     const handleCalculateSetJob = async (recalculateAll) => {
+        const selectedUtilityRows = getJobUtilityRows();
+        if (!Array.isArray(selectedUtilityRows) || selectedUtilityRows.length === 0) {
+            toast.error("No hay una tabla de utilidad disponible para calcular el pedido.", {
+                position: "top-center",
+                autoClose: 6000,
+            });
+            return;
+        }
+
         const jobTotalCost = getJobTotalCost();
         // Calculo las utilidades deseadas de los parametros generales
-        const targetUtilities = utilitiesTable.find((utility) => jobTotalCost < utility.upTo);
+        const targetUtilities = selectedUtilityRows.find((utility) => jobTotalCost < utility.upTo);
         for (const product of jobData.jobProducts) {
             // Calculo las utilidades deseadas de los parametros generales
             const productCost = jobProductsTotalCost.find((el) => el.id === product.jobProductId);

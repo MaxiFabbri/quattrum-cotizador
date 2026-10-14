@@ -122,6 +122,9 @@ const ButtonApproveQuotation = () => {
             deliveryDate: null, // Se definirá posteriormente
             isDateCritical: false,
             customerId: quotationData.customerId,
+            utilityTableId: quotationData.utilityTableId && typeof quotationData.utilityTableId === "object"
+                ? quotationData.utilityTableId._id
+                : quotationData.utilityTableId || null,
             paymentMethodId: quotationData.paymentMethodId,
             customerPaymentDetails: quotationData.customerPaymentDetails,
             invoices: newSellingInvoices,
@@ -146,18 +149,8 @@ const ButtonApproveQuotation = () => {
             console.log("responseQuote en approve Quotation: ", responseQuote);
             newJobId = responseQuote.data.response._id;
             updateJobData({
+                ...jobToSave,
                 jobId: newJobId,
-                quotationId: quotationData.id,
-                approvalDate: today,
-                deliveryDate: null, //to be defined,
-                customerId: quotationData.customerId,
-                paymentMethodId: quotationData.paymentMethodId,
-                customerPaymentDetails: quotationData.customerPaymentDetails,
-                currency: quotationData.currency,
-                exchangeRate: quotationData.exchangeRate,
-                jobStatus: "Nuevo",
-                isKit: quotationData.isKit,
-                jobNotes: ""
             });
             changeQuotationStatus("Aprobado", quotationData.id)
         } catch (error) {

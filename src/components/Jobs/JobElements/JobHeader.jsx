@@ -6,6 +6,7 @@ const JobHeader = () => {
                 <th>Entrega</th>
                 <th>Critica</th>
                 <th>Cliente</th>
+                <th>Lista de precios</th>
                 <th>Forma de pago</th>
                 <th>Moneda</th>
                 <th>Cambio</th>

@@ -194,6 +194,7 @@ const DetailedJobContainer = () => {
             isDateCritical: recievedData.isDateCritical,
             customerId: recievedData.customerId._id,
             customerName: recievedData.customerId.name,
+            utilityTableId: recievedData.utilityTableId?._id || recievedData.utilityTableId || "",
             paymentMethodId: recievedData.paymentMethodId._id,
             paymentMethodName: recievedData.paymentMethodId.customer_payment_description,
             customerPaymentDetails: recievedData.paymentMethodId.customer_payment_details,

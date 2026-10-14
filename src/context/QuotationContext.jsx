@@ -6,12 +6,13 @@ import { validateQuotation } from "../utils/quotationValidations.js";
 import { handleCalculateQuotation } from "../utils/quotationsCalculations.js";
 import { initialQuotationDataState } from "../state/quotationState.js";
 import { getSellingFinanceCost, getBuyingFinanceCost } from "../utils/financeCostCalculations.js";
+import { createUtilityTableResolver } from "../utils/utilityTableResolver.js";
 
 
 export const QuotationContext = createContext();
 
 export const QuotationProvider = ({ children }) => {
-    const { utilitiesTable, tax } = useContext(ParametersContext);
+    const { utilityTables, tax } = useContext(ParametersContext);
     const [isUpdated, setIsUpdated] = useState(false);
     const [isSaved, setIsSaved] = useState(true);
     const [filter, setFilter] = useState("");
@@ -19,6 +20,8 @@ export const QuotationProvider = ({ children }) => {
     let productsTotalCost = []
 
     const [quotationData, setQuotationData] = useState(initialQuotationDataState);
+
+    const getUtilityTableById = createUtilityTableResolver(utilityTables);
 
     useEffect(() => {
         console.log("Quotation Data actualizado en context: ", quotationData);
@@ -41,7 +44,19 @@ export const QuotationProvider = ({ children }) => {
             });
             return;
         }
-        const newData = await handleCalculateQuotation(calculateAll, quotationData, utilitiesTable, tax)
+        const selectedUtilityTable = getUtilityTableById(quotationData.utilityTableId);
+        const selectedUtilityRows = selectedUtilityTable?.rows;
+        if (!Array.isArray(selectedUtilityRows) || selectedUtilityRows.length === 0) {
+            toast.error("No hay una tabla de utilidad disponible para calcular la cotización.", {
+                position: "top-center",
+                autoClose: 6000,
+            });
+            return;
+        }
+
+        console.log("Tabla de utilidad resuelta para la quotation:", selectedUtilityRows);
+
+        const newData = await handleCalculateQuotation(calculateAll, quotationData, selectedUtilityRows, tax);
         console.log("Nueva cotización calculada: ", newData);
         setQuotationData(newData)
         setIsUpdated(true);
@@ -71,9 +86,11 @@ export const QuotationProvider = ({ children }) => {
         console.log("Guardando cotización: ", quotationData);
         // preparo la informacion de Quotation para guardar en la DB
         const quotationId = quotationData.id;
+        const selectedUtilityTable = getUtilityTableById(quotationData.utilityTableId);
         const quotationToSave = {
             date: quotationData.date,
             customerId: quotationData.customerId,
+            utilityTableId: selectedUtilityTable?._id || null,
             customerNote: quotationData.customerNote,
             paymentMethodId: quotationData.paymentMethodId,
             customerPaymentDetails: quotationData.customerPaymentDetails,

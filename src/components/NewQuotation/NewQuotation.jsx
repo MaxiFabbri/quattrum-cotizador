@@ -1,4 +1,4 @@
-import { use, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { apiClient } from "../../config/axiosConfig.js";
 import "./OneQuotationContainer.css"
 
@@ -22,12 +22,28 @@ import { toast } from "react-toastify";
 
 
 const NewQuotation = () => {
-    const { getDolarPrice } = useContext(ParametersContext);
+    const { getDolarPrice, utilityTables } = useContext(ParametersContext);
     const { quotationData, updateQuotationData, setIsSaved } = useContext(QuotationContext);
     const [quotationId, setQuotationId] = useState(null);
 
     useAddProductWithQuotation(quotationId);
     getDolarPrice();
+
+    const getUtilityTableId = (utilityTable) => {
+        if (utilityTable && typeof utilityTable === "object") {
+            return utilityTable._id || utilityTable.id || "";
+        }
+        return utilityTable || "";
+    };
+
+    const getDefaultUtilityTable = () => utilityTables.find((table) => table.isDefault) || utilityTables[0];
+
+    useEffect(() => {
+        if (!quotationData.utilityTableId) {
+            const defaultTable = getDefaultUtilityTable();
+            if (defaultTable) updateQuotationData({ utilityTableId: defaultTable._id });
+        }
+    }, [utilityTables, quotationData.utilityTableId, updateQuotationData]);
 
     const getPaymentMethodData = async (paymentId) => {
         try {
@@ -46,14 +62,23 @@ const NewQuotation = () => {
         console.log("Customer selected:", customer);
         const paymentMethodData = await getPaymentMethodData(customer.customerPaymentMethodId);
         console.log("Fetched payment method data:", paymentMethodData);
+        const defaultTable = getDefaultUtilityTable();
+        const customerTableId = getUtilityTableId(customer.utilityTableId);
+        const customerTable = utilityTables.find((table) => table._id === customerTableId);
         updateQuotationData({
             customerId: customer._id || "",
             customerName: customer.name || "",
+            utilityTableId: customerTable?._id || defaultTable?._id || "",
             paymentMethodId: customer.customerPaymentMethodId || "",
             paymentMethodName: paymentMethodData.customer_payment_description || "",
             customerPaymentDetails: paymentMethodData.customer_payment_details || [],
             // paymentDaysToCollect: paymentMethodData.days_to_collect || 0,
         })
+    };
+
+    const handleUtilityTableChange = (event) => {
+        setIsSaved(false);
+        updateQuotationData({ utilityTableId: event.target.value });
     };
 
     const handleCustomerPaymentMethodUpdate = (newCustomerPaymentMethod) => {
@@ -79,11 +104,15 @@ const NewQuotation = () => {
             return;
         }
         try {
-            console.log("Submitting quotation:", quotationData)
-            const response = await apiClient.post("/quotations", quotationData);
+            const utilityTableId = getUtilityTableId(quotationData.utilityTableId)
+                || getDefaultUtilityTable()?._id
+                || null;
+            const quotationToCreate = { ...quotationData, utilityTableId };
+            console.log("Submitting quotation:", quotationToCreate)
+            const response = await apiClient.post("/quotations", quotationToCreate);
             const dbId = response.data.response._id;
             if (dbId) {
-                updateQuotationData({id: dbId});
+                updateQuotationData({ id: dbId, utilityTableId });
                 setQuotationId(dbId);
             }
         } catch (error) {
@@ -103,6 +132,22 @@ const NewQuotation = () => {
                 <SelectCustomer
                     defaultCustomer={quotationData.customerName || ""}
                     onSelectCustomer={handleCustomerUpdate} />
+            </td>
+            <td>
+                <select
+                    aria-label="Lista de precios"
+                    value={getUtilityTableId(quotationData.utilityTableId)}
+                    onChange={handleUtilityTableChange}
+                    disabled={utilityTables.length === 0}
+                >
+                    {utilityTables.length === 0 ? (
+                        <option value="">Cargando listas...</option>
+                    ) : utilityTables.map((table) => (
+                        <option key={table._id} value={table._id}>
+                            {table.tableName}{table.isDefault ? " (default)" : ""}
+                        </option>
+                    ))}
+                </select>
             </td>
             <td>
                 <input

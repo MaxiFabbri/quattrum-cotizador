@@ -3,6 +3,7 @@ import "./NewJob.css"
 
 import { AuthContext } from "../../context/AuthContext.jsx";
 import { JobContext } from "../../context/JobContext.jsx";
+import { ParametersContext } from "../../context/ParametersContext.jsx";
 
 import DateField from "../NewQuotation/InputComponents/DateField.jsx";
 import CurrencySelect from "../NewQuotation/InputComponents/CurrencySelect.jsx";
@@ -22,10 +23,25 @@ import ImageLinkUploader from "./JobsUtils/ImageLinkUploader.jsx";
 const NewJob = () => {
     const { userId, userName } = useContext(AuthContext);
     const { jobData, setJobData, updateJobData, updateJobDataAndSave, setIsSaved, setIsUpdated } = useContext(JobContext);
+    const { utilityTables } = useContext(ParametersContext);
     const [showInvoices, setShowInvoices] = useState(false);
     const [showEventsForm, setShowEventsForm] = useState(false);
     const [showEvents, setShowEvents] = useState(false);
     const [showFiles, setShowFiles] = useState(false);
+
+    const getUtilityTableId = (utilityTable) => {
+        if (utilityTable && typeof utilityTable === "object") {
+            return utilityTable._id || utilityTable.id || "";
+        }
+        return utilityTable || "";
+    };
+
+    useEffect(() => {
+        if (jobData.jobId && !jobData.utilityTableId) {
+            const defaultTable = utilityTables.find((table) => table.isDefault) || utilityTables[0];
+            if (defaultTable) updateJobData({ utilityTableId: defaultTable._id });
+        }
+    }, [jobData.jobId, jobData.utilityTableId, utilityTables, updateJobData]);
 
     const handleChange = (updates) => {
         setIsSaved(false)
@@ -235,6 +251,22 @@ const NewJob = () => {
                     >
                         <img src="/images/link.png" alt="link" />
                     </a>
+                </td>
+                <td>
+                    <select
+                        aria-label="Lista de precios"
+                        value={getUtilityTableId(jobData.utilityTableId)}
+                        onChange={(e) => handleChange({ utilityTableId: e.target.value })}
+                        disabled={utilityTables.length === 0}
+                    >
+                        {utilityTables.length === 0 ? (
+                            <option value="">Cargando listas...</option>
+                        ) : utilityTables.map((table) => (
+                            <option key={table._id} value={table._id}>
+                                {table.tableName}{table.isDefault ? " (default)" : ""}
+                            </option>
+                        ))}
+                    </select>
                 </td>
                 <td>
                     <SelectCustomerPayMethod

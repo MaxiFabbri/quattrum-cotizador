@@ -6,6 +6,7 @@ export const initialQuotationDataState = {
     date: "",
     customerId: "",
     customerName: "",
+    utilityTableId: "",
     customerNote: "",
     paymentMethodId: "",
     paymentMethodName: "",

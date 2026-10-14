@@ -19,6 +19,9 @@ const ButtonDuplicateQuotation = () => {
         const quotationToSave = {
             date: today,            
             customerId: quotationData.customerId,
+            utilityTableId: quotationData.utilityTableId && typeof quotationData.utilityTableId === "object"
+                ? quotationData.utilityTableId._id
+                : quotationData.utilityTableId || null,
             paymentMethodId: quotationData.paymentMethodId,
             customerPaymentDetails: quotationData.customerPaymentDetails,
             monthlyRate: paramMonthlyRate,
